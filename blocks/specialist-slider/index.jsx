@@ -13,6 +13,7 @@ import { decodeEntities } from "@wordpress/html-entities";
 import { ServerSideRender } from "@wordpress/server-side-render";
 
 import metadata from "./block.json";
+import "./editor.scss";
 import "./index.scss";
 
 const ALL_DOCTORS_QUERY = { perPage: 100, orderby: "title", order: "asc" };
