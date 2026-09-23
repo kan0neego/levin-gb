@@ -1,38 +1,37 @@
 name: Build and Deployment
 
 on:
-    push:
-        branches:
-            - main
-        paths-ignore:
-            - 'README.md'
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "README.md"
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-            - name: PNPM setup
-              uses: pnpm/setup@v2
-              with:
-                  version: 11
-                  runtime: node@22
+      - name: PNPM setup
+        uses: pnpm/setup@v2
+        with:
+          version: 11
+          runtime: node@22
 
-            - run: pnpm install
+      - run: pnpm install
 
-            - name: Production build
-              run: pnpm build:blocks
+      - name: Production build
+        run: pnpm build:blocks
 
-            - name: Copy built blocks to PROD
-              uses: appleboy/scp-action@v0.1.7
-              with:
-                  host: ${{ secrets.HOST }}
-                  username: ${{ secrets.HOST_NAME }}
-                  key: ${{ secrets.RSA_KEY }}
-                  source: dist/blocks/*
-                  target: /var/www/vhosts/u0139435.plsk.regruhosting.ru/httpdocs/doctorlevin.ru/wp-content/themes/sd-03-2_new/blocks/react
-                  strip_components: 2
-                  rm: false
-
+      - name: Copy built blocks to PROD
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.HOST_NAME }}
+          key: ${{ secrets.RSA_KEY }}
+          source: dist/blocks/*
+          target: /var/www/vhosts/u0139435.plsk.regruhosting.ru/httpdocs/doctorlevin.ru/wp-content/themes/sd-03-2_new/blocks/react
+          strip_components: 2
+          rm: false

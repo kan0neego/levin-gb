@@ -6,12 +6,15 @@
     "watch:blocks": "wp-scripts start --webpack-src-dir=blocks --output-path=../blocks --stats=errors-only",
     "build:sass": "sass styles ../assets/styles",
     "watch:sass": "sass --watch styles:../assets/styles",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "wp-packages:update": "wp-scripts packages-update"
   },
   "devDependencies": {
     "@types/wordpress__block-editor": "^14.21.8",
     "@types/wordpress__blocks": "^12.5.18",
     "@wordpress/scripts": "^32.6.0",
+    "prettier": "npm:wp-prettier@^3.0.3",
     "sass": "^1.104.0",
     "sass-loader": "^16.0.8"
   },

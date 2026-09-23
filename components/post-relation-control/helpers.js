@@ -12,9 +12,9 @@ import { DEFAULT_PER_PAGE } from "./constants";
  * @returns {string} Заголовок записи.
  */
 export function getRecordTitle(record) {
-	const raw = record?.title?.rendered ?? record?.title ?? "";
+  const raw = record?.title?.rendered ?? record?.title ?? "";
 
-	return decodeEntities(String(raw));
+  return decodeEntities(String(raw));
 }
 
 /**
@@ -29,15 +29,15 @@ export function getRecordTitle(record) {
  * @returns {Array|null} Новый массив или `null`, если порядок не изменился.
  */
 export function moveItem(items, from, to) {
-	if (from === to || to < 0 || to >= items.length) {
-		return null;
-	}
+  if (from === to || to < 0 || to >= items.length) {
+    return null;
+  }
 
-	const next = [...items];
-	const [moved] = next.splice(from, 1);
-	next.splice(to, 0, moved);
+  const next = [...items];
+  const [moved] = next.splice(from, 1);
+  next.splice(to, 0, moved);
 
-	return next;
+  return next;
 }
 
 /**
@@ -48,7 +48,7 @@ export function moveItem(items, from, to) {
  * @returns {string} Ключ вида «1,2,3».
  */
 export function toIdsKey(ids) {
-	return [...ids].map(String).sort().join(",");
+  return [...ids].map(String).sort().join(",");
 }
 
 /**
@@ -59,13 +59,9 @@ export function toIdsKey(ids) {
  * @returns {Array} Числовые идентификаторы.
  */
 export function fromIdsKey(key, limit = DEFAULT_PER_PAGE) {
-	if (!key) {
-		return [];
-	}
+  if (!key) {
+    return [];
+  }
 
-	return key
-		.split(",")
-		.map(Number)
-		.filter(Number.isFinite)
-		.slice(0, limit);
+  return key.split(",").map(Number).filter(Number.isFinite).slice(0, limit);
 }

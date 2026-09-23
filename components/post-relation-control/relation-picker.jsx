@@ -1,8 +1,8 @@
 import {
-	Button,
-	CheckboxControl,
-	Dropdown,
-	Spinner,
+  Button,
+  CheckboxControl,
+  Dropdown,
+  Spinner,
 } from "@wordpress/components";
 import { chevronDown } from "@wordpress/icons";
 
@@ -24,64 +24,64 @@ import { RelationFilters } from "./relation-filters";
  * @returns {import("react").JSX.Element}
  */
 export function RelationPicker({ labels, filters, results, selected, limit }) {
-	const { posts, isResolving, isSelected, onToggle } = results;
-	const maxReached = limit > 0 && selected >= limit;
+  const { posts, isResolving, isSelected, onToggle } = results;
+  const maxReached = limit > 0 && selected >= limit;
 
-	return (
-		<Dropdown
-			className="post-relation-control__picker"
-			contentClassName="post-relation-control__picker-content"
-			popoverProps={{ placement: "bottom-start", resize: false }}
-			renderToggle={({ isOpen, onToggle: toggle }) => (
-				<Button
-					variant="secondary"
-					className="post-relation-control__add"
-					onClick={toggle}
-					aria-expanded={isOpen}
-					icon={chevronDown}
-					iconPosition="right"
-					disabled={maxReached}
-				>
-					{labels.addLabel}
-				</Button>
-			)}
-			renderContent={() => (
-				<div className="post-relation-control__picker-inner">
-					<RelationFilters {...filters} labels={labels} />
-					<div className="post-relation-control__results">
-						{isResolving && (
-							<p className="post-relation-control__state">
-								<Spinner />
-								Загружаем…
-							</p>
-						)}
-						{!isResolving && posts.length === 0 && (
-							<p className="post-relation-control__state">
-								{labels.emptyLabel}
-							</p>
-						)}
-						{!isResolving && posts.length > 0 && (
-							<ul className="post-relation-control__results-list">
-								{posts.map((record) => {
-									const taken = isSelected(record.id);
-									const title = getRecordTitle(record);
+  return (
+    <Dropdown
+      className="post-relation-control__picker"
+      contentClassName="post-relation-control__picker-content"
+      popoverProps={{ placement: "bottom-start", resize: false }}
+      renderToggle={({ isOpen, onToggle: toggle }) => (
+        <Button
+          variant="secondary"
+          className="post-relation-control__add"
+          onClick={toggle}
+          aria-expanded={isOpen}
+          icon={chevronDown}
+          iconPosition="right"
+          disabled={maxReached}
+        >
+          {labels.addLabel}
+        </Button>
+      )}
+      renderContent={() => (
+        <div className="post-relation-control__picker-inner">
+          <RelationFilters {...filters} labels={labels} />
+          <div className="post-relation-control__results">
+            {isResolving && (
+              <p className="post-relation-control__state">
+                <Spinner />
+                Загружаем…
+              </p>
+            )}
+            {!isResolving && posts.length === 0 && (
+              <p className="post-relation-control__state">
+                {labels.emptyLabel}
+              </p>
+            )}
+            {!isResolving && posts.length > 0 && (
+              <ul className="post-relation-control__results-list">
+                {posts.map((record) => {
+                  const taken = isSelected(record.id);
+                  const title = getRecordTitle(record);
 
-									return (
-										<li key={record.id}>
-											<CheckboxControl
-												label={taken ? `${title} — уже выбран` : title}
-												checked={taken}
-												disabled={taken || maxReached}
-												onChange={(checked) => onToggle(record.id, checked)}
-											/>
-										</li>
-									);
-								})}
-							</ul>
-						)}
-					</div>
-				</div>
-			)}
-		/>
-	);
+                  return (
+                    <li key={record.id}>
+                      <CheckboxControl
+                        label={title}
+                        checked={taken}
+                        disabled={taken || maxReached}
+                        onChange={(checked) => onToggle(record.id, checked)}
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </div>
+      )}
+    />
+  );
 }

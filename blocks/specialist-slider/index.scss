@@ -1,68 +1,68 @@
 @use "@/lib/slider/index.scss";
 @use "@/lib/slider/mixin.scss";
 @use "./styles/banner.scss";
-@use './styles/thumb.scss';
+@use "./styles/thumb.scss";
 
 $button-width: 52px;
 .specialist-slider-wrapper {
-	--overflow-gap: 35px;
-	--swiper-scrollbar-bg-color: rgba(46, 46, 46, 0.05);
-	--swiper-scrollbar-drag-bg-color: var(--main-blue, #20a1e5);
+  --overflow-gap: 35px;
+  --swiper-scrollbar-bg-color: rgba(46, 46, 46, 0.05);
+  --swiper-scrollbar-drag-bg-color: var(--main-blue, #20a1e5);
 
-	@include mixin.slider($button-width, 32px, 0px);
+  @include mixin.slider($button-width, 32px, 0px);
 
-	margin: calc(0px - var(--overflow-gap)) 0px -0px;
-	padding: var(--overflow-gap) 0px 0px;
+  margin: calc(0px - var(--overflow-gap)) 0px -0px;
+  padding: var(--overflow-gap) 0px 0px;
 
-	.btn-slider {
-		--offset: 26px;
+  .btn-slider {
+    --offset: 26px;
 
-		background-color: var(--main-blue, #20a1e5);
+    background-color: var(--main-blue, #20a1e5);
 
-		&-prev {
-			left: var(--offset);
-		}
+    &-prev {
+      left: var(--offset);
+    }
 
-		&-next {
-			right: var(--offset);
-		}
-	}
+    &-next {
+      right: var(--offset);
+    }
+  }
 }
 
 .specialist-slider {
-	--bg-banner: #f6f6f6;
-	--color-title-banner: #000;
-	--color-desc-banner: #000;
-	--banner-rounded: 34px;
+  --bg-banner: #f6f6f6;
+  --color-title-banner: #000;
+  --color-desc-banner: #000;
+  --banner-rounded: 34px;
 
-	border-radius: var(--banner-rounded);
-	clip-path: inset(-100px 0px 0px 0px round var(--banner-rounded));
-	background-color: var(--bg-banner);
-	position: relative;
+  border-radius: var(--banner-rounded);
+  clip-path: inset(-100px 0px 0px 0px round var(--banner-rounded));
+  background-color: var(--bg-banner);
+  position: relative;
 
-	figure {
-		margin: 0px;
-	}
+  figure {
+    margin: 0px;
+  }
 
-	.slider-container {
-		position: relative;
-		z-index: 20;
+  .slider-container {
+    position: relative;
+    z-index: 20;
 
-		overflow: visible;
+    overflow: visible;
 
-		@media screen and (max-width: 768px) {
-			margin: 0px -5px -5px;
-			padding: 0px 5px 5px;
-		}
-	}
+    @media screen and (max-width: 768px) {
+      margin: 0px -5px -5px;
+      padding: 0px 5px 5px;
+    }
+  }
 
-	.swiper-navigation {
-		top: unset;
-		bottom: 20px;
-		right: 20px;
-	}
+  .swiper-navigation {
+    top: unset;
+    bottom: 20px;
+    right: 20px;
+  }
 
-	@media screen and (max-width: 640px) {
-		--banner-rounded: 24px;
-	}
+  @media screen and (max-width: 640px) {
+    --banner-rounded: 24px;
+  }
 }

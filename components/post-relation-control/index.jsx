@@ -53,183 +53,178 @@ import "./index.scss";
  * @returns {import("react").JSX.Element}
  */
 export function PostRelationControl({
-	value = [],
-	onChange,
-	valueKey = "id",
-	postType,
-	taxonomy = null,
-	perPage = DEFAULT_PER_PAGE,
-	maxItems = 0,
-	addLabel = "Добавить записи",
-	selectedLabel = "Выбрано",
-	taxonomyLabel = "Фильтр по таксономии",
-	allTermsLabel = "Все",
-	searchLabel = "Поиск",
-	searchPlaceholder = "Начните вводить название…",
-	emptyLabel = "Записи не найдены",
-	emptySelectedLabel = "Пока ничего не выбрано",
-	missingTitleLabel = "(запись не найдена)",
-	moveUpLabel = "Переместить выше",
-	moveDownLabel = "Переместить ниже",
-	removeLabel = "Убрать",
-	hint = "",
-	className = "",
+  value = [],
+  onChange,
+  valueKey = "id",
+  postType,
+  taxonomy = null,
+  perPage = DEFAULT_PER_PAGE,
+  maxItems = 0,
+  addLabel = "Добавить записи",
+  selectedLabel = "Выбрано",
+  taxonomyLabel = "Фильтр по таксономии",
+  allTermsLabel = "Все",
+  searchLabel = "Поиск",
+  searchPlaceholder = "Начните вводить название…",
+  emptyLabel = "Записи не найдены",
+  emptySelectedLabel = "Пока ничего не выбрано",
+  missingTitleLabel = "(запись не найдена)",
+  moveUpLabel = "Переместить выше",
+  moveDownLabel = "Переместить ниже",
+  removeLabel = "Убрать",
+  hint = "",
+  className = "",
 }) {
-	const instanceId = useInstanceId(PostRelationControl, "post-relation");
-	const entityEnabled = Boolean(postType);
+  const instanceId = useInstanceId(PostRelationControl, "post-relation");
+  const entityEnabled = Boolean(postType);
 
-	const {
-		selectedIds,
-		count,
-		isSelected,
-		toggleId,
-		removeId,
-		moveByIndex,
-		maxReached,
-	} = useRelationSelection({ value, onChange, valueKey, maxItems });
+  const {
+    selectedIds,
+    count,
+    isSelected,
+    toggleId,
+    removeId,
+    moveByIndex,
+    maxReached,
+  } = useRelationSelection({ value, onChange, valueKey, maxItems });
 
-	const {
-		search,
-		setSearch,
-		termId,
-		setTermId,
-		normalizedSearch,
-		hasActiveFilters,
-		reset: resetFilters,
-	} = useRelationFilters({ postType, taxonomy });
+  const {
+    search,
+    setSearch,
+    termId,
+    setTermId,
+    normalizedSearch,
+    hasActiveFilters,
+    reset: resetFilters,
+  } = useRelationFilters({ postType, taxonomy });
 
-	const {
-		terms,
-		termsResolving,
-		termsResolved,
-		taxonomyUnavailable,
-		posts,
-		postsResolving,
-		postsUnavailable,
-		titles,
-	} = useRelationData({
-		postType,
-		taxonomy,
-		search: normalizedSearch,
-		termId,
-		perPage,
-		selectedIds,
-	});
+  const {
+    terms,
+    termsResolving,
+    termsResolved,
+    taxonomyUnavailable,
+    posts,
+    postsResolving,
+    postsUnavailable,
+    titles,
+  } = useRelationData({
+    postType,
+    taxonomy,
+    search: normalizedSearch,
+    termId,
+    perPage,
+    selectedIds,
+  });
 
-	// Термин, исчезнувший из таксономии, сбрасываем на «все».
-	useEffect(() => {
-		if (!termId || !termsResolved) {
-			return;
-		}
+  // Термин, исчезнувший из таксономии, сбрасываем на «все».
+  useEffect(() => {
+    if (!termId || !termsResolved) {
+      return;
+    }
 
-		if (!terms.some((term) => String(term.id) === String(termId))) {
-			setTermId(ALL_TERMS);
-		}
-	}, [termId, terms, termsResolved, setTermId]);
+    if (!terms.some((term) => String(term.id) === String(termId))) {
+      setTermId(ALL_TERMS);
+    }
+  }, [termId, terms, termsResolved, setTermId]);
 
-	const labels = {
-		addLabel,
-		selectedLabel,
-		taxonomyLabel,
-		allTermsLabel,
-		searchLabel,
-		searchPlaceholder,
-		emptyLabel,
-		missingTitleLabel,
-		moveUpLabel,
-		moveDownLabel,
-		removeLabel,
-	};
+  const labels = {
+    addLabel,
+    selectedLabel,
+    taxonomyLabel,
+    allTermsLabel,
+    searchLabel,
+    searchPlaceholder,
+    emptyLabel,
+    missingTitleLabel,
+    moveUpLabel,
+    moveDownLabel,
+    removeLabel,
+  };
 
-	return (
-		<div
-			className={["post-relation-control", className]
-				.filter(Boolean)
-				.join(" ")}
-		>
-			{!entityEnabled && (
-				<Notice
-					status="error"
-					isDismissible={false}
-					className="post-relation-control__notice"
-				>
-					Не указан тип записи: передайте слаг в проп `postType`.
-				</Notice>
-			)}
-			{postsUnavailable && (
-				<Notice
-					status="error"
-					isDismissible={false}
-					className="post-relation-control__notice"
-				>
-					Записи типа «{postType}» недоступны в REST API. Включите
-					«Показывать в REST API» в настройках типа записи.
-				</Notice>
-			)}
-			{maxReached && (
-				<Notice
-					status="warning"
-					isDismissible={false}
-					className="post-relation-control__notice"
-				>
-					Достигнут лимит: можно выбрать не более {maxItems} записей.
-				</Notice>
-			)}
-			{hint && <p className="post-relation-control__hint">{hint}</p>}
+  return (
+    <div
+      className={["post-relation-control", className].filter(Boolean).join(" ")}
+    >
+      {!entityEnabled && (
+        <Notice
+          status="error"
+          isDismissible={false}
+          className="post-relation-control__notice"
+        >
+          Не указан тип записи: передайте слаг в проп `postType`.
+        </Notice>
+      )}
+      {postsUnavailable && (
+        <Notice
+          status="error"
+          isDismissible={false}
+          className="post-relation-control__notice"
+        >
+          Записи типа «{postType}» недоступны в REST API. Включите «Показывать в
+          REST API» в настройках типа записи.
+        </Notice>
+      )}
+      {maxReached && (
+        <Notice
+          status="warning"
+          isDismissible={false}
+          className="post-relation-control__notice"
+        >
+          Достигнут лимит: можно выбрать не более {maxItems} записей.
+        </Notice>
+      )}
+      {hint && <p className="post-relation-control__hint">{hint}</p>}
 
-			{entityEnabled && !postsUnavailable && (
-				<RelationPicker
-					labels={labels}
-					selected={count}
-					limit={maxItems}
-					filters={{
-						state: {
-							termId,
-							search,
-							termsResolving,
-							taxonomyUnavailable,
-							hasActiveFilters,
-						},
-						terms,
-						onTermChange: setTermId,
-						onSearchChange: setSearch,
-						onReset: resetFilters,
-					}}
-					results={{
-						posts,
-						isResolving: postsResolving,
-						isSelected,
-						onToggle: toggleId,
-					}}
-				/>
-			)}
+      {entityEnabled && !postsUnavailable && (
+        <RelationPicker
+          labels={labels}
+          selected={count}
+          limit={maxItems}
+          filters={{
+            state: {
+              termId,
+              search,
+              termsResolving,
+              taxonomyUnavailable,
+              hasActiveFilters,
+            },
+            terms,
+            onTermChange: setTermId,
+            onSearchChange: setSearch,
+            onReset: resetFilters,
+          }}
+          results={{
+            posts,
+            isResolving: postsResolving,
+            isSelected,
+            onToggle: toggleId,
+          }}
+        />
+      )}
 
-			<div className="post-relation-control__selected">
-				<p className="post-relation-control__selected-head">
-					{`${selectedLabel}: ${count}`}
-					{maxItems > 0 && (
-						<span className="post-relation-control__limit">
-							{` / ${maxItems}`}
-						</span>
-					)}
-				</p>
-				{count === 0 && (
-					<p className="post-relation-control__state">
-						{emptySelectedLabel}
-					</p>
-				)}
-				{count > 0 && (
-					<RelationSelected
-						instanceId={instanceId}
-						ids={selectedIds}
-						titles={titles}
-						labels={labels}
-						onMove={moveByIndex}
-						onRemove={removeId}
-					/>
-				)}
-			</div>
-		</div>
-	);
+      <div className="post-relation-control__selected">
+        <p className="post-relation-control__selected-head">
+          {`${selectedLabel}: ${count}`}
+          {maxItems > 0 && (
+            <span className="post-relation-control__limit">
+              {` / ${maxItems}`}
+            </span>
+          )}
+        </p>
+        {count === 0 && (
+          <p className="post-relation-control__state">{emptySelectedLabel}</p>
+        )}
+        {count > 0 && (
+          <RelationSelected
+            instanceId={instanceId}
+            ids={selectedIds}
+            titles={titles}
+            labels={labels}
+            onMove={moveByIndex}
+            onRemove={removeId}
+          />
+        )}
+      </div>
+    </div>
+  );
 }
-

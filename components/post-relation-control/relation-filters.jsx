@@ -1,8 +1,8 @@
 import {
-	Button,
-	Notice,
-	SearchControl,
-	SelectControl,
+  Button,
+  Notice,
+  SearchControl,
+  SelectControl,
 } from "@wordpress/components";
 import { useMemo } from "@wordpress/element";
 import { decodeEntities } from "@wordpress/html-entities";
@@ -25,68 +25,68 @@ import { ALL_TERMS } from "./constants";
  * @returns {import("react").JSX.Element}
  */
 export function RelationFilters({
-	labels,
-	state,
-	terms,
-	onReset,
-	onSearchChange,
-	onTermChange,
+  labels,
+  state,
+  terms,
+  onReset,
+  onSearchChange,
+  onTermChange,
 }) {
-	const {
-		termId,
-		search,
-		termsResolving,
-		taxonomyUnavailable,
-		hasActiveFilters,
-	} = state;
+  const {
+    termId,
+    search,
+    termsResolving,
+    taxonomyUnavailable,
+    hasActiveFilters,
+  } = state;
 
-	const termOptions = useMemo(
-		() => [
-			{ label: labels.allTermsLabel, value: ALL_TERMS },
-			...terms.map((term) => ({
-				label: decodeEntities(term.name),
-				value: String(term.id),
-			})),
-		],
-		[labels.allTermsLabel, terms],
-	);
+  const termOptions = useMemo(
+    () => [
+      { label: labels.allTermsLabel, value: ALL_TERMS },
+      ...terms.map((term) => ({
+        label: decodeEntities(term.name),
+        value: String(term.id),
+      })),
+    ],
+    [labels.allTermsLabel, terms],
+  );
 
-	return (
-		<div className="post-relation-control__filters">
-			<SelectControl
-				className="post-relation-control__filter"
-				label={labels.taxonomyLabel}
-				value={termId}
-				options={termOptions}
-				onChange={onTermChange}
-				disabled={termsResolving || taxonomyUnavailable}
-			/>
-			{taxonomyUnavailable && (
-				<Notice
-					status="warning"
-					isDismissible={false}
-					className="post-relation-control__notice"
-				>
-					Таксономия недоступна в REST API. Включите «Показывать в REST
-					API» в настройках таксономии, чтобы фильтровать по ней.
-				</Notice>
-			)}
-			<SearchControl
-				className="post-relation-control__filter"
-				label={labels.searchLabel}
-				value={search}
-				placeholder={labels.searchPlaceholder}
-				onChange={onSearchChange}
-			/>
-			{hasActiveFilters && (
-				<Button
-					variant="link"
-					className="post-relation-control__reset"
-					onClick={onReset}
-				>
-					Сбросить фильтры
-				</Button>
-			)}
-		</div>
-	);
+  return (
+    <div className="post-relation-control__filters">
+      <SelectControl
+        className="post-relation-control__filter"
+        label={labels.taxonomyLabel}
+        value={termId}
+        options={termOptions}
+        onChange={onTermChange}
+        disabled={termsResolving || taxonomyUnavailable}
+      />
+      {taxonomyUnavailable && (
+        <Notice
+          status="warning"
+          isDismissible={false}
+          className="post-relation-control__notice"
+        >
+          Таксономия недоступна в REST API. Включите «Показывать в REST API» в
+          настройках таксономии, чтобы фильтровать по ней.
+        </Notice>
+      )}
+      <SearchControl
+        className="post-relation-control__filter"
+        label={labels.searchLabel}
+        value={search}
+        placeholder={labels.searchPlaceholder}
+        onChange={onSearchChange}
+      />
+      {hasActiveFilters && (
+        <Button
+          variant="link"
+          className="post-relation-control__reset"
+          onClick={onReset}
+        >
+          Сбросить фильтры
+        </Button>
+      )}
+    </div>
+  );
 }

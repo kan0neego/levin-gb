@@ -30,22 +30,22 @@ const getTitle = (record) => decodeEntities(record.title?.rendered ?? "");
  * @returns {import("react").JSX.Element}
  */
 function CategoryCheckbox({ category, selected, total, onToggle }) {
-	const partially = total > 0 && selected > 0 && selected < total;
-	const checked = total > 0 && selected === total;
+  const partially = total > 0 && selected > 0 && selected < total;
+  const checked = total > 0 && selected === total;
 
-	return (
-		<div className={`category-tree-category${partially ? " is-partial" : ""}`}>
-			<CheckboxControl
-				label={decodeEntities(category.name)}
-				checked={checked}
-				indeterminate={partially}
-				onChange={onToggle}
-			/>
-			<span className="category-tree-count">
-				({selected}/{total})
-			</span>
-		</div>
-	);
+  return (
+    <div className={`category-tree-category${partially ? " is-partial" : ""}`}>
+      <CheckboxControl
+        label={decodeEntities(category.name)}
+        checked={checked}
+        indeterminate={partially}
+        onChange={onToggle}
+      />
+      <span className="category-tree-count">
+        ({selected}/{total})
+      </span>
+    </div>
+  );
 }
 
 /**
@@ -61,124 +61,124 @@ function CategoryCheckbox({ category, selected, total, onToggle }) {
  * @returns {import("react").JSX.Element}
  */
 function CategoryTree({ slides, taxonomy, setAttributes }) {
-	const { records: categoryRecords, isResolving: resolvingCategories } =
-		useEntityRecords("taxonomy", taxonomy);
-	const { records: caseRecords, isResolving: resolvingCases } =
-		useEntityRecords("postType", "cases", ALL_CASES_QUERY);
+  const { records: categoryRecords, isResolving: resolvingCategories } =
+    useEntityRecords("taxonomy", taxonomy);
+  const { records: caseRecords, isResolving: resolvingCases } =
+    useEntityRecords("postType", "cases", ALL_CASES_QUERY);
 
-	const selectedIds = useMemo(
-		() => slides.map((slide) => slide.caseId),
-		[slides],
-	);
-	const isSelected = (caseId) => selectedIds.includes(caseId);
+  const selectedIds = useMemo(
+    () => slides.map((slide) => slide.caseId),
+    [slides],
+  );
+  const isSelected = (caseId) => selectedIds.includes(caseId);
 
-	const applyChanges = (addIds, removeIds) => {
-		const addSet = new Set(addIds.filter((id) => !selectedIds.includes(id)));
-		const removeSet = new Set(removeIds);
-		const next = [
-			...slides,
-			...Array.from(addSet).map((caseId) => ({ caseId })),
-		].filter((slide) => !removeSet.has(slide.caseId));
-		setAttributes({ slides: next });
-	};
+  const applyChanges = (addIds, removeIds) => {
+    const addSet = new Set(addIds.filter((id) => !selectedIds.includes(id)));
+    const removeSet = new Set(removeIds);
+    const next = [
+      ...slides,
+      ...Array.from(addSet).map((caseId) => ({ caseId })),
+    ].filter((slide) => !removeSet.has(slide.caseId));
+    setAttributes({ slides: next });
+  };
 
-	const toggleCase = (caseId, checked) => {
-		if (checked) {
-			applyChanges([caseId], []);
-		} else {
-			applyChanges([], [caseId]);
-		}
-	};
+  const toggleCase = (caseId, checked) => {
+    if (checked) {
+      applyChanges([caseId], []);
+    } else {
+      applyChanges([], [caseId]);
+    }
+  };
 
-	const toggleCategory = (caseIds, checked) => {
-		if (checked) {
-			applyChanges(caseIds, []);
-		} else {
-			applyChanges([], caseIds);
-		}
-	};
+  const toggleCategory = (caseIds, checked) => {
+    if (checked) {
+      applyChanges(caseIds, []);
+    } else {
+      applyChanges([], caseIds);
+    }
+  };
 
-	const isResolving = resolvingCategories || resolvingCases;
-	const categories = categoryRecords ?? [];
-	const cases = caseRecords ?? [];
+  const isResolving = resolvingCategories || resolvingCases;
+  const categories = categoryRecords ?? [];
+  const cases = caseRecords ?? [];
 
-	const uncategorizedCases = cases.filter(
-		(record) =>
-			!Array.isArray(record.categories) || record.categories.length === 0,
-	);
+  const uncategorizedCases = cases.filter(
+    (record) =>
+      !Array.isArray(record.categories) || record.categories.length === 0,
+  );
 
-	return (
-		<div className="category-tree">
-			{isResolving && (
-				<p className="category-tree-loading">
-					<Spinner /> Загружаем категории…
-				</p>
-			)}
-			{!isResolving && categories.length === 0 && (
-				<p className="category-tree-empty">Категории не найдены</p>
-			)}
-			{!isResolving && categories.length > 0 && (
-				<ul className="category-tree-list">
-					{categories.map((category) => {
-						const catId = category.id;
-						const catCases = cases.filter((record) =>
-							record.categories.includes(catId),
-						);
-						const selected = catCases.filter((record) =>
-							isSelected(record.id),
-						).length;
+  return (
+    <div className="category-tree">
+      {isResolving && (
+        <p className="category-tree-loading">
+          <Spinner /> Загружаем категории…
+        </p>
+      )}
+      {!isResolving && categories.length === 0 && (
+        <p className="category-tree-empty">Категории не найдены</p>
+      )}
+      {!isResolving && categories.length > 0 && (
+        <ul className="category-tree-list">
+          {categories.map((category) => {
+            const catId = category.id;
+            const catCases = cases.filter((record) =>
+              record.categories.includes(catId),
+            );
+            const selected = catCases.filter((record) =>
+              isSelected(record.id),
+            ).length;
 
-						return (
-							<li key={catId} className="category-tree-item">
-								<CategoryCheckbox
-									category={category}
-									selected={selected}
-									total={catCases.length}
-									onToggle={(checked) =>
-										toggleCategory(
-											catCases.map((r) => r.id),
-											checked,
-										)
-									}
-								/>
-								{catCases.length > 0 && (
-									<ul className="category-tree-cases">
-										{catCases.map((record) => (
-											<li key={record.id}>
-												<CheckboxControl
-													label={getTitle(record)}
-													checked={isSelected(record.id)}
-													onChange={(checked) => toggleCase(record.id, checked)}
-												/>
-											</li>
-										))}
-									</ul>
-								)}
-							</li>
-						);
-					})}
-				</ul>
-			)}
-			{!isResolving && uncategorizedCases.length > 0 && (
-				<div className="category-tree-uncategorized">
-					<span className="category-tree-uncategorized-title">
-						Без категории
-					</span>
-					<ul className="category-tree-cases">
-						{uncategorizedCases.map((record) => (
-							<li key={record.id}>
-								<CheckboxControl
-									label={getTitle(record)}
-									checked={isSelected(record.id)}
-									onChange={(checked) => toggleCase(record.id, checked)}
-								/>
-							</li>
-						))}
-					</ul>
-				</div>
-			)}
-		</div>
-	);
+            return (
+              <li key={catId} className="category-tree-item">
+                <CategoryCheckbox
+                  category={category}
+                  selected={selected}
+                  total={catCases.length}
+                  onToggle={(checked) =>
+                    toggleCategory(
+                      catCases.map((r) => r.id),
+                      checked,
+                    )
+                  }
+                />
+                {catCases.length > 0 && (
+                  <ul className="category-tree-cases">
+                    {catCases.map((record) => (
+                      <li key={record.id}>
+                        <CheckboxControl
+                          label={getTitle(record)}
+                          checked={isSelected(record.id)}
+                          onChange={(checked) => toggleCase(record.id, checked)}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      {!isResolving && uncategorizedCases.length > 0 && (
+        <div className="category-tree-uncategorized">
+          <span className="category-tree-uncategorized-title">
+            Без категории
+          </span>
+          <ul className="category-tree-cases">
+            {uncategorizedCases.map((record) => (
+              <li key={record.id}>
+                <CheckboxControl
+                  label={getTitle(record)}
+                  checked={isSelected(record.id)}
+                  onChange={(checked) => toggleCase(record.id, checked)}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
 }
 
 /**
@@ -190,23 +190,23 @@ function CategoryTree({ slides, taxonomy, setAttributes }) {
  * @returns {import("react").JSX.Element}
  */
 function EditorTools({ attributes, setAttributes }) {
-	const { slides, taxonomy } = attributes;
+  const { slides, taxonomy } = attributes;
 
-	return (
-		<InspectorControls>
-			<PanelBody title="Кейсы слайдера" initialOpen>
-				<p className="case-settings-hint">
-					Выберите кейсы по категориям. Отметка категории включает все её кейсы,
-					отдельные кейсы можно убрать или добавить точечно.
-				</p>
-				<CategoryTree
-					slides={slides}
-					taxonomy={taxonomy}
-					setAttributes={setAttributes}
-				/>
-			</PanelBody>
-		</InspectorControls>
-	);
+  return (
+    <InspectorControls>
+      <PanelBody title="Кейсы слайдера" initialOpen>
+        <p className="case-settings-hint">
+          Выберите кейсы по категориям. Отметка категории включает все её кейсы,
+          отдельные кейсы можно убрать или добавить точечно.
+        </p>
+        <CategoryTree
+          slides={slides}
+          taxonomy={taxonomy}
+          setAttributes={setAttributes}
+        />
+      </PanelBody>
+    </InspectorControls>
+  );
 }
 
 /**
@@ -218,60 +218,60 @@ function EditorTools({ attributes, setAttributes }) {
  * @returns {import("react").JSX.Element}
  */
 function CaseSliderWidget({ attributes, setAttributes }) {
-	const { slides } = attributes;
-	const blockProps = useBlockProps();
-	const [activeIndex, setActiveIndex] = useState(0);
-	const slidesKey = slides.map((slide) => slide.caseId).join("-");
+  const { slides } = attributes;
+  const blockProps = useBlockProps();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const slidesKey = slides.map((slide) => slide.caseId).join("-");
 
-	const hasSlides = slides.length > 0;
+  const hasSlides = slides.length > 0;
 
-	return (
-		<>
-			<div {...blockProps}>
-				{hasSlides && (
-					<div className="case-slider">
-						<SliderContext.Provider value={{ activeIndex, setActiveIndex }}>
-							<Slider slidesKey={slidesKey} option="cases" perView={1}>
-								<SliderWrapper>
-									{slides.map((slide) => (
-										<Slide key={slide.caseId}>
-											<ServerSideRender
-												block="theme/case-list"
-												attributes={{ caseId: slide.caseId }}
-											/>
-										</Slide>
-									))}
-								</SliderWrapper>
-								<SliderPagination />
-								<div className="swiper-navigation">
-									<SliderButton type="prev" />
-									<SliderButton type="next" />
-								</div>
-							</Slider>
-						</SliderContext.Provider>
-					</div>
-				)}
-				{!hasSlides && (
-					<div
-						className="case-slider-empty"
-						aria-hidden="true"
-						title="Кейсы не выбраны"
-					/>
-				)}
-			</div>
-			<EditorTools attributes={attributes} setAttributes={setAttributes} />
-		</>
-	);
+  return (
+    <>
+      <div {...blockProps}>
+        {hasSlides && (
+          <div className="case-slider">
+            <SliderContext.Provider value={{ activeIndex, setActiveIndex }}>
+              <Slider slidesKey={slidesKey} option="cases" perView={1}>
+                <SliderWrapper>
+                  {slides.map((slide) => (
+                    <Slide key={slide.caseId}>
+                      <ServerSideRender
+                        block="theme/case-list"
+                        attributes={{ caseId: slide.caseId }}
+                      />
+                    </Slide>
+                  ))}
+                </SliderWrapper>
+                <SliderPagination />
+                <div className="swiper-navigation">
+                  <SliderButton type="prev" />
+                  <SliderButton type="next" />
+                </div>
+              </Slider>
+            </SliderContext.Provider>
+          </div>
+        )}
+        {!hasSlides && (
+          <div
+            className="case-slider-empty"
+            aria-hidden="true"
+            title="Кейсы не выбраны"
+          />
+        )}
+      </div>
+      <EditorTools attributes={attributes} setAttributes={setAttributes} />
+    </>
+  );
 }
 
 registerBlockType(metadata.name, {
-	...metadata,
+  ...metadata,
 
-	edit: function ({ attributes, setAttributes }) {
-		return (
-			<CaseSliderWidget attributes={attributes} setAttributes={setAttributes} />
-		);
-	},
+  edit: function ({ attributes, setAttributes }) {
+    return (
+      <CaseSliderWidget attributes={attributes} setAttributes={setAttributes} />
+    );
+  },
 
-	save: () => null,
+  save: () => null,
 });

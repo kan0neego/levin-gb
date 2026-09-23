@@ -10,9 +10,9 @@ import metadata from "./block.json";
  * сервере, поэтому edit/save здесь — заглушки и в редакторе не используются.
  */
 registerBlockType(metadata.name, {
-	...metadata,
+  ...metadata,
 
-	edit: () => null,
+  edit: () => null,
 
-	save: () => null,
+  save: () => null,
 });

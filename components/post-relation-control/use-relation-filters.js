@@ -15,29 +15,29 @@ import { ALL_TERMS, SEARCH_DELAY } from "./constants";
  * @returns {Object} Значения фильтров и обработчики.
  */
 export function useRelationFilters({ postType, taxonomy }) {
-	const [search, setSearch] = useState("");
-	const [termId, setTermId] = useState(ALL_TERMS);
-	const debouncedSearch = useDebouncedValue(search, SEARCH_DELAY);
+  const [search, setSearch] = useState("");
+  const [termId, setTermId] = useState(ALL_TERMS);
+  const debouncedSearch = useDebouncedValue(search, SEARCH_DELAY);
 
-	// При смене типа записи или таксономии прежний термин неактуален.
-	useEffect(() => {
-		setTermId(ALL_TERMS);
-		setSearch("");
-	}, [postType, taxonomy]);
+  // При смене типа записи или таксономии прежний термин неактуален.
+  useEffect(() => {
+    setTermId(ALL_TERMS);
+    setSearch("");
+  }, [postType, taxonomy]);
 
-	const reset = useCallback(() => {
-		setSearch("");
-		setTermId(ALL_TERMS);
-	}, []);
+  const reset = useCallback(() => {
+    setSearch("");
+    setTermId(ALL_TERMS);
+  }, []);
 
-	return {
-		search,
-		setSearch,
-		termId,
-		setTermId,
-		// Поиск уходит в запрос только после задержки и без крайних пробелов.
-		normalizedSearch: debouncedSearch.trim(),
-		hasActiveFilters: Boolean(termId) || Boolean(search),
-		reset,
-	};
+  return {
+    search,
+    setSearch,
+    termId,
+    setTermId,
+    // Поиск уходит в запрос только после задержки и без крайних пробелов.
+    normalizedSearch: debouncedSearch.trim(),
+    hasActiveFilters: Boolean(termId) || Boolean(search),
+    reset,
+  };
 }

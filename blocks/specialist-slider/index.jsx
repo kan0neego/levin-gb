@@ -28,32 +28,31 @@ const VALUE_KEY = "doctorId";
  * @returns {import("react").JSX.Element}
  */
 function EditorTools({ attributes, setAttributes }) {
-	const { slides } = attributes;
+  const { slides } = attributes;
 
-	return (
-		<InspectorControls>
-			<PanelBody title="Специалисты слайдера" initialOpen>
-				<PostRelationControl
-					value={slides}
-					onChange={(nextSlides) => setAttributes({ slides: nextSlides })}
-					valueKey={VALUE_KEY}
-					postType={POST_TYPE}
-					taxonomy={TAXONOMY}
-					addLabel="Добавить специалистов"
-					selectedLabel="Выбрано специалистов"
-					taxonomyLabel="Специальность"
-					searchLabel="Поиск по имени"
-					searchPlaceholder="Начните вводить имя…"
-					emptyLabel="Специалисты не найдены"
-					emptySelectedLabel="Пока ничего не выбрано"
-					hint="Выберите специалистов, которые попадут в слайдер.
-						Порядок в списке ниже определяет порядок слайдов."
-				/>
-			</PanelBody>
-		</InspectorControls>
-	);
+  return (
+    <InspectorControls>
+      <PanelBody title="Специалисты слайдера" initialOpen>
+        <PostRelationControl
+          value={slides}
+          onChange={(nextSlides) => setAttributes({ slides: nextSlides })}
+          valueKey={VALUE_KEY}
+          postType={POST_TYPE}
+          taxonomy={TAXONOMY}
+          addLabel="Добавить специалистов"
+          selectedLabel="Выбрано специалистов"
+          taxonomyLabel="Специальность"
+          searchLabel="Поиск по имени"
+          searchPlaceholder="Начните вводить имя…"
+          emptyLabel="Специалисты не найдены"
+          emptySelectedLabel="Пока ничего не выбрано"
+          hint="Выберите специалистов, которые попадут в слайдер.
+            Порядок в списке ниже определяет порядок слайдов."
+        />
+      </PanelBody>
+    </InspectorControls>
+  );
 }
-
 
 /**
  * Виджет блока в редакторе.
@@ -64,65 +63,65 @@ function EditorTools({ attributes, setAttributes }) {
  * @returns {import("react").JSX.Element}
  */
 function SpecialistSliderWidget({ attributes, setAttributes }) {
-	const { slides } = attributes;
-	const blockProps = useBlockProps();
-	const [activeIndex, setActiveIndex] = useState(0);
-	const slidesKey = slides.map((slide) => slide.doctorId).join("-");
+  const { slides } = attributes;
+  const blockProps = useBlockProps();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const slidesKey = slides.map((slide) => slide.doctorId).join("-");
 
-	const hasSlides = slides.length > 0;
+  const hasSlides = slides.length > 0;
 
-	return (
-		<>
-			<div {...blockProps}>
-				{hasSlides && (
-					<div className="specialist-slider-wrapper">
-						<div className="specialist-slider">
-							<SliderContext.Provider value={{ activeIndex, setActiveIndex }}>
-								<Slider slidesKey={slidesKey} option="specialist" perView={1}>
-									<SliderWrapper>
-										{slides.map((slide) => (
-											<Slide key={slide.doctorId}>
-												<ServerSideRender
-													block="theme/specialist-slide"
-													attributes={{ doctorId: slide.doctorId }}
-												/>
-											</Slide>
-										))}
-									</SliderWrapper>
-									<SliderPagination />
-									<div className="swiper-navigation">
-										<SliderButton type="prev" />
-										<SliderButton type="next" />
-									</div>
-								</Slider>
-							</SliderContext.Provider>
-						</div>
-					</div>
-				)}
-				{!hasSlides && (
-					<div
-						className="specialist-slider-empty"
-						aria-hidden="true"
-						title="Специалисты не выбраны"
-					/>
-				)}
-			</div>
-			<EditorTools attributes={attributes} setAttributes={setAttributes} />
-		</>
-	);
+  return (
+    <>
+      <div {...blockProps}>
+        {hasSlides && (
+          <div className="specialist-slider-wrapper">
+            <div className="specialist-slider">
+              <SliderContext.Provider value={{ activeIndex, setActiveIndex }}>
+                <Slider slidesKey={slidesKey} option="specialist" perView={1}>
+                  <SliderWrapper>
+                    {slides.map((slide) => (
+                      <Slide key={slide.doctorId}>
+                        <ServerSideRender
+                          block="theme/specialist-slide"
+                          attributes={{ doctorId: slide.doctorId }}
+                        />
+                      </Slide>
+                    ))}
+                  </SliderWrapper>
+                  <SliderPagination />
+                  <div className="swiper-navigation">
+                    <SliderButton type="prev" />
+                    <SliderButton type="next" />
+                  </div>
+                </Slider>
+              </SliderContext.Provider>
+            </div>
+          </div>
+        )}
+        {!hasSlides && (
+          <div
+            className="specialist-slider-empty"
+            aria-hidden="true"
+            title="Специалисты не выбраны"
+          />
+        )}
+      </div>
+      <EditorTools attributes={attributes} setAttributes={setAttributes} />
+    </>
+  );
 }
 
 registerBlockType(metadata.name, {
-	...metadata,
+  ...metadata,
 
-	edit: function ({ attributes, setAttributes }) {
-		return (
-			<SpecialistSliderWidget
-				attributes={attributes}
-				setAttributes={setAttributes}
-			/>
-		);
-	},
+  edit: function ({ attributes, setAttributes }) {
+    return (
+      <SpecialistSliderWidget
+        attributes={attributes}
+        setAttributes={setAttributes}
+      />
+    );
+  },
 
-	save: () => null,
+  save: () => null,
 });

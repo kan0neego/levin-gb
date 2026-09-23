@@ -1,0 +1,16 @@
+# Зависимости
+node_modules
+pnpm-lock.yaml
+pnpm-workspace.yaml
+package-lock.json
+
+# Сборка
+dist
+
+# Артефакты компиляции sass, которые dart-sass кладёт рядом с исходниками
+styles/*.css
+styles/*.css.map
+
+# Служебное
+.review
+.DS_Store

@@ -1,48 +1,48 @@
 {
-	"apiVersion": 3,
-	"name": "theme/image",
-	"title": "Изображение",
-	"icon": "format-image",
-	"description": "",
-	"supports": {
-		"html": false,
-		"align": false,
-		"className": false,
-		"color": {
-			"background": false,
-			"text": false
-		}
-	},
-	"attributes": {
-		"media": {
-			"type": "array",
-			"default": [],
-			"items": {
-				"type": "object",
-				"properties": {
-					"id": {
-						"type": "number"
-					},
-					"url": {
-						"type": "string"
-					},
-					"alt": {
-						"type": "string"
-					},
-					"sizes": {
-						"type": "object"
-					},
-					"caption": {
-						"type": "string"
-					}
-				}
-			}
-		}
-	},
-	"textdomain": "theme",
-	"editorScript": "file:./index.js",
-	"editorStyle": "file:./index.css",
-	"style": "file:./index.css",
-	"viewScript": "file:./view.js",
-	"render": "file:./render.php"
+  "apiVersion": 3,
+  "name": "theme/image",
+  "title": "Изображение",
+  "icon": "format-image",
+  "description": "",
+  "supports": {
+    "html": false,
+    "align": false,
+    "className": false,
+    "color": {
+      "background": false,
+      "text": false
+    }
+  },
+  "attributes": {
+    "media": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "url": {
+            "type": "string"
+          },
+          "alt": {
+            "type": "string"
+          },
+          "sizes": {
+            "type": "object"
+          },
+          "caption": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "textdomain": "theme",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./index.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
 }

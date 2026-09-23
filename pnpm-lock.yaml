@@ -51,6 +51,9 @@ importers:
       '@wordpress/scripts':
         specifier: ^32.6.0
         version: 32.6.0(@playwright/test@1.62.1)(@types/node@20.19.43)(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(@typescript-eslint/eslint-plugin@8.70.0(@typescript-eslint/parser@8.70.0(eslint@10.10.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3))(eslint@10.10.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3))(@typescript-eslint/parser@8.70.0(eslint@10.10.0(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3))(babel-plugin-macros@3.1.0)(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.14.0(stylelint@16.26.1(supports-color@8.1.1)(typescript@6.0.3)))(supports-color@8.1.1)(svgo@3.3.5)(type-fest@4.41.0)(typescript@6.0.3)
+      prettier:
+        specifier: npm:wp-prettier@^3.0.3
+        version: wp-prettier@3.0.3
       sass:
         specifier: ^1.104.0
         version: 1.104.0
