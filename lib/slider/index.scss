@@ -1,0 +1,270 @@
+@use '@/styles/decorators.scss' as *;
+
+:root {
+	--swiper-pagination-bullet-width: 88px;
+	--swiper-pagination-bullet-height: 4px;
+	--swiper-pagination-bullet-border-radius: 55px;
+	--swiper-pagination-bullet-active-size: 8px;
+	--swiper-pagination-bullet-horizontal-gap: 6px;
+	--swiper-pagination-bullet-inactive-color: #ffffff;
+	--swiper-pagination-color: #fff;
+	--swiper-scrollbar-bg-color: transparent;
+	--swiper-scrollbar-drag-bg-color: transparent;
+	--swiper-pagination-bullet-inactive-opacity: 0.6;
+}
+
+.slider-container-padding {
+	margin: -20px -20px -20px;
+	padding: 20px 20px 20px;
+
+	@media screen and (max-width: 640px) {
+		margin: -5px -5px -5px;
+		padding: 5px 5px 5px;
+	}
+}
+
+.slider-container {
+	--item-size: 100%;
+	--gap: 2%;
+
+	position: relative;
+	overflow: hidden;
+
+	& .swiper-slide {
+		display: flex;
+
+		width: var(--item-size);
+		height: auto;
+		margin-right: var(--gap);
+	}
+
+	&[data-per-view="1"] {
+		& .swiper-slide {
+			--gap: 0px;
+		}
+	}
+}
+
+.sliders {
+	display: flex;
+}
+
+.swiper-wrapper {
+	display: flex;
+	height: 100%;
+}
+
+.swiper-number {
+	font-size: 32px;
+	line-height: 100%;
+	font-weight: 200;
+	color: var(--main-orange);
+}
+
+.swiper-slide {
+	display: flex;
+	justify-content: center;
+	flex-shrink: 0;
+
+	position: relative;
+
+	& > .video-lightbox {
+		width: 100%;
+		// height: 100%;
+	}
+
+	.image-lightbox {
+		transition: transform 150ms ease;
+	}
+
+	& > .video-lightbox {
+		&::before {
+			visibility: visible;
+		}
+	}
+}
+
+.swiper-thumbs {
+	& {
+		.swiper-slide {
+			cursor: pointer;
+		}
+	}
+}
+
+.btn-slider {
+	display: none;
+
+	align-items: center;
+	justify-content: center;
+
+	width: 52px;
+	height: 52px;
+
+	padding: 0px;
+
+	border: none;
+	border-radius: 50%;
+
+	cursor: pointer;
+
+	position: absolute;
+	z-index: 100;
+
+	color: #fff;
+	background-color: #3136403a;
+	box-shadow: 0 41.488px 86.433px 0 rgba(17, 12, 46, 0.15);
+	backdrop-filter: blur(8px);
+
+	overflow: hidden;
+
+	transition:
+		background-color 150ms ease-in,
+		opacity 150ms ease-in;
+
+	@media (hover: hover) {
+		&:hover {
+			background-color: #3136406f;
+		}
+	}
+
+	& > * {
+		width: 9px;
+		height: 16px;
+
+		z-index: 10;
+	}
+
+	&-prev {
+		left: 0;
+
+		& > * {
+			transform: rotate(180deg);
+		}
+	}
+
+	&-next {
+		right: 0;
+	}
+
+	@media screen and (max-width: 768px) {
+		display: none !important;
+	}
+}
+
+.btn-slider {
+	transition: all 150ms ease-in;
+}
+
+.swiper-button-disabled {
+	display: none;
+	opacity: 0.5;
+	cursor: default;
+	pointer-events: none;
+}
+
+.swiper-navigation {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+
+	border-radius: 99px;
+
+	position: absolute;
+	z-index: 10;
+
+	& button {
+		position: static;
+	}
+
+	@media screen and (max-width: 768px) {
+		position: static;
+	}
+
+	@media screen and (max-width: 640px) {
+		display: none;
+	}
+}
+
+.swiper-pagination-bullet {
+	overflow: hidden;
+}
+
+.line-pagination {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	max-width: 330px;
+
+	margin: 0 auto;
+}
+
+.line-pagination-overflow {
+	--swiper-pagination-bottom: 18px;
+
+	display: flex;
+
+	width: fit-content !important;
+	max-width: 90%;
+
+	padding: 6px 4px;
+	border-radius: 55px;
+	background-color: #1e3a571a;
+
+	position: absolute;
+	right: 0;
+	z-index: 10;
+
+	@media screen and (max-width: 640px) {
+		--swiper-pagination-bottom: 8px;
+	}
+}
+
+.swiper-caption {
+	margin-top: 12px;
+}
+
+.swiper-caption-content {
+	transition: height 0.3s ease;
+	overflow: hidden;
+}
+
+.swiper-caption-text {
+	@include figcaption;
+	overflow: hidden;
+	word-break: break-word;
+}
+
+.slider-navigation-wrapper {
+	display: flex;
+	align-items: center;
+	margin-top: 32px;
+
+	& > * {
+		position: static;
+	}
+
+	& .swiper-scrollbar.swiper-scrollbar-horizontal {
+		max-width: 100%;
+		margin-right: 30px;
+
+		cursor: grab;
+
+		position: static;
+
+		&:active {
+			cursor: grabbing;
+		}
+	}
+
+	@media screen and (max-width: 768px) {
+		& .swiper-scrollbar.swiper-scrollbar-horizontal {
+			margin-right: 0px;
+		}
+	}
+
+	@media screen and (max-width: 640px) {
+		margin-top: 24px;
+	}
+}

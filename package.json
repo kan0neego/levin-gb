@@ -1,0 +1,30 @@
+{
+  "name": "my-theme-blocks",
+  "version": "1.0.0",
+  "scripts": {
+    "build:blocks": "wp-scripts build --webpack-src-dir=blocks --output-path=dist/blocks",
+    "watch:blocks": "wp-scripts start --webpack-src-dir=blocks --output-path=../blocks --stats=errors-only",
+    "build:sass": "sass styles ../assets/styles",
+    "watch:sass": "sass --watch styles:../assets/styles",
+    "wp-packages:update": "wp-scripts packages-update"
+  },
+  "devDependencies": {
+    "@types/wordpress__block-editor": "^14.21.8",
+    "@types/wordpress__blocks": "^12.5.18",
+    "@wordpress/scripts": "^32.6.0",
+    "sass": "^1.104.0",
+    "sass-loader": "^16.0.8"
+  },
+  "dependencies": {
+    "@wordpress/block-editor": "^15.23.0",
+    "@wordpress/blocks": "^15.27.0",
+    "@wordpress/components": "^35.0.1",
+    "@wordpress/compose": "^8.7.0",
+    "@wordpress/core-data": "^7.54.0",
+    "@wordpress/element": "^8.6.0",
+    "@wordpress/hooks": "^4.54.0",
+    "@wordpress/i18n": "^6.27.0",
+    "@wordpress/server-side-render": "^6.30.0",
+    "swiper": "11.2.4"
+  }
+}

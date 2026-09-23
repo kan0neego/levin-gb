@@ -1,0 +1,23 @@
+@mixin slider($arrowWidth, $paginationGap, $arrowGap) {
+	position: relative;
+
+	& .btn-slider {
+		width: $arrowWidth;
+		height: $arrowWidth;
+
+		top: calc(50% - ($arrowWidth / 2));
+
+		@media screen and (max-width: 1024px) {
+			display: none;
+		}
+	}
+
+	& .swiper-navigation {
+		top: $arrowGap;
+		right: 0;
+	}
+
+	& .line-pagination {
+		margin-top: 0px;
+	}
+}

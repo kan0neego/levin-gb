@@ -1,0 +1,21 @@
+{
+  "apiVersion": 3,
+  "name": "theme/specialist-slide",
+  "title": "Баннер врача",
+  "icon": "portfolio",
+  "description": "Служебный блок для отрисовки компонента в редакторе (ServerSideRender).",
+  "supports": {
+    "html": false,
+    "align": false,
+    "className": false,
+    "inserter": false
+  },
+  "attributes": {
+    "doctorId": {
+      "type": "number"
+    }
+  },
+  "textdomain": "theme",
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php"
+}

@@ -1,0 +1,46 @@
+{
+	"apiVersion": 3,
+	"name": "theme/case-slider",
+	"title": "Кейсы",
+	"icon": "portfolio",
+	"description": "Слайдер карточек кейсов",
+	"supports": {
+		"html": false,
+		"align": false,
+		"className": false,
+		"color": {
+			"background": false,
+			"text": false
+		}
+	},
+	"attributes": {
+		"taxonomy": {
+			"type": "string",
+			"default": "category"
+		},
+		"terms": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "number"
+			}
+		},
+		"slides": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"caseId": {
+						"type": "number"
+					}
+				}
+			}
+		}
+	},
+	"textdomain": "theme",
+	"editorScript": "file:./index.js",
+	"style": "file:./index.css",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php"
+}

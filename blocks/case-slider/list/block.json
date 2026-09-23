@@ -1,0 +1,21 @@
+{
+  "apiVersion": 3,
+  "name": "theme/case-list",
+  "title": "Карточка кейса",
+  "icon": "portfolio",
+  "description": "Служебный блок для отрисовки карточки кейса в редакторе (ServerSideRender).",
+  "supports": {
+    "html": false,
+    "align": false,
+    "className": false,
+    "inserter": false
+  },
+  "attributes": {
+    "caseId": {
+      "type": "number"
+    }
+  },
+  "textdomain": "theme",
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php"
+}

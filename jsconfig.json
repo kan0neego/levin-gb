@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["./*"],
+			"@lib/*": ["./lib/*"],
+			"@components/*": ["./components/*"]
+		}
+	},
+	"include": ["blocks", "components", "lib", "webpack.config.js"]
+}

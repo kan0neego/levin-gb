@@ -1,0 +1,29 @@
+@use '@/lib/slider/index.scss';
+@use '@/lib/slider/mixin.scss';
+
+.media-slider {
+	$padding-bottom: 32px;
+	$button-width: 52px;
+
+	@include mixin.slider($button-width, 32px, - calc($button-width + $padding-bottom));
+
+	.swiper-slide {
+		cursor: grab;
+
+		&:active {
+			cursor: grabbing;
+		}
+	}
+
+	.btn-slider {
+		--offset: 26px;
+
+		&-prev {
+			left: var(--offset);
+		}
+
+		&-next {
+			right: var(--offset);
+		}
+	}
+}
