@@ -69,10 +69,34 @@ if ( empty( $slides ) ) {
 			<div class="swiper-scrollbar"></div>
 			<div class="swiper-navigation">
 				<button data-button="prev" class="btn-slider btn-slider-prev">
-					<i class="icon-f-arrow-shot-left-light"></i>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 9 16"
+						fill="none"
+					>
+						<path
+							d="M0.999999 14.2063L7.60316 7.60316L1 1"
+							stroke="currentColor"
+							strokeWidth="2"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+						/>
+					</svg>
 				</button>
 				<button data-button="next" class="btn-slider btn-slider-next">
-					<i class="icon-f-arrow-shot-right-light"></i>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 9 16"
+						fill="none"
+					>
+						<path
+							d="M0.999999 14.2063L7.60316 7.60316L1 1"
+							stroke="currentColor"
+							strokeWidth="2"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+						/>
+					</svg>
 				</button>
 			</div>
 		</div>

@@ -53,6 +53,12 @@ $button-width: 52px;
 			padding: 0px 5px 5px;
 		}
 	}
+
+	.swiper-navigation {
+		top: unset;
+		bottom: 20px;
+		right: 20px;
+	}
 }
 
 .specialist-slider-empty {
