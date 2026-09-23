@@ -45,7 +45,6 @@ if ( empty( $slides ) ) {
 					data-option="specialist-thumb"
 					data-lg-slides-per-view='3'
 					data-xl-slides-per-view='4'
-					data-2xl-slides-per-view='5'
 				>
 					<div class="swiper-wrapper">
 						<?php

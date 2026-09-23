@@ -1,4 +1,4 @@
-@use '@/styles/decorators.scss' as *;
+@use "@/styles/decorators.scss" as *;
 
 :root {
 	--swiper-pagination-bullet-width: 88px;
@@ -41,6 +41,231 @@
 	&[data-per-view="1"] {
 		& .swiper-slide {
 			--gap: 0px;
+		}
+	}
+
+	&[data-per-view="2"] {
+		& > * > .swiper-slide {
+			--gap: 2%;
+			--item-size: 49%;
+		}
+	}
+
+	&[data-sm-slides-per-view="2"] {
+		@media screen and (min-width: 640px) {
+			--item-size: 49%;
+
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 49%;
+			}
+		}
+	}
+
+	&[data-md-slides-per-view="2"] {
+		@media screen and (min-width: 769px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 49%;
+			}
+		}
+	}
+
+	&[data-lg-slides-per-view="2"] {
+		@media screen and (min-width: 1025px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 49%;
+			}
+		}
+	}
+
+	&[data-xl-slides-per-view="2"] {
+		@media screen and (min-width: 1260px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 49%;
+			}
+		}
+	}
+
+	&[data-per-view="2.2"] {
+		& > * > .swiper-slide {
+			--gap: 2%;
+			--item-size: 44.4%;
+		}
+	}
+
+	&[data-sm-slides-per-view="2.2"] {
+		@media screen and (min-width: 640px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 44.4%;
+			}
+		}
+	}
+
+	&[data-md-slides-per-view="2.2"] {
+		@media screen and (min-width: 769px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 44.4%;
+			}
+		}
+	}
+
+	&[data-lg-slides-per-view="2.2"] {
+		@media screen and (min-width: 1025px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 44.4%;
+			}
+		}
+	}
+
+	&[data-per-view="3"] {
+		& > * > .swiper-slide {
+			--gap: 2%;
+			--item-size: 32%;
+		}
+	}
+
+	&[data-sm-slides-per-view="3"] {
+		@media screen and (min-width: 640px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 32%;
+			}
+		}
+	}
+
+	&[data-md-slides-per-view="3"] {
+		@media screen and (min-width: 769px) {
+			& > * > .swiper-slide {
+				--item-size: 32%;
+				--gap: 2%;
+			}
+		}
+	}
+
+	&[data-lg-slides-per-view="3"] {
+		@media screen and (min-width: 1025px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 32%;
+			}
+		}
+	}
+
+	&[data-xl-slides-per-view="3"] {
+		@media screen and (min-width: 1025px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 32%;
+			}
+		}
+	}
+
+	&[data-per-view="4"] {
+		& > * > .swiper-slide {
+			--gap: 2%;
+			--item-size: 23.5%;
+		}
+	}
+
+	&[data-sm-slides-per-view="4"] {
+		@media screen and (min-width: 640px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 23.5%;
+			}
+		}
+	}
+
+	&[data-md-slides-per-view="4"] {
+		@media screen and (min-width: 769px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 23.5%;
+			}
+		}
+	}
+
+	&[data-lg-slides-per-view="4"] {
+		@media screen and (min-width: 1025px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 23.5%;
+			}
+		}
+	}
+
+	&[data-xl-slides-per-view="4"] {
+		@media screen and (min-width: 1260px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 23.5%;
+			}
+		}
+	}
+
+	&[data-2xl-slides-per-view="4"] {
+		@media screen and (min-width: 1368px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 23.5%;
+			}
+		}
+	}
+
+	&[data-per-view="5"] {
+		& > * > .swiper-slide {
+			--gap: 2%;
+			--item-size: 18.43%;
+		}
+	}
+
+	&[data-sm-slides-per-view="5"] {
+		@media screen and (min-width: 640px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 18.43%;
+			}
+		}
+	}
+	&[data-md-slides-per-view="5"] {
+		@media screen and (min-width: 769px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 18.43%;
+			}
+		}
+	}
+
+	&[data-lg-slides-per-view="5"] {
+		@media screen and (min-width: 1025px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 18.43%;
+			}
+		}
+	}
+
+	&[data-2xl-slides-per-view="5"] {
+		@media screen and (min-width: 1368px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 18.43%;
+			}
+		}
+	}
+
+	&[data-lg-slides-per-view="8"] {
+		@media screen and (min-width: 1025px) {
+			& > * > .swiper-slide {
+				--gap: 2%;
+				--item-size: 11.7825%;
+			}
 		}
 	}
 }

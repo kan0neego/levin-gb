@@ -4,17 +4,27 @@
 $button-width: 52px;
 .specialist-slider-wrapper {
 	--overflow-gap: 35px;
-	--swiper-pagination-bullet-width: 6px;
-	--swiper-pagination-bullet-height: 6px;
-	--swiper-pagination-bullet-active-size: 6px;
-	--swiper-pagination-color: #20a1e5;
-	--swiper-pagination-bullet-inactive-color: #313640;
-	--swiper-pagination-bullet-inactive-opacity: 1;
+	--swiper-scrollbar-bg-color: rgba(46, 46, 46, 0.05);
+	--swiper-scrollbar-drag-bg-color: var(--main-blue, #20A1E5);
 
 	@include mixin.slider($button-width, 32px, 0px);
 
 	margin: calc(0px - var(--overflow-gap)) 0px -0px;
 	padding: var(--overflow-gap) 0px 0px;
+
+	.btn-slider {
+		--offset: 26px;
+
+		background-color: var(--main-blue, #20A1E5);
+
+		&-prev {
+			left: var(--offset);
+		}
+
+		&-next {
+			right: var(--offset);
+		}
+	}
 }
 
 .specialist-slider {
@@ -41,30 +51,6 @@ $button-width: 52px;
 		@media screen and (max-width: 768px) {
 			margin: 0px -5px -5px;
 			padding: 0px 5px 5px;
-		}
-	}
-
-	.swiper-navigation {
-		top: unset;
-		bottom: calc(33px + 32px + 8px);
-		right: 33px;
-	}
-
-	.line-pagination {
-		margin-top: 32px;
-	}
-
-	.btn-slider {
-		--offset: 26px;
-
-		background-color: var(--main-blue, #20a1e5);
-
-		&-prev {
-			left: var(--offset);
-		}
-
-		&-next {
-			right: var(--offset);
 		}
 	}
 }
