@@ -1,4 +1,4 @@
-import { useEntityRecords } from "@wordpress/core-data";
+import { useEntityRecord, useEntityRecords } from "@wordpress/core-data";
 import { useMemo } from "@wordpress/element";
 
 import { TERMS_PER_PAGE } from "./constants";
@@ -48,6 +48,21 @@ export function useRelationData({
     enabled: taxonomyEnabled,
   });
 
+  // REST API фильтрует записи по ключу `rest_base` таксономии, а не по её
+  // слагу (для `category` это `categories`), поэтому ключ фильтра берём из
+  // конфигурации таксономии — иначе параметр молча игнорируется.
+  // @see WP_REST_Posts_Controller::prepare_tax_query()
+  const { record: taxonomyRecord } = useEntityRecord(
+    "root",
+    "taxonomy",
+    taxonomy,
+    { enabled: taxonomyEnabled },
+  );
+
+  // Пока конфигурация не загружена, используется слаг: запрос перестроится
+  // сам, когда `rest_base` станет известен.
+  const taxonomyQueryKey = taxonomyRecord?.rest_base || taxonomy;
+
   const postsQuery = useMemo(() => {
     const query = {
       per_page: perPage,
@@ -60,11 +75,11 @@ export function useRelationData({
     }
 
     if (termId && taxonomyEnabled) {
-      query[taxonomy] = termId;
+      query[taxonomyQueryKey] = termId;
     }
 
     return query;
-  }, [perPage, search, termId, taxonomy, taxonomyEnabled]);
+  }, [perPage, search, termId, taxonomyQueryKey, taxonomyEnabled]);
 
   const {
     records: postRecords,

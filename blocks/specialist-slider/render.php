@@ -6,6 +6,7 @@
  */
 
 $slides = array();
+$thumbs = array();
 
 if ( function_exists( 'render_specialist_slide' ) ) {
 	foreach ( $attributes['slides'] as $slide ) {
@@ -17,6 +18,7 @@ if ( function_exists( 'render_specialist_slide' ) ) {
 
 		if ( '' !== $rendered_slide ) {
 			$slides[] = $rendered_slide;
+			$thumbs[] = $slide;
 		}
 	}
 }
@@ -48,8 +50,8 @@ if ( empty( $slides ) ) {
 				>
 					<div class="swiper-wrapper">
 						<?php
-						foreach ( $attributes['slides'] as $slide ) :
-								$params = array( 'post_id' => $slide['doctorId'] );
+						foreach ( $thumbs as $thumb ) :
+								$params = array( 'post_id' => $thumb['doctorId'] );
 							?>
 								<div class="swiper-slide">
 									<?php
