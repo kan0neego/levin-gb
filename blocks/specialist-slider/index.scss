@@ -69,64 +69,6 @@ $button-width: 52px;
 	}
 }
 
-.specialist-thumb-slider {
-	padding: 0px 34px 38px 34px;
-
-	@media screen and (max-width: 640px) {
-		display: none;
-	}
-}
-
-.specialist-thumb-card {
-	width: 100%;
-
-	padding: 6px 24.5px 6px 6px;
-
-	border-radius: 13.68px;
-
-	background-color: #fff;
-	box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.1);
-
-	cursor: pointer;
-
-	&__avatar {
-		width: 100%;
-
-		.avatar {
-			&__img {
-				--size: 51.3px;
-
-				border-color: white;
-				border-radius: 6.256px;
-				background-color: var(--main-light-grey, #f4f4f4);
-			}
-		}
-
-		.meta-title {
-			margin-bottom: 2px;
-
-			font-family: "Rubik";
-			color: #313640;
-			font-size: 12.825px;
-			font-weight: 500;
-			line-height: 135%;
-			letter-spacing: -0.001px;
-		}
-
-		.meta-desc {
-			font-family: "SF UI Display";
-			color: #898f9c;
-			font-size: 11.542px;
-			font-weight: 400;
-			line-height: 100%;
-		}
-	}
-
-	&__meta {
-		flex-shrink: 1;
-	}
-}
-
 .specialist-slider-empty {
 	aspect-ratio: 16 / 9;
 	width: 100%;
