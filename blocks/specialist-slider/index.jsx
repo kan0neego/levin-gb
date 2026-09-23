@@ -1,3 +1,4 @@
+import { PostRelationControl } from "@components/post-relation-control";
 import { SliderContext } from "@components/slider/context";
 import { Slide } from "@components/slider/slide";
 import { Slider } from "@components/slider/slider";
@@ -6,90 +7,17 @@ import { SliderPagination } from "@components/slider/slider-pagination";
 import { SliderWrapper } from "@components/slider/slider-wrapper";
 import { InspectorControls, useBlockProps } from "@wordpress/block-editor";
 import { registerBlockType } from "@wordpress/blocks";
-import { CheckboxControl, PanelBody, Spinner } from "@wordpress/components";
-import { useEntityRecords } from "@wordpress/core-data";
-import { useMemo, useState } from "@wordpress/element";
-import { decodeEntities } from "@wordpress/html-entities";
+import { PanelBody } from "@wordpress/components";
+import { useState } from "@wordpress/element";
 import { ServerSideRender } from "@wordpress/server-side-render";
 
 import metadata from "./block.json";
 import "./editor.scss";
 import "./index.scss";
 
-const ALL_DOCTORS_QUERY = { perPage: 100, orderby: "title", order: "asc" };
-
-const getTitle = (record) => decodeEntities(record.title?.rendered ?? "");
-
-/**
- * Список специалистов с чекбоксами.
- *
- * Единый источник слайдов — атрибут `slides`. Каждая отметка добавляет запись
- * `{ doctorId }`, снятие отметки — удаляет её.
- *
- * @param {Object}   props
- * @param {Array}    props.slides        - Текущие слайды: [{ doctorId }].
- * @param {Function} props.setAttributes - setter атрибутов блока.
- * @returns {import("react").JSX.Element}
- */
-function DoctorList({ slides, setAttributes }) {
-	const { records: doctorRecords, isResolving } = useEntityRecords(
-		"postType",
-		"doctors",
-		ALL_DOCTORS_QUERY,
-	);
-
-	const selectedIds = useMemo(
-		() => slides.map((slide) => slide.doctorId),
-		[slides],
-	);
-	const isSelected = (doctorId) => selectedIds.includes(doctorId);
-
-	const applyChanges = (addIds, removeIds) => {
-		const addSet = new Set(addIds.filter((id) => !selectedIds.includes(id)));
-		const removeSet = new Set(removeIds);
-		const next = [
-			...slides,
-			...Array.from(addSet).map((doctorId) => ({ doctorId })),
-		].filter((slide) => !removeSet.has(slide.doctorId));
-		setAttributes({ slides: next });
-	};
-
-	const toggleDoctor = (doctorId, checked) => {
-		if (checked) {
-			applyChanges([doctorId], []);
-		} else {
-			applyChanges([], [doctorId]);
-		}
-	};
-
-	const doctors = doctorRecords ?? [];
-
-	return (
-		<div className="doctor-list">
-			{isResolving && (
-				<p className="doctor-list-loading">
-					<Spinner /> Загружаем специалистов…
-				</p>
-			)}
-			{!isResolving && doctors.length === 0 && (
-				<p className="doctor-list-empty">Специалисты не найдены</p>
-			)}
-			{!isResolving && doctors.length > 0 && (
-				<ul className="doctor-list-items">
-					{doctors.map((record) => (
-						<li key={record.id}>
-							<CheckboxControl
-								label={getTitle(record)}
-								checked={isSelected(record.id)}
-								onChange={(checked) => toggleDoctor(record.id, checked)}
-							/>
-						</li>
-					))}
-				</ul>
-			)}
-		</div>
-	);
-}
+const POST_TYPE = "doctors";
+const TAXONOMY = "doctors_specialty";
+const VALUE_KEY = "doctorId";
 
 /**
  * Пространство настроек блока в сайдбаре: список специалистов.
@@ -105,14 +33,27 @@ function EditorTools({ attributes, setAttributes }) {
 	return (
 		<InspectorControls>
 			<PanelBody title="Специалисты слайдера" initialOpen>
-				<p className="specialist-settings-hint">
-					Выберите специалистов, которые попадут в слайдер.
-				</p>
-				<DoctorList slides={slides} setAttributes={setAttributes} />
+				<PostRelationControl
+					value={slides}
+					onChange={(nextSlides) => setAttributes({ slides: nextSlides })}
+					valueKey={VALUE_KEY}
+					postType={POST_TYPE}
+					taxonomy={TAXONOMY}
+					addLabel="Добавить специалистов"
+					selectedLabel="Выбрано специалистов"
+					taxonomyLabel="Специальность"
+					searchLabel="Поиск по имени"
+					searchPlaceholder="Начните вводить имя…"
+					emptyLabel="Специалисты не найдены"
+					emptySelectedLabel="Пока ничего не выбрано"
+					hint="Выберите специалистов, которые попадут в слайдер.
+						Порядок в списке ниже определяет порядок слайдов."
+				/>
 			</PanelBody>
 		</InspectorControls>
 	);
 }
+
 
 /**
  * Виджет блока в редакторе.

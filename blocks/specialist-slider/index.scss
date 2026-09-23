@@ -1,6 +1,7 @@
 @use "@/lib/slider/index.scss";
 @use "@/lib/slider/mixin.scss";
 @use "./styles/banner.scss";
+@use './styles/thumb.scss';
 
 $button-width: 52px;
 .specialist-slider-wrapper {
