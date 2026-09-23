@@ -16,7 +16,7 @@ import "./editor.scss";
 import "./index.scss";
 
 const POST_TYPE = "doctors";
-const TAXONOMY = "doctors_specialty";
+const TAXONOMY = "doctors_group";
 const VALUE_KEY = "doctorId";
 
 /**
@@ -41,7 +41,7 @@ function EditorTools({ attributes, setAttributes }) {
           taxonomy={TAXONOMY}
           addLabel="Добавить специалистов"
           selectedLabel="Выбрано специалистов"
-          taxonomyLabel="Специальность"
+          taxonomyLabel="Отделения врачей"
           searchLabel="Поиск по имени"
           searchPlaceholder="Начните вводить имя…"
           emptyLabel="Специалисты не найдены"
