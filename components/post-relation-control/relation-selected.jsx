@@ -2,6 +2,9 @@ import { Button, Icon } from "@wordpress/components";
 import { closeSmall, dragHandle } from "@wordpress/icons";
 import { useSortableList } from "@lib/hooks/use-sortable-list";
 
+import { REMOVE_LABEL } from "./constants";
+import { getRecordLabel, isDraftRecord } from "./helpers";
+
 /**
  * Список выбранных записей с ручной сортировкой.
  *
@@ -12,8 +15,7 @@ import { useSortableList } from "@lib/hooks/use-sortable-list";
  * @param {Object}   props
  * @param {string}   props.instanceId - Уникальный префикс DOM-id строк.
  * @param {Array}    props.ids        - Упорядоченный список ID записей.
- * @param {Map}      props.titles     - ID записи → заголовок.
- * @param {Object}   props.labels     - Подписи элементов.
+ * @param {Map}      props.records    - ID записи → запись REST API.
  * @param {Function} props.onMove     - Перестановка `(from, to)`.
  * @param {Function} props.onRemove   - Удаление записи.
  * @returns {import("react").JSX.Element}
@@ -21,8 +23,7 @@ import { useSortableList } from "@lib/hooks/use-sortable-list";
 export function RelationSelected({
   instanceId,
   ids,
-  titles,
-  labels,
+  records,
   onMove,
   onRemove,
 }) {
@@ -50,9 +51,10 @@ export function RelationSelected({
       onDrop={handleDrop}
     >
       {ids.map((id, index) => {
-        // Ключи карты заголовков строковые: ID из REST и из атрибута могут
-        // отличаться типом.
-        const title = titles.get(String(id));
+        // Ключи карт строковые: ID из REST и из атрибута могут отличаться
+        // типом.
+        const record = records.get(String(id));
+        const title = getRecordLabel(record);
         const isDragging = dragIndex === index;
         const isBefore =
           dropTarget?.index === index && dropTarget.position === "before";
@@ -63,6 +65,8 @@ export function RelationSelected({
           isDragging ? "is-dragging" : "",
           isBefore ? "is-drop-before" : "",
           isAfter ? "is-drop-after" : "",
+          record ? "" : "is-missing",
+          isDraftRecord(record) ? "is-draft" : "",
         ]
           .filter(Boolean)
           .join(" ");
@@ -86,13 +90,13 @@ export function RelationSelected({
               {index + 1}
             </span>
             <span className="post-relation-control__row-title" title={title}>
-              {title || labels.missingTitleLabel}
+              {title}
             </span>
             <span className="post-relation-control__row-actions">
               <Button
                 size="small"
                 icon={closeSmall}
-                label={labels.removeLabel}
+                label={REMOVE_LABEL}
                 onClick={() => onRemove(id)}
               />
             </span>

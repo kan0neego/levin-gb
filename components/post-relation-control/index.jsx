@@ -45,6 +45,7 @@ import "./index.scss";
  * @param {string}   props.emptyLabel         - Текст при пустой выдаче.
  * @param {string}   props.emptySelectedLabel - Текст при пустом выборе.
  * @param {string}   props.missingTitleLabel  - Текст для удалённой записи.
+ * @param {string}   props.draftLabel         - Пометка черновика в заголовке.
  * @param {string}   props.removeLabel        - Подпись кнопки удаления.
  * @param {string}   props.hint               - Подсказка над контролом.
  * @param {string}   props.className          - Дополнительный CSS-класс.
@@ -68,6 +69,7 @@ export function PostRelationControl({
   emptySelectedLabel = "Пока ничего не выбрано",
   missingTitleLabel = "(запись не найдена)",
   removeLabel = "Убрать",
+  draftLabel = "(Черновик)",
   hint = "",
   className = "",
 }) {
@@ -102,7 +104,7 @@ export function PostRelationControl({
     posts,
     postsResolving,
     postsUnavailable,
-    titles,
+    records,
   } = useRelationData({
     postType,
     taxonomy,
@@ -132,6 +134,7 @@ export function PostRelationControl({
     searchPlaceholder,
     emptyLabel,
     missingTitleLabel,
+    draftLabel,
     removeLabel,
   };
 
@@ -212,7 +215,7 @@ export function PostRelationControl({
           <RelationSelected
             instanceId={instanceId}
             ids={selectedIds}
-            titles={titles}
+            records={records}
             labels={labels}
             onMove={moveByIndex}
             onRemove={removeId}

@@ -1,8 +1,8 @@
 import { useEntityRecord, useEntityRecords } from "@wordpress/core-data";
 import { useMemo } from "@wordpress/element";
 
-import { TERMS_PER_PAGE } from "./constants";
-import { fromIdsKey, getRecordTitle, toIdsKey } from "./helpers";
+import { POST_STATUSES, TERMS_PER_PAGE } from "./constants";
+import { fromIdsKey, toIdsKey } from "./helpers";
 
 const TERMS_QUERY = {
   per_page: TERMS_PER_PAGE,
@@ -11,8 +11,12 @@ const TERMS_QUERY = {
 };
 
 /**
- * Данные контрола: термины таксономии, результаты поиска и заголовки
- * выбранных записей.
+ * Данные контрола: термины таксономии, результаты поиска и записи выбранных
+ * ID.
+ *
+ * В обе выборки попадают и черновики: без явного `status` REST API отдаёт
+ * только опубликованные записи. Отсутствие ID в карте `records` означает,
+ * что запись удалена или недоступна текущему пользователю.
  *
  * Поиск и таксономия уходят в один запрос, поэтому пересечение считает
  * сервер: поиск выполняется только по записям выбранного термина, а не по
@@ -68,6 +72,7 @@ export function useRelationData({
       per_page: perPage,
       orderby: "title",
       order: "asc",
+      status: POST_STATUSES,
     };
 
     if (search) {
@@ -91,9 +96,9 @@ export function useRelationData({
 
   const posts = postRecords ?? [];
 
-  // Заголовки выбранных записей нужны отдельным запросом: они могут не
-  // попадать в текущую выборку фильтров. ID сортируются, чтобы перестановка
-  // не меняла ключ запроса и не вызывала повторный запрос.
+  // Выбранные записи нужны отдельным запросом: они могут не попадать в
+  // текущую выборку фильтров. ID сортируются, чтобы перестановка не меняла
+  // ключ запроса и не вызывала повторный запрос.
   const includedIds = useMemo(
     () => fromIdsKey(toIdsKey(selectedIds)),
     [selectedIds],
@@ -103,6 +108,7 @@ export function useRelationData({
     () => ({
       include: includedIds,
       per_page: Math.max(includedIds.length, 1),
+      status: POST_STATUSES,
     }),
     [includedIds],
   );
@@ -114,14 +120,14 @@ export function useRelationData({
     { enabled: entityEnabled && includedIds.length > 0 },
   );
 
-  // Заголовки: из выборки выбранных записей и из текущих результатов
+  // Записи по ID: из выборки выбранных записей и из текущих результатов
   // (второе перекрывает первое — данные свежее).
-  const titles = useMemo(() => {
+  const records = useMemo(() => {
     const map = new Map();
 
     [selectedRecords ?? [], posts].forEach((collection) => {
       collection.forEach((record) => {
-        map.set(String(record.id), getRecordTitle(record));
+        map.set(String(record.id), record);
       });
     });
 
@@ -140,6 +146,6 @@ export function useRelationData({
     posts,
     postsResolving,
     postsUnavailable: entityEnabled && postsResolved && postRecords === null,
-    titles,
+    records,
   };
 }

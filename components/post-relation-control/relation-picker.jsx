@@ -6,7 +6,7 @@ import {
 } from "@wordpress/components";
 import { chevronDown } from "@wordpress/icons";
 
-import { getRecordTitle } from "./helpers";
+import { getRecordLabel, isDraftRecord } from "./helpers";
 import { RelationFilters } from "./relation-filters";
 
 /**
@@ -65,10 +65,13 @@ export function RelationPicker({ labels, filters, results, selected, limit }) {
                 {posts.map((record) => {
                   const taken = isSelected(record.id);
                   const blocked = taken || maxReached;
-                  const title = getRecordTitle(record);
+                  const title = getRecordLabel(record);
 
                   return (
-                    <li key={record.id}>
+                    <li
+                      key={record.id}
+                      className={isDraftRecord(record) ? "is-draft" : undefined}
+                    >
                       <CheckboxControl
                         label={title}
                         checked={taken}

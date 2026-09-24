@@ -1,12 +1,14 @@
 import { decodeEntities } from "@wordpress/html-entities";
 
-import { DEFAULT_PER_PAGE } from "./constants";
+import {
+  DEFAULT_PER_PAGE,
+  DRAFT_LABEL,
+  DRAFT_STATUS,
+  MISSING_TITLE_LABEL,
+} from "./constants";
 
 /**
  * Приводит заголовок записи к строке без HTML-сущностей.
- *
- * В зависимости от контекста REST API `title` приходит либо объектом
- * `{ rendered }`, либо строкой.
  *
  * @param {Object} record Запись из REST API.
  * @returns {string} Заголовок записи.
@@ -15,6 +17,39 @@ export function getRecordTitle(record) {
   const raw = record?.title?.rendered ?? record?.title ?? "";
 
   return decodeEntities(String(raw));
+}
+
+/**
+ * Проверяет, что запись находится в черновике.
+ *
+ * @param {Object} record Запись из REST API.
+ * @returns {boolean} `true`, если статус записи — `draft`.
+ */
+export function isDraftRecord(record) {
+  return record?.status === DRAFT_STATUS;
+}
+
+/**
+ * Подпись записи для списков выбора и выбранных.
+ *
+ * Порядок проверок важен: у отсутствующей записи нет ни заголовка, ни
+ * статуса, поэтому она проверяется первой.
+ *
+ * @param {Object} record Запись из REST API или `undefined`.
+ * @returns {string} Подпись для вывода.
+ */
+export function getRecordLabel(record) {
+  if (!record) {
+    return MISSING_TITLE_LABEL;
+  }
+
+  const title = getRecordTitle(record);
+
+  if (isDraftRecord(record)) {
+    return `${title || MISSING_TITLE_LABEL} ${DRAFT_LABEL}`;
+  }
+
+  return title;
 }
 
 /**
