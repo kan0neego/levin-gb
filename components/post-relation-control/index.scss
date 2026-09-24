@@ -71,6 +71,18 @@
         margin-bottom: 0;
       }
     }
+
+    .components-checkbox-control:has(
+        .components-checkbox-control__input[aria-disabled="true"]
+      ) {
+      .components-checkbox-control__label {
+        cursor: default;
+      }
+
+      svg.components-checkbox-control__checked {
+        fill: var(--wp-components-color-gray-400, #ccc);
+      }
+    }
   }
 
   // Список выбранных записей.

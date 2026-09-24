@@ -64,6 +64,7 @@ export function RelationPicker({ labels, filters, results, selected, limit }) {
               <ul className="post-relation-control__results-list">
                 {posts.map((record) => {
                   const taken = isSelected(record.id);
+                  const blocked = taken || maxReached;
                   const title = getRecordTitle(record);
 
                   return (
@@ -71,8 +72,14 @@ export function RelationPicker({ labels, filters, results, selected, limit }) {
                       <CheckboxControl
                         label={title}
                         checked={taken}
-                        disabled={taken || maxReached}
-                        onChange={(checked) => onToggle(record.id, checked)}
+                        aria-disabled={blocked || undefined}
+                        onChange={(checked) => {
+                          if (blocked) {
+                            return;
+                          }
+
+                          onToggle(record.id, checked);
+                        }}
                       />
                     </li>
                   );
