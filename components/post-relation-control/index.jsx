@@ -2,7 +2,7 @@ import { Notice } from "@wordpress/components";
 import { useInstanceId } from "@wordpress/compose";
 import { useEffect } from "@wordpress/element";
 
-import { ALL_TERMS, DEFAULT_PER_PAGE } from "./constants";
+import { ALL_TERMS, DEFAULT_PER_PAGE, EMPTY_SELECTED_LABEL } from "./constants";
 import { RelationPicker } from "./relation-picker";
 import { RelationSelected } from "./relation-selected";
 import { useRelationData } from "./use-relation-data";
@@ -39,14 +39,9 @@ import "./index.scss";
  * @param {string}   props.addLabel           - Текст кнопки добавления.
  * @param {string}   props.selectedLabel      - Заголовок блока выбранных.
  * @param {string}   props.taxonomyLabel      - Подпись фильтра таксономии.
- * @param {string}   props.allTermsLabel      - Подпись опции «все термины».
  * @param {string}   props.searchLabel        - Подпись поля поиска.
  * @param {string}   props.searchPlaceholder  - Плейсхолдер поля поиска.
  * @param {string}   props.emptyLabel         - Текст при пустой выдаче.
- * @param {string}   props.emptySelectedLabel - Текст при пустом выборе.
- * @param {string}   props.missingTitleLabel  - Текст для удалённой записи.
- * @param {string}   props.draftLabel         - Пометка черновика в заголовке.
- * @param {string}   props.removeLabel        - Подпись кнопки удаления.
  * @param {string}   props.hint               - Подсказка над контролом.
  * @param {string}   props.className          - Дополнительный CSS-класс.
  * @returns {import("react").JSX.Element}
@@ -62,14 +57,9 @@ export function PostRelationControl({
   addLabel = "Добавить записи",
   selectedLabel = "Выбрано",
   taxonomyLabel = "Фильтр по таксономии",
-  allTermsLabel = "Все",
   searchLabel = "Поиск",
   searchPlaceholder = "Начните вводить название…",
   emptyLabel = "Записи не найдены",
-  emptySelectedLabel = "Пока ничего не выбрано",
-  missingTitleLabel = "(запись не найдена)",
-  removeLabel = "Убрать",
-  draftLabel = "(Черновик)",
   hint = "",
   className = "",
 }) {
@@ -129,13 +119,9 @@ export function PostRelationControl({
     addLabel,
     selectedLabel,
     taxonomyLabel,
-    allTermsLabel,
     searchLabel,
     searchPlaceholder,
     emptyLabel,
-    missingTitleLabel,
-    draftLabel,
-    removeLabel,
   };
 
   return (
@@ -209,14 +195,13 @@ export function PostRelationControl({
           )}
         </p>
         {count === 0 && (
-          <p className="post-relation-control__state">{emptySelectedLabel}</p>
+          <p className="post-relation-control__state">{EMPTY_SELECTED_LABEL}</p>
         )}
         {count > 0 && (
           <RelationSelected
             instanceId={instanceId}
             ids={selectedIds}
             records={records}
-            labels={labels}
             onMove={moveByIndex}
             onRemove={removeId}
           />

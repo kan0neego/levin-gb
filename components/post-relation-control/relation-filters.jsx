@@ -7,7 +7,7 @@ import {
 import { useMemo } from "@wordpress/element";
 import { decodeEntities } from "@wordpress/html-entities";
 
-import { ALL_TERMS } from "./constants";
+import { ALL_TERMS, ALL_TERMS_LABEL } from "./constants";
 
 /**
  * Фильтры результатов: поиск и выбор термина таксономии.
@@ -42,13 +42,13 @@ export function RelationFilters({
 
   const termOptions = useMemo(
     () => [
-      { label: labels.allTermsLabel, value: ALL_TERMS },
+      { label: ALL_TERMS_LABEL, value: ALL_TERMS },
       ...terms.map((term) => ({
         label: decodeEntities(term.name),
         value: String(term.id),
       })),
     ],
-    [labels.allTermsLabel, terms],
+    [terms],
   );
 
   return (

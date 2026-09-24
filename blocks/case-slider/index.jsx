@@ -43,7 +43,6 @@ function EditorTools({ attributes, setAttributes }) {
           searchLabel="Поиск по названию"
           searchPlaceholder="Начните вводить название…"
           emptyLabel="Кейсы не найдены"
-          emptySelectedLabel="Пока ничего не выбрано"
           hint="Выберите кейсы, которые попадут в слайдер.
             Порядок в списке ниже определяет порядок слайдов."
         />

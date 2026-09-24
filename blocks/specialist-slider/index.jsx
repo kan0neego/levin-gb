@@ -45,7 +45,6 @@ function EditorTools({ attributes, setAttributes }) {
           searchLabel="Поиск по имени"
           searchPlaceholder="Начните вводить имя…"
           emptyLabel="Специалисты не найдены"
-          emptySelectedLabel="Пока ничего не выбрано"
           hint="Выберите специалистов, которые попадут в слайдер.
             Порядок в списке ниже определяет порядок слайдов."
         />

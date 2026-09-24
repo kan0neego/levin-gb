@@ -175,6 +175,17 @@
     text-overflow: ellipsis;
   }
 
+  &__row.is-missing,
+  &__results-list > li.is-missing .components-checkbox-control__label {
+    color: #757575;
+    font-style: italic;
+  }
+
+  &__row.is-draft,
+  &__results-list > li.is-draft .components-checkbox-control__label {
+    font-style: italic;
+  }
+
   &__row-actions {
     display: inline-flex;
     flex-shrink: 0;
