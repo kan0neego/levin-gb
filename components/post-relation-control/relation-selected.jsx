@@ -1,11 +1,13 @@
 import { Button, Icon } from "@wordpress/components";
-import { arrowDown, arrowUp, closeSmall, dragHandle } from "@wordpress/icons";
+import { closeSmall, dragHandle } from "@wordpress/icons";
 import { useSortableList } from "@lib/hooks/use-sortable-list";
 
 /**
  * Список выбранных записей с ручной сортировкой.
  *
  * Порядок элементов здесь — источник истины для порядка вывода на сайте.
+ * Перестановка — перетаскиванием строки за маркер либо сочетанием `Alt` +
+ * стрелки вверх/вниз на сфокусированной строке.
  *
  * @param {Object}   props
  * @param {string}   props.instanceId - Уникальный префикс DOM-id строк.
@@ -30,7 +32,6 @@ export function RelationSelected({
     dragIndex,
     dropTarget,
     resetDrag,
-    moveByOffset,
     handleDragStart,
     handleDragOver,
     handleDrop,
@@ -88,20 +89,6 @@ export function RelationSelected({
               {title || labels.missingTitleLabel}
             </span>
             <span className="post-relation-control__row-actions">
-              <Button
-                size="small"
-                icon={arrowUp}
-                label={labels.moveUpLabel}
-                disabled={index === 0}
-                onClick={() => moveByOffset(index, -1)}
-              />
-              <Button
-                size="small"
-                icon={arrowDown}
-                label={labels.moveDownLabel}
-                disabled={index === ids.length - 1}
-                onClick={() => moveByOffset(index, 1)}
-              />
               <Button
                 size="small"
                 icon={closeSmall}

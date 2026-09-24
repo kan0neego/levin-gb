@@ -45,8 +45,6 @@ import "./index.scss";
  * @param {string}   props.emptyLabel         - Текст при пустой выдаче.
  * @param {string}   props.emptySelectedLabel - Текст при пустом выборе.
  * @param {string}   props.missingTitleLabel  - Текст для удалённой записи.
- * @param {string}   props.moveUpLabel        - Подпись кнопки «выше».
- * @param {string}   props.moveDownLabel      - Подпись кнопки «ниже».
  * @param {string}   props.removeLabel        - Подпись кнопки удаления.
  * @param {string}   props.hint               - Подсказка над контролом.
  * @param {string}   props.className          - Дополнительный CSS-класс.
@@ -69,8 +67,6 @@ export function PostRelationControl({
   emptyLabel = "Записи не найдены",
   emptySelectedLabel = "Пока ничего не выбрано",
   missingTitleLabel = "(запись не найдена)",
-  moveUpLabel = "Переместить выше",
-  moveDownLabel = "Переместить ниже",
   removeLabel = "Убрать",
   hint = "",
   className = "",
@@ -136,8 +132,6 @@ export function PostRelationControl({
     searchPlaceholder,
     emptyLabel,
     missingTitleLabel,
-    moveUpLabel,
-    moveDownLabel,
     removeLabel,
   };
 
