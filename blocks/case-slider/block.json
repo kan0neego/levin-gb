@@ -25,6 +25,10 @@
         "type": "number"
       }
     },
+    "includeRelatedCases": {
+      "type": "boolean",
+      "default": false
+    },
     "slides": {
       "type": "array",
       "default": [],

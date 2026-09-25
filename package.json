@@ -19,6 +19,7 @@
     "sass-loader": "^16.0.8"
   },
   "dependencies": {
+    "@wordpress/api-fetch": "^7.56.0",
     "@wordpress/block-editor": "^15.23.0",
     "@wordpress/blocks": "^15.27.0",
     "@wordpress/components": "^35.0.1",

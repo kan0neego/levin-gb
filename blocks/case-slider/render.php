@@ -7,6 +7,24 @@
 
 $slides = array();
 
+// Режим «кейсы текущего врача»: список собирается по ACF-полю «Родственные
+// связи» вместо ручного выбора в блоке.
+if ( ! empty( $attributes['includeRelatedCases'] ) ) {
+	$doctor = Doctor::get_current();
+
+	if ( ! $doctor ) {
+		return;
+	}
+
+	$related_slides = $doctor->get_relative_case_slides();
+
+	if ( ! $related_slides ) {
+		return;
+	}
+
+	$attributes['slides'] = $related_slides;
+}
+
 if ( function_exists( 'render_case_card' ) ) {
 	foreach ( $attributes['slides'] as $slide ) {
 		if ( ! is_array( $slide ) || empty( $slide['caseId'] ) ) {
