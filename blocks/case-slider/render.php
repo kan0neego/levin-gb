@@ -16,7 +16,7 @@ if ( ! empty( $attributes['includeRelatedCases'] ) ) {
 		return;
 	}
 
-	$related_slides = $doctor->get_relative_case_slides();
+	$related_slides = ( new Case_Repository() )->find_slides_by_doctor( $doctor->get_id() );
 
 	if ( ! $related_slides ) {
 		return;
