@@ -97,6 +97,27 @@
 
     position: relative;
 
+    &::before {
+      --size: 465px;
+
+      display: block;
+      content: "";
+
+      width: var(--size);
+      height: var(--size);
+
+      border-radius: calc(infinity * 1px);
+      background: linear-gradient(
+        180deg,
+        rgba(201, 206, 214, 0.2) 0%,
+        rgba(201, 206, 214, 0) 74.43%
+      );
+
+      position: absolute;
+      top: 50px;
+      right: -93px;
+    }
+
     @media screen and (max-width: 1024px) {
       flex-basis: 380px;
     }
@@ -189,10 +210,13 @@
 
   &__button {
     flex: 0 1 300px;
+    font-size: 18px;
 
     @media screen and (max-width: 640px) {
       flex-basis: auto;
       width: 100%;
+
+      font-size: 16px;
     }
   }
 
