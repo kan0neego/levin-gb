@@ -141,9 +141,7 @@ if ( empty( $media ) ) {
 // Single image.
 if ( 1 === count( $media ) ) {
 	?>
-		<div <?php echo get_block_wrapper_attributes(); //phpcs:ignore ?>>
-			<?php echo theme_render_image_figure( $media[0] ); // phpcs:ignore ?>
-		</div>
+<?php echo theme_render_image_figure( $media[0] ); // phpcs:ignore ?>
 	<?php
 	return;
 }
@@ -151,53 +149,37 @@ if ( 1 === count( $media ) ) {
 // Gallery (media slider).
 $first_caption = isset( $media[0]['caption'] ) ? $media[0]['caption'] : '';
 ?>
-<div <?php echo get_block_wrapper_attributes(); // phpcs:ignore ?>>
-	<div class="media-slider">
-		<div class="slider-container" data-option="media" data-per-view="1">
-			<div class="swiper-wrapper">
-				<?php foreach ( $media as $item ) : ?>
-					<div class="swiper-slide" data-caption="<?php echo esc_attr( isset( $item['caption'] ) ? $item['caption'] : '' ); ?>">
-						<?php echo theme_render_image_figure( $item, false ); // phpcs:ignore ?>
-					</div>
-				<?php endforeach; ?>
+<div class="media-slider">
+	<div class="slider-container" data-option="media" data-per-view="1">
+		<div class="swiper-wrapper">
+			<?php foreach ( $media as $item ) : ?>
+			<div class="swiper-slide"
+				data-caption="<?php echo esc_attr( isset( $item['caption'] ) ? $item['caption'] : '' ); ?>">
+				<?php echo theme_render_image_figure( $item, false ); // phpcs:ignore ?>
 			</div>
-			<div class="line-pagination line-pagination-overflow"></div>
-			<button type="button" class="btn-slider btn-slider-prev" data-button="prev" aria-label="<?php esc_attr_e( 'Предыдущий слайд', 'theme' ); ?>">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 9 16"
-					fill="none"
-				>
-					<path
-						d="M0.999999 14.2063L7.60316 7.60316L1 1"
-						stroke="currentColor"
-						strokeWidth="2"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-					/>
-				</svg>
-			</button>
-			<button type="button" class="btn-slider btn-slider-next" data-button="next" aria-label="<?php esc_attr_e( 'Следующий слайд', 'theme' ); ?>">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 9 16"
-					fill="none"
-				>
-					<path
-						d="M0.999999 14.2063L7.60316 7.60316L1 1"
-						stroke="currentColor"
-						strokeWidth="2"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-					/>
-				</svg>
-			</button>
+			<?php endforeach; ?>
 		</div>
-		<div class="swiper-caption">
-			<div class="swiper-caption-content">
-				<div class="swiper-caption-text"><?php echo esc_html( $first_caption ); ?></div>
+		<div class="line-pagination line-pagination-overflow"></div>
+		<button type="button" class="btn-slider btn-slider-prev" data-button="prev"
+			aria-label="<?php esc_attr_e( 'Предыдущий слайд', 'theme' ); ?>">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 9 16" fill="none">
+				<path d="M0.999999 14.2063L7.60316 7.60316L1 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+					strokeLinejoin="round" />
+			</svg>
+		</button>
+		<button type="button" class="btn-slider btn-slider-next" data-button="next"
+			aria-label="<?php esc_attr_e( 'Следующий слайд', 'theme' ); ?>">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 9 16" fill="none">
+				<path d="M0.999999 14.2063L7.60316 7.60316L1 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+					strokeLinejoin="round" />
+			</svg>
+		</button>
+	</div>
+	<div class="swiper-caption">
+		<div class="swiper-caption-content">
+			<div class="swiper-caption-text">
+				<?php echo esc_html( $first_caption ); ?>
 			</div>
 		</div>
 	</div>
 </div>
-
