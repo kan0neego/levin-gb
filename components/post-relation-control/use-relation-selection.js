@@ -86,6 +86,23 @@ export function useRelationSelection({ value, onChange, valueKey, maxItems }) {
     [addId, removeId],
   );
 
+  /**
+   * Заменяет набор выбранных записей одиночной — для режима единичного
+   * выбора. Если ID не изменился, атрибут не перезаписывается.
+   *
+   * @param {string|number} id ID записи.
+   */
+  const replaceId = useCallback(
+    (id) => {
+      if (String(id) === String(selectedIds[0])) {
+        return;
+      }
+
+      applyIds([id]);
+    },
+    [applyIds, selectedIds],
+  );
+
   const moveByIndex = useCallback(
     (from, to) => {
       const next = moveItem(selectedIds, from, to);
@@ -102,6 +119,7 @@ export function useRelationSelection({ value, onChange, valueKey, maxItems }) {
     count: selectedIds.length,
     isSelected,
     toggleId,
+    replaceId,
     removeId,
     moveByIndex,
     maxReached,

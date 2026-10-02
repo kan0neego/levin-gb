@@ -18,6 +18,7 @@ import { getRecordLabel, isDraftRecord } from "./helpers";
  * @param {Map}      props.records    - ID записи → запись REST API.
  * @param {Function} props.onMove     - Перестановка `(from, to)`.
  * @param {Function} props.onRemove   - Удаление записи.
+ * @param {boolean}  props.sortable   - Показывать сортировку и маркеры.
  * @returns {import("react").JSX.Element}
  */
 export function RelationSelected({
@@ -26,6 +27,7 @@ export function RelationSelected({
   records,
   onMove,
   onRemove,
+  sortable = true,
 }) {
   const getRowId = (index) => `${instanceId}-row-${ids[index]}`;
 
@@ -77,18 +79,25 @@ export function RelationSelected({
             id={`${instanceId}-row-${id}`}
             className={rowClassName}
             tabIndex={-1}
-            draggable={ids.length > 1}
-            onDragStart={handleDragStart(index)}
-            onDragOver={handleDragOver(index)}
-            onDragEnd={resetDrag}
-            onKeyDown={handleKeyDown(index)}
+            draggable={sortable && ids.length > 1}
+            onDragStart={sortable ? handleDragStart(index) : undefined}
+            onDragOver={sortable ? handleDragOver(index) : undefined}
+            onDragEnd={sortable ? resetDrag : undefined}
+            onKeyDown={sortable ? handleKeyDown(index) : undefined}
           >
-            <span className="post-relation-control__handle" aria-hidden="true">
-              <Icon icon={dragHandle} size={18} />
-            </span>
-            <span className="post-relation-control__row-index">
-              {index + 1}
-            </span>
+            {sortable && (
+              <span
+                className="post-relation-control__handle"
+                aria-hidden="true"
+              >
+                <Icon icon={dragHandle} size={18} />
+              </span>
+            )}
+            {sortable && (
+              <span className="post-relation-control__row-index">
+                {index + 1}
+              </span>
+            )}
             <span className="post-relation-control__row-title" title={title}>
               {title}
             </span>

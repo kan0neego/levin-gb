@@ -1,0 +1,51 @@
+{
+	"apiVersion": 3,
+	"name": "theme/quote",
+	"version": "1.0.0",
+	"title": "Цитата врача",
+	"category": "widgets",
+	"icon": "format-quote",
+	"description": "Большой блок с цитатой врача",
+	"keywords": [
+		"цитата",
+		"цитата врача"
+	],
+	"supports": {
+		"html": false,
+		"align": true,
+		"className": false,
+		"color": {
+			"background": false,
+			"text": false
+		}
+	},
+	"attributes": {
+		"heading": {
+			"type": "string",
+			"default": ""
+		},
+		"variations": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"is-image",
+				"is-image is-rounded-image"
+			]
+		},
+		"author": {
+			"type": "object",
+			"default": {
+				"id": "",
+				"name": "",
+				"spec": "",
+				"avatar": "",
+				"picture": ""
+			}
+		}
+	},
+	"textdomain": "theme",
+	"editorScript": "file:./index.js",
+	"style": "file:./index.css",
+	"render": "file:./render.php"
+}

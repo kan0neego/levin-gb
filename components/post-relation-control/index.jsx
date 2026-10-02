@@ -44,6 +44,8 @@ import "./index.scss";
  * @param {string}   props.emptyLabel         - Текст при пустой выдаче.
  * @param {string}   props.hint               - Подсказка над контролом.
  * @param {string}   props.className          - Дополнительный CSS-класс.
+ * @param {string}   props.selectionMode      - Режим выбора: `select` или `single`.
+ * @param {boolean}  props.lockSelected       - Блокировать выбранные в выдаче.
  * @returns {import("react").JSX.Element}
  */
 export function PostRelationControl({
@@ -62,15 +64,19 @@ export function PostRelationControl({
   emptyLabel = "Записи не найдены",
   hint = "",
   className = "",
+  selectionMode = "select",
+  lockSelected = false,
 }) {
   const instanceId = useInstanceId(PostRelationControl, "post-relation");
   const entityEnabled = Boolean(postType);
+  const isSingle = selectionMode === "single";
 
   const {
     selectedIds,
     count,
     isSelected,
     toggleId,
+    replaceId,
     removeId,
     moveByIndex,
     maxReached,
@@ -126,7 +132,13 @@ export function PostRelationControl({
 
   return (
     <div
-      className={["post-relation-control", className].filter(Boolean).join(" ")}
+      className={[
+        "post-relation-control",
+        isSingle ? "post-relation-control--single" : "",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
       {!entityEnabled && (
         <Notice
@@ -163,6 +175,8 @@ export function PostRelationControl({
           labels={labels}
           selected={count}
           limit={maxItems}
+          selectionMode={selectionMode}
+          lockSelected={lockSelected}
           filters={{
             state: {
               termId,
@@ -180,14 +194,16 @@ export function PostRelationControl({
             posts,
             isResolving: postsResolving,
             isSelected,
+            selectedIds,
             onToggle: toggleId,
+            onSelect: replaceId,
           }}
         />
       )}
 
       <div className="post-relation-control__selected">
         <p className="post-relation-control__selected-head">
-          {`${selectedLabel}: ${count}`}
+          {isSingle ? selectedLabel : `${selectedLabel}: ${count}`}
           {maxItems > 0 && (
             <span className="post-relation-control__limit">
               {` / ${maxItems}`}
@@ -204,6 +220,7 @@ export function PostRelationControl({
             records={records}
             onMove={moveByIndex}
             onRemove={removeId}
+            sortable={!isSingle}
           />
         )}
       </div>

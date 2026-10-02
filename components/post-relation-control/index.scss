@@ -195,4 +195,12 @@
       padding: 0;
     }
   }
+
+  // Режим единичного выбора: без маркеров сортировки и порядкового номера.
+
+  &--single {
+    .post-relation-control__row-index {
+      display: none;
+    }
+  }
 }
