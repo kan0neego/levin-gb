@@ -1,4 +1,3 @@
-import { useImage } from "@lib/hooks/use-image";
 import { MediaSlider } from "@components/slider/media-slider";
 import { Slide } from "@components/slider/slide";
 import {
@@ -73,7 +72,6 @@ function EditorTools({ attributes, setAttributes }) {
 }
 
 function FigureImage({ image, media, set }) {
-  const imageProps = useImage(image);
   const editable = Boolean(set && media);
 
   const setItem = (item) => {
@@ -86,7 +84,7 @@ function FigureImage({ image, media, set }) {
       style={{ "--img-url": `url(${image.url})` }}
     >
       <picture>
-        <img {...imageProps} />
+        <img src={media.url} width={media.width} height={media.height} />
       </picture>
       {editable && (
         <RichText

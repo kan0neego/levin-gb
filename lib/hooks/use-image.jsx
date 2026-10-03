@@ -1,3 +1,8 @@
+/**
+ * @deprecated srcset может вести себя в редакторе не предсказуемо.
+ *             Использовать его дальше нет необходимости.
+ */
+
 export function useImage(media) {
   const createSrcset = () => {
     const set = [];
