@@ -17,6 +17,7 @@ import { createImageItem, isDownload, transforms } from "./transforms";
 const mergeImageItem = (prev, curr) => {
   return curr.map((item) => {
     const match = prev.find((image) => image.id === item.id);
+    console.log(match);
     return match ? { ...item, caption: match.caption || "" } : item;
   });
 };
@@ -32,9 +33,11 @@ function EditorTools({ attributes, setAttributes }) {
           <MediaUpload
             value={ids}
             allowedTypes={["image"]}
-            onSelect={(media) => {
-              const item = createImageItem([media]);
-              setAttributes({ media: item });
+            onSelect={(img) => {
+              const item = createImageItem([img]);
+              setAttributes(({ media }) => {
+                return { media: mergeImageItem(media, item) };
+              });
             }}
             render={({ open }) => (
               <ToolbarButton
@@ -71,12 +74,10 @@ function EditorTools({ attributes, setAttributes }) {
   );
 }
 
-function FigureImage({ image, media, set }) {
-  const editable = Boolean(set && media);
-
-  const setItem = (item) => {
-    set({ media: media.map((i) => (i.id === item.id ? item : i)) });
-  };
+function FigureImage({ image, editable = false, set }) {
+  const {
+    sizes: { full },
+  } = image;
 
   return (
     <figure
@@ -84,7 +85,7 @@ function FigureImage({ image, media, set }) {
       style={{ "--img-url": `url(${image.url})` }}
     >
       <picture>
-        <img src={media.url} width={media.width} height={media.height} />
+        <img src={image.url} width={full.width} height={full.height} />
       </picture>
       {editable && (
         <RichText
@@ -93,7 +94,10 @@ function FigureImage({ image, media, set }) {
           placeholder="Опишите изображение (опционально)"
           onChange={(text) => {
             const item = { ...image, caption: text };
-            setItem(item);
+            set(({ media }) => {
+              const up = media.map((i) => (i.id === item.id ? item : i));
+              return { media: up };
+            });
           }}
         />
       )}
@@ -113,7 +117,7 @@ function MediaWidget({ attributes, setAttributes }) {
       <EditorTools attributes={attributes} setAttributes={setAttributes} />
       <div {...blockProps}>
         {isMedia && (
-          <FigureImage image={media[0]} media={media} set={setAttributes} />
+          <FigureImage image={media[0]} set={setAttributes} editable={true} />
         )}
 
         {isGallery && (
