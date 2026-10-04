@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "title": "Один врач",
   "category": "widgets",
-  "icon": "format-quote",
+  "icon": "businessperson",
   "description": "Баннер одного врача",
   "keywords": ["баннер", "врач"],
   "supports": {

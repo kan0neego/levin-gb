@@ -11,7 +11,17 @@ $author_name = get_the_title( $author_id );
 $author_exp  = num_decline( gmdate( 'Y' ) - get_field( 'experience', $author_id, false ), 'год, года, лет' );
 $author_spec = wp_strip_all_tags( get_the_excerpt( $author_id ) );
 $description = $attributes['description']['edited'] ? $attributes['description']['value'] : get_field( 'banner_text', $author_id, false );
-$picture_url = get_field( 'clipped_photo_list', $author_id );
+$picture_url = get_field( 'clipped_photo_block_single', $author_id );
+
+if ( get_field( 'is_active', $author_id ) ) {
+	$button_link = get_permalink( $author_id );
+	$button_attr = 'target="_blank"';
+	$button_text = 'Подробнее о враче';
+} else {
+	$button_link = '#';
+	$button_attr = 'data-toggle="modal" data-target="#myModal2"';
+	$button_text = 'Записаться на прием';
+}
 ?>
 
 <div <?php echo get_block_wrapper_attributes( array( 'class' => 'dc-prose' ) ); ?>>
@@ -40,7 +50,9 @@ $picture_url = get_field( 'clipped_photo_list', $author_id );
 			<?php echo esc_html( $description ); ?>
 		</div>
 		<div class="dc-prose__footer">
-			<div class="section-button">Заказать звонок</div>
+			<a href="<?php echo esc_url( $button_link ); ?>" <?php echo esc_attr( $button_attr ); ?> class="section-button">
+				<?php echo esc_html( $button_text ); ?>
+			</a>
 		</div>
 	</div>
 </div>
