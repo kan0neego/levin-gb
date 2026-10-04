@@ -1,0 +1,37 @@
+{
+	"apiVersion": 3,
+	"name": "theme/video",
+	"title": "Видео",
+	"icon": "video-alt3",
+	"description": "Видео с кастомным отображением",
+	"category": "media",
+	"supports": {
+		"html": false,
+		"align": false,
+		"className": false,
+		"color": {
+			"background": false,
+			"text": false
+		}
+	},
+	"attributes": {
+		"id": {
+			"type": "number",
+			"default": 0
+		},
+		"url": {
+			"type": "string",
+			"default": ""
+		},
+		"caption": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"textdomain": "theme",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./index.css",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php"
+}
