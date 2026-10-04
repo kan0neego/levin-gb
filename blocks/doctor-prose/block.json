@@ -1,0 +1,42 @@
+{
+  "apiVersion": 3,
+  "name": "theme/doctor-prose",
+  "version": "1.0.0",
+  "title": "Один врач",
+  "category": "widgets",
+  "icon": "format-quote",
+  "description": "Баннер одного врача",
+  "keywords": ["баннер", "врач"],
+  "supports": {
+    "html": false,
+    "align": true,
+    "className": false,
+    "color": {
+      "background": false,
+      "text": false
+    }
+  },
+  "attributes": {
+    "description": {
+      "type": "object",
+      "default": {
+        "edited": false,
+        "value": ""
+      }
+    },
+    "author": {
+      "type": "object",
+      "default": {
+        "id": "",
+        "name": "",
+        "spec": "",
+        "avatar": "",
+        "picture": "",
+        "experience": ""
+      }
+    }
+  },
+  "textdomain": "theme",
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php"
+}

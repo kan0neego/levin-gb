@@ -1,0 +1,16 @@
+.b-placeholder {
+  width: 100%;
+  padding: 60px 0;
+
+  background-color: #ebedf0;
+
+  &__name {
+    color: #a5b1bd;
+    text-align: center;
+    font-size: 2em;
+  }
+
+  &__subname {
+    font-size: 0.5em;
+  }
+}
