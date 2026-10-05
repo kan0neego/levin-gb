@@ -34,7 +34,7 @@ if ( $preview_id > 0 ) {
 	}
 }
 
-$poster = wp_get_attachment_image( $poster_id, 'full', false, array( 'class' => 'video-poster' ) );
+$poster = wp_get_attachment_image( $poster_id, 'full', false, array( 'class' => 'video-poster', 'srcset' => " " ) );
 
 $is_direct = (bool) preg_match( '/\.(mp4|webm|ogv|ogg|mov)(\?.*)?$/i', $url );
 
@@ -73,10 +73,10 @@ $wrapper_attributes = get_block_wrapper_attributes(
 ?>
 
 <figure <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-	<img class="video-poster" src="<?php echo esc_url( $poster ); ?>" alt="" />
+	<?php echo $poster ?>
 	<?php if ( $is_direct && '' !== $preview ) : ?>
 		<video class="video-content" muted loop playsinline>
-			<source data-src="<?php echo esc_url( $source_url ); ?>" type="<?php echo esc_attr( $mime_type ); ?>" />
+			<source data-src="<?php echo esc_url( $preview ); ?>" type="<?php echo esc_attr( $mime_type ); ?>" />
 		</video>
 	<?php endif; ?>
 	<?php if ( '' !== $caption ) : ?>
