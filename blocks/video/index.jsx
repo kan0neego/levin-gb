@@ -127,14 +127,6 @@ function VideoSourceControl({
     setExternalUrl(nextUrl);
   };
 
-  const applyPreviewUrl = () => {
-    setAttributes({
-      previewId: 0,
-      preview: externalUrl,
-      mimeType: getVideoMimeType(externalUrl),
-    });
-  };
-
   const applyVideoUrl = () => {
     setAttributes({
       id: 0,
@@ -251,8 +243,8 @@ function InspectorTools({ attributes, setAttributes }) {
   const hasVideo = Boolean(url);
 
   if (!hasVideo) return null;
-
-  const isDirect = isDirectVideo(url);
+  const hasPreview = preview !== '';
+  console.log(hasPreview);
 
   return (
     <InspectorControls>
@@ -270,7 +262,7 @@ function InspectorTools({ attributes, setAttributes }) {
           isBlock
           label="Режим воспроизведения"
           value={playMode}
-          disabled={!isDirect}
+          disabled={!hasPreview}
           onChange={(value) => setAttributes({ playMode: value })}
         >
           {PLAY_MODES.map((mode) => (
@@ -278,6 +270,7 @@ function InspectorTools({ attributes, setAttributes }) {
               key={mode.value}
               value={mode.value}
               label={mode.label}
+              disabled={!hasPreview}
             />
           ))}
         </ToggleGroupControl>
