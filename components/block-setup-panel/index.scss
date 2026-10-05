@@ -18,23 +18,16 @@
 
   &__icon {
     flex-shrink: 0;
-
-    width: 24px;
-    height: 24px;
-
-    color: #a5b1bd;
   }
 
   &__title {
     font-size: 16px;
-    line-height: 1.2;
+    line-height: 1;
     color: #000;
     font-weight: 500;
   }
 
   &__hint {
-    margin: 0 0 16px;
-
     color: #757575;
     font-size: 12px;
     line-height: 1.5;

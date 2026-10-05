@@ -9,7 +9,6 @@ $id        = isset( $attributes['id'] ) ? absint( $attributes['id'] ) : 0;
 $url       = isset( $attributes['url'] ) ? $attributes['url'] : '';
 $mime_type = isset( $attributes['mimeType'] ) ? $attributes['mimeType'] : '';
 $poster_id = isset( $attributes['posterId'] ) ? absint( $attributes['posterId'] ) : 0;
-$poster    = isset( $attributes['poster'] ) ? $attributes['poster'] : '';
 $play_mode = isset( $attributes['playMode'] ) ? $attributes['playMode'] : 'autoplay';
 $caption   = isset( $attributes['caption'] ) ? $attributes['caption'] : '';
 
@@ -25,19 +24,10 @@ if ( '' === $url ) {
 	return;
 }
 
-// Постер: предпочитаем вложение.
-if ( $poster_id > 0 ) {
-	$poster_url = wp_get_attachment_image_url( $poster_id, 'full' );
-	if ( $poster_url ) {
-		$poster = $poster_url;
-	}
-}
+$poster = wp_get_attachment_image( $poster_id, 'full' false, array('class' => 'video-poster') );
 
-// Прямая ссылка на файл рендерится в <video>, внешний источник — во фрейме.
 $is_direct = (bool) preg_match( '/\.(mp4|webm|ogv|ogg|mov)(\?.*)?$/i', $url );
 
-// MIME-тип берём из атрибутов, сохранённых при выборе видео в редакторе.
-// Парсинг расширения — только fallback для блоков, сохранённых до появления атрибута.
 if ( '' === $mime_type ) {
 	$mime_types = array(
 		'mp4'  => 'video/mp4',
