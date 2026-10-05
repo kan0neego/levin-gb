@@ -26,17 +26,18 @@ if ( '' === $url ) {
 	return;
 }
 
+$has_preview = false;
 // Инлайновое превью-видео: вложение имеет приоритет над ссылкой.
 if ( $preview_id > 0 ) {
 	$preview_attachment_url = wp_get_attachment_url( $preview_id );
 	if ( $preview_attachment_url ) {
 		$preview = $preview_attachment_url;
+		$has_preview = true;
 	}
 }
 
 $poster = wp_get_attachment_image( $poster_id, 'full', false, array( 'class' => 'video-poster', 'srcset' => " " ) );
 
-$is_direct = (bool) preg_match( '/\.(mp4|webm|ogv|ogg|mov)(\?.*)?$/i', $url );
 
 if ( '' === $mime_type ) {
 	$mime_types = array(
@@ -56,7 +57,7 @@ if ( '' === $mime_type ) {
 }
 
 $classes = 'vid-block wp-block-video video-lightbox';
-if ( $is_direct ) {
+if ( $has_preview ) {
 	$classes .= ' video-autoplay';
 }
 
@@ -67,14 +68,14 @@ $wrapper_attributes = get_block_wrapper_attributes(
 			'data-src'      => $url,
 			'data-fancybox' => '',
 		),
-		$is_direct ? array( 'data-play-mode' => $play_mode ) : array( 'data-type' => 'iframe' )
+		$has_preview ? array( 'data-play-mode' => $play_mode ) : array( 'data-type' => 'iframe' )
 	)
 );
 ?>
 
 <figure <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<?php echo $poster ?>
-	<?php if ( $is_direct && '' !== $preview ) : ?>
+	<?php if ( $has_preview && '' !== $preview ) : ?>
 		<video class="video-content" muted loop playsinline>
 			<source data-src="<?php echo esc_url( $preview ); ?>" type="<?php echo esc_attr( $mime_type ); ?>" />
 		</video>
