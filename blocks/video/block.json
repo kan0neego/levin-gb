@@ -35,6 +35,14 @@
       "type": "string",
       "default": ""
     },
+    "previewId": {
+      "type": "number",
+      "default": 0
+    },
+    "preview": {
+      "type": "string",
+      "default": ""
+    },
     "playMode": {
       "type": "string",
       "default": "autoplay",

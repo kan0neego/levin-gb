@@ -73,6 +73,10 @@
 
     padding: 0;
 
+    &.has-text {
+      width: 100%;
+      padding: 6px;
+    }
   }
 
   &__popover-inner {
@@ -87,8 +91,15 @@
     }
   }
 
-  .components-button.has-text {
-    flex: 1;
+  &__dropdown {
+    &:first-child {
+      flex: 1;
+
+      & > * {
+        width: 100%;
+        overflow: hidden;
+      }
+    }
   }
 }
 

@@ -11,10 +11,11 @@ import {
   Button,
   Dropdown,
   PanelBody,
-  SelectControl,
   TextControl,
+  __experimentalToggleGroupControl as ToggleGroupControl,
+  __experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from "@wordpress/components";
-import { link } from "@wordpress/icons";
+import { image, link } from "@wordpress/icons";
 import { useState } from "@wordpress/element";
 import { BlockSetupPanel } from "@/components/block-setup-panel";
 import { MediaPreviewControl } from "@/components/media-preview-control";
@@ -62,7 +63,7 @@ function getVideoMimeType(url) {
 }
 
 const PLAY_MODES = [
-  { label: "Автовоспроизведение", value: "autoplay" },
+  { label: "Авто-плей", value: "autoplay" },
   { label: "При наведении", value: "hover" },
 ];
 
@@ -86,51 +87,104 @@ function createVideoAttributes(media) {
 }
 
 /**
- * Панель выбора видео в сайдбаре: кнопка выбора из медиагалереи и кнопка
- * внешнего источника, открывающая попап с полем ввода ссылки.
+ * Панель выбора видео в сайдбаре.
  *
- * Выбор из галереи сохраняет `id`, `url` и MIME-тип вложения; внешняя ссылка
- * сбрасывает `id` и определяет MIME-тип по расширению.
+ * Кнопка «Редактировать превью» открывает попап изменения атрибута `preview`
+ * (ссылка инлайнового тега video): выбор из медиагалереи либо ввод внешней
+ * ссылки. Кнопка внешнего источника задаёт ссылку основного видео `url`.
+ * Кнопка «Заменить постер» третьей открывает медиагалерею для атрибутов
+ * `posterId`/`poster`.
+ *
+ * Выбор из галереи сохраняет `previewId` и `preview`; внешняя ссылка сбрасывает
+ * `previewId` и определяет MIME-тип по расширению.
  *
  * @param {Object}   props
- * @param {number}   props.id            - ID текущего вложения.
- * @param {string}   props.url           - URL текущего видео.
+ * @param {number}   props.previewId     - ID текущего вложения превью.
+ * @param {string}   props.preview       - URL текущего превью.
+ * @param {string}   props.url           - URL основного видео.
+ * @param {number}   props.posterId      - ID текущего вложения постера.
  * @param {Function} props.setAttributes - setter атрибутов блока.
  * @return {import("react").JSX.Element}
  */
-function VideoSourceControl({ id, url, setAttributes }) {
-  const [externalUrl, setExternalUrl] = useState(url);
+function VideoSourceControl({
+  previewId,
+  preview,
+  url,
+  posterId,
+  setAttributes,
+}) {
+  const [externalUrl, setExternalUrl] = useState(preview);
+  const [videoUrl, setVideoUrl] = useState(url);
 
-  const applyExternalUrl = () => {
+  const selectPreview = (media) => {
+    const nextUrl = media?.url ?? "";
+
+    setAttributes({
+      previewId: media?.id ?? 0,
+      preview: nextUrl,
+      mimeType: media?.mime || getVideoMimeType(nextUrl),
+    });
+    setExternalUrl(nextUrl);
+  };
+
+  const applyPreviewUrl = () => {
+    setAttributes({
+      previewId: 0,
+      preview: externalUrl,
+      mimeType: getVideoMimeType(externalUrl),
+    });
+  };
+
+  const applyVideoUrl = () => {
     setAttributes({
       id: 0,
-      url: externalUrl,
-      mimeType: getVideoMimeType(externalUrl),
+      url: videoUrl,
     });
   };
 
   return (
     <div className="video-source">
-      <MediaUploadCheck>
-        <MediaUpload
-          value={id}
-          allowedTypes={["video"]}
-          render={({ open }) => (
-            <Button
-              variant="secondary"
-              icon="video-alt3"
-              label="Изменить видео"
-              onClick={open}
-            >
-              Изменить видео
+      <Dropdown
+        className="video-source__dropdown"
+        contentClassName="video-source__popover"
+        popoverProps={{ placement: "bottom-start", resize: false }}
+        renderToggle={({ isOpen, onToggle }) => (
+          <Button
+            variant="secondary"
+            icon="video-alt3"
+            label="Редактировать превью"
+            onClick={onToggle}
+            aria-expanded={isOpen}
+          >
+            Ред. превью
+          </Button>
+        )}
+        renderContent={() => (
+          <div className="video-source__popover-inner">
+            <MediaUploadCheck>
+              <MediaUpload
+                value={previewId}
+                allowedTypes={["video"]}
+                render={({ open }) => (
+                  <Button variant="secondary" onClick={open}>
+                    Выбрать из медиагалереи
+                  </Button>
+                )}
+                onSelect={selectPreview}
+              />
+            </MediaUploadCheck>
+            <TextControl
+              label="Ссылка на превью"
+              value={externalUrl}
+              placeholder="https://"
+              onChange={setExternalUrl}
+            />
+            <Button variant="primary" onClick={applyPreviewUrl}>
+              Применить
             </Button>
-          )}
-          onSelect={(media) => {
-            setAttributes(createVideoAttributes(media));
-            setExternalUrl(media?.url ?? "");
-          }}
-        />
-      </MediaUploadCheck>
+          </div>
+        )}
+      />
       <Dropdown
         className="video-source__dropdown"
         contentClassName="video-source__popover"
@@ -149,16 +203,37 @@ function VideoSourceControl({ id, url, setAttributes }) {
           <div className="video-source__popover-inner">
             <TextControl
               label="Ссылка на видео"
-              value={externalUrl}
+              value={videoUrl}
               placeholder="https://"
-              onChange={setExternalUrl}
+              onChange={setVideoUrl}
             />
-            <Button variant="primary" onClick={applyExternalUrl}>
+            <Button variant="primary" onClick={applyVideoUrl}>
               Применить
             </Button>
           </div>
         )}
       />
+      <MediaUploadCheck>
+        <MediaUpload
+          value={posterId}
+          allowedTypes={["image"]}
+          render={({ open }) => (
+            <Button
+              className="video-source__button"
+              variant="secondary"
+              icon={image}
+              label="Заменить постер"
+              onClick={open}
+            />
+          )}
+          onSelect={(media) =>
+            setAttributes({
+              posterId: media?.id ?? 0,
+              poster: media?.url ?? "",
+            })
+          }
+        />
+      </MediaUploadCheck>
     </div>
   );
 }
@@ -172,7 +247,7 @@ function VideoSourceControl({ id, url, setAttributes }) {
  * @return {import("react").JSX.Element}
  */
 function InspectorTools({ attributes, setAttributes }) {
-  const { id, url, playMode, posterId } = attributes;
+  const { previewId, preview, url, playMode, posterId } = attributes;
   const hasVideo = Boolean(url);
 
   if (!hasVideo) return null;
@@ -182,33 +257,30 @@ function InspectorTools({ attributes, setAttributes }) {
   return (
     <InspectorControls>
       <PanelBody title="Настройка видео">
-        <VideoSourceControl id={id} url={url} setAttributes={setAttributes} />
+        <VideoSourceControl
+          previewId={previewId}
+          preview={preview}
+          url={url}
+          posterId={posterId}
+          setAttributes={setAttributes}
+        />
       </PanelBody>
       <PanelBody title="Настройки отображения">
-        <SelectControl
+        <ToggleGroupControl
+          isBlock
           label="Режим воспроизведения"
           value={playMode}
-          options={PLAY_MODES}
           disabled={!isDirect}
           onChange={(value) => setAttributes({ playMode: value })}
-        />
-        <MediaUploadCheck>
-          <MediaUpload
-            value={posterId}
-            allowedTypes={["image"]}
-            render={({ open }) => (
-              <Button variant="secondary" onClick={open}>
-                Заменить постер
-              </Button>
-            )}
-            onSelect={(media) =>
-              setAttributes({
-                posterId: media?.id ?? 0,
-                poster: media?.url ?? "",
-              })
-            }
-          />
-        </MediaUploadCheck>
+        >
+          {PLAY_MODES.map((mode) => (
+            <ToggleGroupControlOption
+              key={mode.value}
+              value={mode.value}
+              label={mode.label}
+            />
+          ))}
+        </ToggleGroupControl>
       </PanelBody>
     </InspectorControls>
   );
@@ -222,6 +294,7 @@ function InspectorTools({ attributes, setAttributes }) {
  *
  * @param {Object}   props
  * @param {string}   props.url        - URL выбранного видео.
+ * @param {string}   props.preview    - URL инлайнового превью-видео.
  * @param {string}   props.mimeType   - MIME-тип видео из атрибутов блока.
  * @param {string}   props.poster     - URL постера.
  * @param {string}   props.playMode   - Режим воспроизведения.
@@ -229,10 +302,18 @@ function InspectorTools({ attributes, setAttributes }) {
  * @param {Function} props.setCaption - setter атрибута caption.
  * @return {import("react").JSX.Element}
  */
-function VideoFigure({ url, caption, mimeType, poster, playMode, setCaption }) {
+function VideoFigure({
+  url,
+  preview,
+  caption,
+  mimeType,
+  poster,
+  playMode,
+  setCaption,
+}) {
   const isDirect = isDirectVideo(url);
-  // Атрибут хранит тип, определённый при выборе; парсим только как fallback.
-  const sourceType = mimeType || getVideoMimeType(url);
+  const previewUrl = preview;
+  const sourceType = mimeType || getVideoMimeType(previewUrl);
 
   const figureProps = {
     className: [
@@ -253,7 +334,7 @@ function VideoFigure({ url, caption, mimeType, poster, playMode, setCaption }) {
       <img className="video-poster" src={poster} alt="" />
       {isDirect && (
         <video className="video-content" muted loop playsInline>
-          <source data-src={url} type={sourceType} />
+          <source data-src={previewUrl} type={sourceType} />
         </video>
       )}
       <RichText
@@ -271,7 +352,8 @@ registerBlockType(metadata.name, {
   ...metadata,
 
   edit: function ({ attributes, setAttributes }) {
-    const { url, mimeType, poster, posterId, playMode, caption } = attributes;
+    const { url, preview, mimeType, poster, posterId, playMode, caption } =
+      attributes;
     const blockProps = useBlockProps();
     const hasVideo = Boolean(url);
 
@@ -318,6 +400,7 @@ registerBlockType(metadata.name, {
           {hasVideo && (
             <VideoFigure
               url={url}
+              preview={preview}
               caption={caption}
               mimeType={mimeType}
               poster={poster}
