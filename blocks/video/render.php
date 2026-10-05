@@ -29,10 +29,10 @@ if ( '' === $url ) {
 $has_preview = false;
 // Инлайновое превью-видео: вложение имеет приоритет над ссылкой.
 if ( $preview_id > 0 ) {
+	$has_preview = true;
 	$preview_attachment_url = wp_get_attachment_url( $preview_id );
 	if ( $preview_attachment_url ) {
 		$preview = $preview_attachment_url;
-		$has_preview = true;
 	}
 }
 
