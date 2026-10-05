@@ -159,14 +159,17 @@ function VideoSourceControl({
             Ред. превью
           </Button>
         )}
-        renderContent={() => (
+        renderContent={({ onClose }) => (
           <div className="video-source__popover-inner">
             <MediaUploadCheck>
               <MediaUpload
                 value={previewId}
                 allowedTypes={["video"]}
                 render={({ open }) => (
-                  <Button variant="secondary" onClick={open}>
+                  <Button variant="secondary" onClick={() => {
+                    onClose();
+                    setTimeout(() => open(), 150)
+                  }}>
                     Выбрать из медиагалереи
                   </Button>
                 )}
@@ -179,9 +182,6 @@ function VideoSourceControl({
               placeholder="https://"
               onChange={setExternalUrl}
             />
-            <Button variant="primary" onClick={applyPreviewUrl}>
-              Применить
-            </Button>
           </div>
         )}
       />

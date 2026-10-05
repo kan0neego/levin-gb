@@ -13,6 +13,7 @@ $mime_type  = isset( $attributes['mimeType'] ) ? $attributes['mimeType'] : '';
 $poster_id  = isset( $attributes['posterId'] ) ? absint( $attributes['posterId'] ) : 0;
 $play_mode  = isset( $attributes['playMode'] ) ? $attributes['playMode'] : 'autoplay';
 $caption    = isset( $attributes['caption'] ) ? $attributes['caption'] : '';
+$has_preview = '' !== $preview;
 
 // Предпочитаем вложение: даёт актуальный URL даже если сохранённый устарел.
 if ( $id > 0 ) {
@@ -26,10 +27,8 @@ if ( '' === $url ) {
 	return;
 }
 
-$has_preview = false;
 // Инлайновое превью-видео: вложение имеет приоритет над ссылкой.
 if ( $preview_id > 0 ) {
-	$has_preview = true;
 	$preview_attachment_url = wp_get_attachment_url( $preview_id );
 	if ( $preview_attachment_url ) {
 		$preview = $preview_attachment_url;
@@ -37,7 +36,6 @@ if ( $preview_id > 0 ) {
 }
 
 $poster = wp_get_attachment_image( $poster_id, 'full', false, array( 'class' => 'video-poster', 'srcset' => " " ) );
-
 
 if ( '' === $mime_type ) {
 	$mime_types = array(
@@ -75,7 +73,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 
 <figure <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<?php echo $poster ?>
-	<?php if ( $has_preview && '' !== $preview ) : ?>
+	<?php if ( '' !== $has_preview ) : ?>
 		<video class="video-content" muted loop playsinline>
 			<source data-src="<?php echo esc_url( $preview ); ?>" type="<?php echo esc_attr( $mime_type ); ?>" />
 		</video>
