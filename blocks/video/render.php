@@ -7,6 +7,7 @@
 
 $id        = isset( $attributes['id'] ) ? absint( $attributes['id'] ) : 0;
 $url       = isset( $attributes['url'] ) ? $attributes['url'] : '';
+$mime_type = isset( $attributes['mimeType'] ) ? $attributes['mimeType'] : '';
 $poster_id = isset( $attributes['posterId'] ) ? absint( $attributes['posterId'] ) : 0;
 $poster    = isset( $attributes['poster'] ) ? $attributes['poster'] : '';
 $play_mode = isset( $attributes['playMode'] ) ? $attributes['playMode'] : 'autoplay';
@@ -35,19 +36,22 @@ if ( $poster_id > 0 ) {
 // Прямая ссылка на файл рендерится в <video>, внешний источник — во фрейме.
 $is_direct = (bool) preg_match( '/\.(mp4|webm|ogv|ogg|mov)(\?.*)?$/i', $url );
 
-// MIME-тип видео для атрибута `type` тега <source> определяется по расширению.
-$mime_types = array(
-	'mp4'  => 'video/mp4',
-	'webm' => 'video/webm',
-	'ogv'  => 'video/ogg',
-	'ogg'  => 'video/ogg',
-	'mov'  => 'video/quicktime',
-);
-$mime_type  = 'video/mp4';
-if ( preg_match( '/\.([^.\/?#]+)(?:\?.*)?$/', $url, $matches ) ) {
-	$extension = strtolower( $matches[1] );
-	if ( isset( $mime_types[ $extension ] ) ) {
-		$mime_type = $mime_types[ $extension ];
+// MIME-тип берём из атрибутов, сохранённых при выборе видео в редакторе.
+// Парсинг расширения — только fallback для блоков, сохранённых до появления атрибута.
+if ( '' === $mime_type ) {
+	$mime_types = array(
+		'mp4'  => 'video/mp4',
+		'webm' => 'video/webm',
+		'ogv'  => 'video/ogg',
+		'ogg'  => 'video/ogg',
+		'mov'  => 'video/quicktime',
+	);
+	$mime_type  = 'video/mp4';
+	if ( preg_match( '/\.([^.\/?#]+)(?:\?.*)?$/', $url, $matches ) ) {
+		$extension = strtolower( $matches[1] );
+		if ( isset( $mime_types[ $extension ] ) ) {
+			$mime_type = $mime_types[ $extension ];
+		}
 	}
 }
 
@@ -60,7 +64,6 @@ $wrapper_attributes = get_block_wrapper_attributes(
 	array_merge(
 		array(
 			'class'         => $classes,
-			'data-fancybox' => '',
 			'data-src'      => $url,
 			'data-lightbox' => '',
 		),
@@ -68,6 +71,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 	)
 );
 ?>
+
 <figure <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<img class="video-poster" src="<?php echo esc_url( $poster ); ?>" alt="" />
 	<?php if ( $is_direct ) : ?>

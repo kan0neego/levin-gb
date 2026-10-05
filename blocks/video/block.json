@@ -23,6 +23,10 @@
       "type": "string",
       "default": ""
     },
+    "mimeType": {
+      "type": "string",
+      "default": ""
+    },
     "posterId": {
       "type": "number",
       "default": 0

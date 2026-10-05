@@ -29,6 +29,9 @@ const VIDEO_MIME_TYPES = {
   mov: "video/quicktime",
 };
 
+/** MIME-тип по умолчанию для видео с неизвестным расширением. */
+const DEFAULT_VIDEO_MIME_TYPE = "video/mp4";
+
 /**
  * Определяет, является ли источник прямой ссылкой на видеофайл.
  * Всё остальное (YouTube, Vimeo, embed) считается внешним источником.
@@ -51,7 +54,7 @@ function getVideoMimeType(url) {
   const match = (url ?? "").match(/\.([^./?#]+)(?:\?.*)?$/);
   const extension = match ? match[1].toLowerCase() : "";
 
-  return VIDEO_MIME_TYPES[extension] ?? "video/mp4";
+  return VIDEO_MIME_TYPES[extension] ?? DEFAULT_VIDEO_MIME_TYPE;
 }
 
 const PLAY_MODES = [
@@ -61,15 +64,20 @@ const PLAY_MODES = [
 
 /**
  * Извлекает из объекта вложения (выбор из медиабиблиотеки или REST-ответ)
- * значения атрибутов `id` и `url` блока `theme/video`.
+ * значения атрибутов `id`, `url` и `mimeType` блока `theme/video`.
+ *
+ * Предпочитает `mime` вложения, чтобы не определять тип повторно при рендере.
  *
  * @param {Object} media Объект вложения.
- * @return {{id: number, url: string}} Значения атрибутов.
+ * @return {{id: number, url: string, mimeType: string}} Значения атрибутов.
  */
 function createVideoAttributes(media) {
+  const url = media?.url ?? "";
+
   return {
     id: media?.id ?? 0,
-    url: media?.url ?? "",
+    url,
+    mimeType: media?.mime || getVideoMimeType(url),
   };
 }
 
@@ -154,12 +162,15 @@ function InspectorTools({ attributes, setAttributes }) {
  *
  * @param {Object} props
  * @param {string} props.url      - URL выбранного видео.
+ * @param {string} props.mimeType - MIME-тип видео из атрибутов блока.
  * @param {string} props.poster   - URL постера.
  * @param {string} props.playMode - Режим воспроизведения.
  * @return {import("react").JSX.Element}
  */
-function VideoFigure({ url, poster, playMode }) {
+function VideoFigure({ url, mimeType, poster, playMode }) {
   const isDirect = isDirectVideo(url);
+  // Атрибут хранит тип, определённый при выборе; парсим только как fallback.
+  const sourceType = mimeType || getVideoMimeType(url);
 
   const figureProps = {
     className: [
@@ -169,7 +180,6 @@ function VideoFigure({ url, poster, playMode }) {
     ]
       .filter(Boolean)
       .join(" "),
-    "data-fancybox": "",
     "data-src": url,
     "data-lightbox": "",
     ...(isDirect ? { "data-play-mode": playMode } : { "data-type": "iframe" }),
@@ -180,7 +190,7 @@ function VideoFigure({ url, poster, playMode }) {
       <img className="video-poster" src={poster} alt="" />
       {isDirect && (
         <video className="video-content" muted loop playsInline>
-          <source data-src={url} type={getVideoMimeType(url)} />
+          <source data-src={url} type={sourceType} />
         </video>
       )}
     </figure>
@@ -191,7 +201,7 @@ registerBlockType(metadata.name, {
   ...metadata,
 
   edit: function ({ attributes, setAttributes }) {
-    const { id, url, poster, playMode } = attributes;
+    const { id, url, mimeType, poster, playMode } = attributes;
     const blockProps = useBlockProps();
     const hasVideo = Boolean(url);
 
@@ -207,11 +217,22 @@ registerBlockType(metadata.name, {
               accept="video/*"
               allowedTypes={["video"]}
               onSelect={(media) => setAttributes(createVideoAttributes(media))}
-              onSelectURL={(nextUrl) => setAttributes({ id: 0, url: nextUrl })}
+              onSelectURL={(nextUrl) =>
+                setAttributes({
+                  id: 0,
+                  url: nextUrl,
+                  mimeType: getVideoMimeType(nextUrl),
+                })
+              }
             />
           )}
           {hasVideo && (
-            <VideoFigure url={url} poster={poster} playMode={playMode} />
+            <VideoFigure
+              url={url}
+              mimeType={mimeType}
+              poster={poster}
+              playMode={playMode}
+            />
           )}
         </div>
       </>
