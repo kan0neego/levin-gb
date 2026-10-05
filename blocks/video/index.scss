@@ -120,3 +120,10 @@
   bottom: 40px;
   transform: translateX(-50%);
 }
+
+.video-poster {
+  transition: opacity 150ms ease-in-out;
+
+  position: static;
+  z-index: 10;
+}
