@@ -1,0 +1,42 @@
+.has-iframe .fancybox__content,
+.has-html5video .fancybox__content {
+	width: 100%;
+	height: auto;
+
+	max-width: 1280px;
+	padding: 0;
+}
+
+.has-iframe .fancybox__content:where(.shot *),
+.has-html5video .fancybox__content:where(.shot *) {
+	width: auto !important;
+	height: 45vw !important;
+	aspect-ratio: 9/16 !important;
+
+	@media screen and (max-width: 1024px) {
+		height: 70vw !important;
+	}
+
+	@media screen and (max-width: 640px) {
+		width: 100% !important;
+		height: auto !important;
+	}
+}
+
+.fancybox {
+	&__content {
+		border-radius: 16px;
+		overflow: hidden !important;
+	}
+
+	&__backdrop {
+		display: none;
+
+		background-color: #08101126;
+		opacity: 1;
+
+		position: fixed;
+		inset: 0;
+		z-index: -1;
+	}
+}

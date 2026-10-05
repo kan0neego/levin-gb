@@ -6,3 +6,8 @@ observe(document.querySelectorAll(".video-autoplay"), async (element) => {
   });
 });
 
+observe(document.querySelectorAll("[data-fancybox]"), async (element) => {
+  await import("@lib/fancybox").then((module) => {
+    module.default(element);
+  });
+});
