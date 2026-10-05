@@ -7,7 +7,15 @@ import {
   useBlockProps,
 } from "@wordpress/block-editor";
 import { registerBlockType } from "@wordpress/blocks";
-import { Button, PanelBody, SelectControl } from "@wordpress/components";
+import {
+  Button,
+  Dropdown,
+  PanelBody,
+  SelectControl,
+  TextControl,
+} from "@wordpress/components";
+import { link } from "@wordpress/icons";
+import { useState } from "@wordpress/element";
 import { BlockSetupPanel } from "@/components/block-setup-panel";
 import { MediaPreviewControl } from "@/components/media-preview-control";
 import metadata from "./block.json";
@@ -78,7 +86,85 @@ function createVideoAttributes(media) {
 }
 
 /**
- * Настройки блока в сайдбаре: режим воспроизведения и постер.
+ * Панель выбора видео в сайдбаре: кнопка выбора из медиагалереи и кнопка
+ * внешнего источника, открывающая попап с полем ввода ссылки.
+ *
+ * Выбор из галереи сохраняет `id`, `url` и MIME-тип вложения; внешняя ссылка
+ * сбрасывает `id` и определяет MIME-тип по расширению.
+ *
+ * @param {Object}   props
+ * @param {number}   props.id            - ID текущего вложения.
+ * @param {string}   props.url           - URL текущего видео.
+ * @param {Function} props.setAttributes - setter атрибутов блока.
+ * @return {import("react").JSX.Element}
+ */
+function VideoSourceControl({ id, url, setAttributes }) {
+  const [externalUrl, setExternalUrl] = useState(url);
+
+  const applyExternalUrl = () => {
+    setAttributes({
+      id: 0,
+      url: externalUrl,
+      mimeType: getVideoMimeType(externalUrl),
+    });
+  };
+
+  return (
+    <div className="video-source">
+      <MediaUploadCheck>
+        <MediaUpload
+          value={id}
+          allowedTypes={["video"]}
+          render={({ open }) => (
+            <Button
+              variant="secondary"
+              icon="video-alt3"
+              label="Изменить видео"
+              onClick={open}
+            >
+              Изменить видео
+            </Button>
+          )}
+          onSelect={(media) => {
+            setAttributes(createVideoAttributes(media));
+            setExternalUrl(media?.url ?? "");
+          }}
+        />
+      </MediaUploadCheck>
+      <Dropdown
+        className="video-source__dropdown"
+        contentClassName="video-source__popover"
+        popoverProps={{ placement: "bottom-start", resize: false }}
+        renderToggle={({ isOpen, onToggle }) => (
+          <Button
+            className="video-source__button"
+            variant="secondary"
+            icon={link}
+            label="Внешний источник"
+            onClick={onToggle}
+            aria-expanded={isOpen}
+          />
+        )}
+        renderContent={() => (
+          <div className="video-source__popover-inner">
+            <TextControl
+              label="Ссылка на видео"
+              value={externalUrl}
+              placeholder="https://"
+              onChange={setExternalUrl}
+            />
+            <Button variant="primary" onClick={applyExternalUrl}>
+              Применить
+            </Button>
+          </div>
+        )}
+      />
+    </div>
+  );
+}
+
+/**
+ * Настройки блока в сайдбаре: видео, режим воспроизведения и постер.
  *
  * @param {Object}   props
  * @param {Object}   props.attributes    - Атрибуты блока.
@@ -86,15 +172,24 @@ function createVideoAttributes(media) {
  * @return {import("react").JSX.Element}
  */
 function InspectorTools({ attributes, setAttributes }) {
-  const { playMode, posterId, poster } = attributes;
+  const { id, url, playMode, posterId } = attributes;
+  const hasVideo = Boolean(url);
+
+  if (!hasVideo) return null;
+
+  const isDirect = isDirectVideo(url);
 
   return (
     <InspectorControls>
+      <PanelBody title="Настройка видео">
+        <VideoSourceControl id={id} url={url} setAttributes={setAttributes} />
+      </PanelBody>
       <PanelBody title="Настройки отображения">
         <SelectControl
           label="Режим воспроизведения"
           value={playMode}
           options={PLAY_MODES}
+          disabled={!isDirect}
           onChange={(value) => setAttributes({ playMode: value })}
         />
         <MediaUploadCheck>
@@ -103,7 +198,7 @@ function InspectorTools({ attributes, setAttributes }) {
             allowedTypes={["image"]}
             render={({ open }) => (
               <Button variant="secondary" onClick={open}>
-                {poster ? "Заменить постер" : "Выбрать постер"}
+                Заменить постер
               </Button>
             )}
             onSelect={(media) =>
@@ -149,7 +244,7 @@ function VideoFigure({ url, caption, mimeType, poster, playMode, setCaption }) {
       .filter(Boolean)
       .join(" "),
     "data-src": url,
-    "data-lightbox": "",
+    "data-fancybox": "",
     ...(isDirect ? { "data-play-mode": playMode } : { "data-type": "iframe" }),
   };
 

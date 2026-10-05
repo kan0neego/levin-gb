@@ -55,7 +55,7 @@ if ( '' === $mime_type ) {
 	}
 }
 
-$classes = 'wp-block-video video-lightbox';
+$classes = 'vid-block wp-block-video video-lightbox';
 if ( $is_direct ) {
 	$classes .= ' video-autoplay';
 }
@@ -65,7 +65,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 		array(
 			'class'         => $classes,
 			'data-src'      => $url,
-			'data-lightbox' => '',
+			'data-fancybox' => '',
 		),
 		$is_direct ? array( 'data-play-mode' => $play_mode ) : array( 'data-type' => 'iframe' )
 	)
@@ -80,7 +80,10 @@ $wrapper_attributes = get_block_wrapper_attributes(
 		</video>
 	<?php endif; ?>
 	<?php if ( '' !== $caption ) : ?>
-		<figcaption><?php echo wp_kses_post( $caption ); ?></figcaption>
+		<figcaption class="video-caption"><?php echo wp_kses_post( $caption ); ?></figcaption>
 	<?php endif; ?>
+	<div class="video-play">
+		<img decoding="async" class="video-play__image" src="https://doctorlevin.ru/wp-content/themes/sd-03-2_new/static/img/video-play-button.svg" alt="">
+	</div>
 </figure>
 
