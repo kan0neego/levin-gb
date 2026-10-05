@@ -9,6 +9,7 @@ import {
 import { registerBlockType } from "@wordpress/blocks";
 import { Button, PanelBody, SelectControl } from "@wordpress/components";
 import { BlockSetupPanel } from "@/components/block-setup-panel";
+import { MediaPreviewControl } from "@/components/media-preview-control";
 import metadata from "./block.json";
 import "./index.scss";
 
@@ -140,6 +141,7 @@ function VideoFigure({ url, caption, mimeType, poster, playMode, setCaption }) {
 
   const figureProps = {
     className: [
+      "vid-block",
       "wp-block-video",
       "video-lightbox",
       isDirect ? "video-autoplay" : "",
@@ -188,28 +190,18 @@ registerBlockType(metadata.name, {
               icon="video-alt3"
               hint="Выберите видео и обложку, затем настройте отображение."
             >
-              <MediaUploadCheck>
-                <MediaUpload
-                  value={posterId}
-                  allowedTypes={["image"]}
-                  render={({ open }) => (
-                    <>
-                      <Button variant="secondary" onClick={open}>
-                        {poster ? "Заменить обложку" : "Выбрать обложку"}
-                      </Button>
-                      {poster && (
-                        <img className="b-setup__cover" src={poster} alt="" />
-                      )}
-                    </>
-                  )}
-                  onSelect={(media) =>
-                    setAttributes({
-                      posterId: media?.id ?? 0,
-                      poster: media?.url ?? "",
-                    })
-                  }
-                />
-              </MediaUploadCheck>
+              <MediaPreviewControl
+                label="Обложка"
+                accept="image/*"
+                allowedTypes={["image"]}
+                value={{ id: posterId, url: poster }}
+                onChange={(media) =>
+                  setAttributes({
+                    posterId: media?.id ?? 0,
+                    poster: media?.url ?? "",
+                  })
+                }
+              />
               <MediaPlaceholder
                 icon="video-alt3"
                 labels={{ title: "Видео" }}
