@@ -18,10 +18,12 @@ export function BlockSetupPanel({ title, icon, hint = "", children }) {
   return (
     <div className="b-setup">
       <div className="b-setup__header">
-        {icon && <Icon className="b-setup__icon" icon={icon} />}
-        <span className="b-setup__title">{title}</span>
+        <div className="b-setup__heading">
+          {icon && <Icon className="b-setup__icon" icon={icon} />}
+          <span className="b-setup__title">{title}</span>
+        </div>
+        {hint && <p className="b-setup__hint">{hint}</p>}
       </div>
-      {hint && <p className="b-setup__hint">{hint}</p>}
       <div className="b-setup__body">{children}</div>
     </div>
   );
