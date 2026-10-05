@@ -1,19 +1,14 @@
 import {
-  BlockControls,
   InspectorControls,
   MediaPlaceholder,
   MediaUpload,
   MediaUploadCheck,
+  RichText,
   useBlockProps,
 } from "@wordpress/block-editor";
 import { registerBlockType } from "@wordpress/blocks";
-import {
-  Button,
-  PanelBody,
-  SelectControl,
-  ToolbarButton,
-  ToolbarGroup,
-} from "@wordpress/components";
+import { Button, PanelBody, SelectControl } from "@wordpress/components";
+import { BlockSetupPanel } from "@/components/block-setup-panel";
 import metadata from "./block.json";
 import "./index.scss";
 
@@ -82,37 +77,6 @@ function createVideoAttributes(media) {
 }
 
 /**
- * Панель инструментов блока: замена выбранного видео.
- *
- * @param {Object}   props
- * @param {number}   props.id            - ID выбранного вложения.
- * @param {Function} props.setAttributes - setter атрибутов блока.
- * @return {import("react").JSX.Element}
- */
-function EditorTools({ id, setAttributes }) {
-  return (
-    <BlockControls>
-      <ToolbarGroup>
-        <MediaUploadCheck>
-          <MediaUpload
-            value={id}
-            allowedTypes={["video"]}
-            render={({ open }) => (
-              <ToolbarButton
-                label="Заменить видео"
-                icon="video-alt3"
-                onClick={open}
-              />
-            )}
-            onSelect={(media) => setAttributes(createVideoAttributes(media))}
-          />
-        </MediaUploadCheck>
-      </ToolbarGroup>
-    </BlockControls>
-  );
-}
-
-/**
  * Настройки блока в сайдбаре: режим воспроизведения и постер.
  *
  * @param {Object}   props
@@ -160,14 +124,16 @@ function InspectorTools({ attributes, setAttributes }) {
  * Прямая ссылка на файл рендерится в <video>, внешний источник — во фрейме
  * через fancybox (data-type="iframe").
  *
- * @param {Object} props
- * @param {string} props.url      - URL выбранного видео.
- * @param {string} props.mimeType - MIME-тип видео из атрибутов блока.
- * @param {string} props.poster   - URL постера.
- * @param {string} props.playMode - Режим воспроизведения.
+ * @param {Object}   props
+ * @param {string}   props.url        - URL выбранного видео.
+ * @param {string}   props.mimeType   - MIME-тип видео из атрибутов блока.
+ * @param {string}   props.poster     - URL постера.
+ * @param {string}   props.playMode   - Режим воспроизведения.
+ * @param {string}   props.caption    - Подпись к видео.
+ * @param {Function} props.setCaption - setter атрибута caption.
  * @return {import("react").JSX.Element}
  */
-function VideoFigure({ url, mimeType, poster, playMode }) {
+function VideoFigure({ url, caption, mimeType, poster, playMode, setCaption }) {
   const isDirect = isDirectVideo(url);
   // Атрибут хранит тип, определённый при выборе; парсим только как fallback.
   const sourceType = mimeType || getVideoMimeType(url);
@@ -193,6 +159,13 @@ function VideoFigure({ url, mimeType, poster, playMode }) {
           <source data-src={url} type={sourceType} />
         </video>
       )}
+      <RichText
+        tagName="figcaption"
+        className="video-caption"
+        value={caption}
+        placeholder="Описание (опционально)"
+        onChange={setCaption}
+      />
     </figure>
   );
 }
@@ -201,37 +174,68 @@ registerBlockType(metadata.name, {
   ...metadata,
 
   edit: function ({ attributes, setAttributes }) {
-    const { id, url, mimeType, poster, playMode } = attributes;
+    const { url, mimeType, poster, posterId, playMode, caption } = attributes;
     const blockProps = useBlockProps();
     const hasVideo = Boolean(url);
 
     return (
       <>
-        <EditorTools id={id} setAttributes={setAttributes} />
         <InspectorTools attributes={attributes} setAttributes={setAttributes} />
         <div {...blockProps}>
           {!hasVideo && (
-            <MediaPlaceholder
+            <BlockSetupPanel
+              title={metadata.title}
               icon="video-alt3"
-              labels={{ title: "Видео" }}
-              accept="video/*"
-              allowedTypes={["video"]}
-              onSelect={(media) => setAttributes(createVideoAttributes(media))}
-              onSelectURL={(nextUrl) =>
-                setAttributes({
-                  id: 0,
-                  url: nextUrl,
-                  mimeType: getVideoMimeType(nextUrl),
-                })
-              }
-            />
+              hint="Выберите видео и обложку, затем настройте отображение."
+            >
+              <MediaUploadCheck>
+                <MediaUpload
+                  value={posterId}
+                  allowedTypes={["image"]}
+                  render={({ open }) => (
+                    <>
+                      <Button variant="secondary" onClick={open}>
+                        {poster ? "Заменить обложку" : "Выбрать обложку"}
+                      </Button>
+                      {poster && (
+                        <img className="b-setup__cover" src={poster} alt="" />
+                      )}
+                    </>
+                  )}
+                  onSelect={(media) =>
+                    setAttributes({
+                      posterId: media?.id ?? 0,
+                      poster: media?.url ?? "",
+                    })
+                  }
+                />
+              </MediaUploadCheck>
+              <MediaPlaceholder
+                icon="video-alt3"
+                labels={{ title: "Видео" }}
+                accept="video/*"
+                allowedTypes={["video"]}
+                onSelect={(media) =>
+                  setAttributes(createVideoAttributes(media))
+                }
+                onSelectURL={(nextUrl) =>
+                  setAttributes({
+                    id: 0,
+                    url: nextUrl,
+                    mimeType: getVideoMimeType(nextUrl),
+                  })
+                }
+              />
+            </BlockSetupPanel>
           )}
           {hasVideo && (
             <VideoFigure
               url={url}
+              caption={caption}
               mimeType={mimeType}
               poster={poster}
               playMode={playMode}
+              setCaption={(value) => setAttributes({ caption: value })}
             />
           )}
         </div>
