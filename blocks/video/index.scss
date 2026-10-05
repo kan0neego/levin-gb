@@ -124,6 +124,6 @@
 .video-poster {
   transition: opacity 150ms ease-in-out;
 
-  position: static;
+  position: relative;
   z-index: 10;
 }
