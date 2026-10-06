@@ -244,7 +244,6 @@ function InspectorTools({ attributes, setAttributes }) {
 
   if (!hasVideo) return null;
   const hasPreview = preview !== '';
-  console.log(hasPreview);
 
   return (
     <InspectorControls>

@@ -59,14 +59,18 @@ if ( $has_preview ) {
 	$classes .= ' video-autoplay';
 }
 
+// Прямая ссылка на видеофайл открывается во встроенном плеере, всё остальное (YouTube, Vimeo и т.п.) — во фрейме.
+$is_direct = (bool) preg_match( '/\.(mp4|webm|ogv|ogg|mov)(\?.*)?$/i', $url );
+
 $wrapper_attributes = get_block_wrapper_attributes(
 	array_merge(
 		array(
 			'class'         => $classes,
 			'data-src'      => $url,
 			'data-fancybox' => '',
+			'data-play-mode' => $play_mode
 		),
-		$has_preview ? array( 'data-play-mode' => $play_mode ) : array( 'data-type' => 'iframe' )
+		$is_direct ? array() : array( 'data-type' => 'iframer' ),
 	)
 );
 ?>
