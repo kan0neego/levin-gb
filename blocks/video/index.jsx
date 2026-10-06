@@ -191,7 +191,7 @@ function VideoSourceControl({
             aria-expanded={isOpen}
           />
         )}
-        renderContent={() => (
+        renderContent={({ onClose }) => (
           <div className="video-source__popover-inner">
             <TextControl
               label="Ссылка на видео"
@@ -199,7 +199,11 @@ function VideoSourceControl({
               placeholder="https://"
               onChange={setVideoUrl}
             />
-            <Button variant="primary" onClick={applyVideoUrl}>
+            <Button variant="primary" onClick={() => {
+              applyVideoUrl();
+              onClose();
+            }}
+            >
               Применить
             </Button>
           </div>

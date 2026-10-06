@@ -1,14 +1,13 @@
-.has-iframe .fancybox__content,
-.has-html5video .fancybox__content {
-	width: 100%;
+.has-iframe .f-html {
 	height: auto;
 
 	max-width: 1280px;
 	padding: 0;
+  aspect-ratio: 16 / 9;
 }
 
-.has-iframe .fancybox__content:where(.shot *),
-.has-html5video .fancybox__content:where(.shot *) {
+.has-iframe .f-html:where(.shot *),
+.has-html5video .f-html:where(.shot *) {
 	width: auto !important;
 	height: 45vw !important;
 	aspect-ratio: 9/16 !important;
@@ -24,11 +23,6 @@
 }
 
 .fancybox {
-	&__content {
-		border-radius: 16px;
-		overflow: hidden !important;
-	}
-
 	&__backdrop {
 		display: none;
 
