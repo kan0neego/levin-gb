@@ -119,6 +119,8 @@
   left: 50%;
   bottom: 40px;
   transform: translateX(-50%);
+
+  pointer-events: none;
 }
 
 .video-poster {
@@ -126,4 +128,8 @@
 
   position: relative;
   z-index: 10;
+}
+
+.video-play {
+  pointer-events: none;
 }
