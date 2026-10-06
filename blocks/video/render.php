@@ -70,7 +70,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 			'data-fancybox' => '',
 			'data-play-mode' => $play_mode
 		),
-		$is_direct ? array() : array( 'data-type' => 'iframer' ),
+		$is_direct ? array() : array( 'data-type' => 'iframe' ),
 	)
 );
 ?>
