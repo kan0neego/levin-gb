@@ -120,7 +120,9 @@
   bottom: 40px;
   transform: translateX(-50%);
 
-  pointer-events: none;
+  &:where(:not(.editor-styles-wrapper *)) {
+    pointer-events: none;
+  }
 
   @media screen and (max-width: 640px) {
     font-size: 22px;

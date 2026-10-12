@@ -63,8 +63,8 @@ function getVideoMimeType(url) {
 }
 
 const PLAY_MODES = [
-  { label: "Авто-плей", value: "autoplay" },
-  { label: "При наведении", value: "hover" },
+  { label: "Автоплей", value: "autoplay" },
+  { label: "Наведениe", value: "hover" },
 ];
 
 /**
@@ -116,22 +116,32 @@ function VideoSourceControl({
   const [externalUrl, setExternalUrl] = useState(preview);
   const [videoUrl, setVideoUrl] = useState(url);
 
-  const selectPreview = (media) => {
-    const nextUrl = media?.url ?? "";
+  const getMedia = (media) => {
+    const { id, url, mime } = media;
+    return { id, url, mime: mime || getVideoMimeType(url) };
+  }
 
-    setAttributes({
-      previewId: media?.id ?? 0,
-      preview: nextUrl,
-      mimeType: media?.mime || getVideoMimeType(nextUrl),
-    });
-    setExternalUrl(nextUrl);
+  const selectPreview = (media) => {
+    const { id, url, mime } = getMedia(media);
+
+    setAttributes({ previewId: id, preview: url, mimeType: mime });
+    setExternalUrl(url);
   };
 
+  const selectVideo = (media) => {
+    const { id, url } = getMedia(media);
+    setAttributes({ id, url });
+    setVideoUrl(url);
+  }
+
+  const applyPreviewUrl = () => {
+    if (externalUrl === preview) return;
+    const mime = getVideoMimeType(externalUrl);
+    setAttributes({ id: 0, preview: externalUrl, mime });
+  }
+
   const applyVideoUrl = () => {
-    setAttributes({
-      id: 0,
-      url: videoUrl,
-    });
+    setAttributes({ id: 0, url: videoUrl });
   };
 
   return (
@@ -174,6 +184,13 @@ function VideoSourceControl({
               placeholder="https://"
               onChange={setExternalUrl}
             />
+            <Button variant="primary" onClick={() => {
+              applyPreviewUrl();
+              onClose();
+            }}
+            >
+              Применить
+            </Button>
           </div>
         )}
       />
@@ -186,13 +203,28 @@ function VideoSourceControl({
             className="video-source__button"
             variant="secondary"
             icon={link}
-            label="Внешний источник"
+            label="Внешний источник или медиа"
             onClick={onToggle}
             aria-expanded={isOpen}
           />
         )}
         renderContent={({ onClose }) => (
           <div className="video-source__popover-inner">
+            <MediaUploadCheck>
+              <MediaUpload
+                value={url}
+                allowedTypes={["video"]}
+                render={({ open }) => (
+                  <Button variant="secondary" onClick={() => {
+                    onClose();
+                    setTimeout(() => open(), 150)
+                  }}>
+                    Выбрать из медиагалереи
+                  </Button>
+                )}
+                onSelect={selectVideo}
+              />
+            </MediaUploadCheck>
             <TextControl
               label="Ссылка на видео"
               value={videoUrl}
