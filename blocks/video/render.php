@@ -13,6 +13,8 @@ $mime_type  = isset( $attributes['mimeType'] ) ? $attributes['mimeType'] : '';
 $poster_id  = isset( $attributes['posterId'] ) ? absint( $attributes['posterId'] ) : 0;
 $play_mode  = isset( $attributes['playMode'] ) ? $attributes['playMode'] : 'autoplay';
 $caption    = isset( $attributes['caption'] ) ? $attributes['caption'] : '';
+$width      = isset( $attributes['width'] ) ? absint( $attributes['width'] ) : 0;
+$height     = isset( $attributes['height'] ) ? absint( $attributes['height'] ) : 0;
 $has_preview = '' !== $preview;
 
 // Предпочитаем вложение: даёт актуальный URL даже если сохранённый устарел.
@@ -24,6 +26,44 @@ if ( $id > 0 ) {
 }
 
 if ( '' === $url ) {
+	return;
+}
+
+// Прямая ссылка на видеофайл открывается во встроенном плеере, всё остальное (YouTube, Vimeo и т.п.) — во фрейме.
+$is_direct     = (bool) preg_match( '/\.(mp4|webm|ogv|ogg|mov)(\?.*)?$/i', $url );
+$is_background = ! empty( $attributes['isBackground'] ) && $is_direct;
+
+// Фоновое видео: автовоспроизведение без обложки и lightbox проигрывателя.
+if ( $is_background ) {
+	if ( ( ! $width || ! $height ) && $id > 0 ) {
+		$metadata = wp_get_attachment_metadata( $id );
+		$width    = isset( $metadata['width'] ) ? absint( $metadata['width'] ) : 0;
+		$height   = isset( $metadata['height'] ) ? absint( $metadata['height'] ) : 0;
+	}
+
+	$has_dimensions     = $width > 0 && $height > 0;
+	$wrapper_attributes = get_block_wrapper_attributes(
+		array( 'class' => 'vid-block wp-block-video video-background' )
+	);
+	?>
+
+<figure <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+	<video
+		class="video-content"
+		src="<?php echo esc_url( $url ); ?>"
+		<?php if ( $has_dimensions ) : ?>
+			width="<?php echo esc_attr( $width ); ?>"
+			height="<?php echo esc_attr( $height ); ?>"
+			style="aspect-ratio: <?php echo esc_attr( $width . ' / ' . $height ); ?>"
+		<?php endif; ?>
+		autoplay muted loop playsinline
+	></video>
+	<?php if ( '' !== $caption ) : ?>
+		<figcaption class="video-caption"><?php echo wp_kses_post( $caption ); ?></figcaption>
+	<?php endif; ?>
+</figure>
+
+	<?php
 	return;
 }
 
@@ -59,9 +99,6 @@ if ( $has_preview ) {
 	$classes .= ' video-autoplay';
 }
 
-// Прямая ссылка на видеофайл открывается во встроенном плеере, всё остальное (YouTube, Vimeo и т.п.) — во фрейме.
-$is_direct = (bool) preg_match( '/\.(mp4|webm|ogv|ogg|mov)(\?.*)?$/i', $url );
-
 $wrapper_attributes = get_block_wrapper_attributes(
 	array_merge(
 		array(
@@ -89,4 +126,3 @@ $wrapper_attributes = get_block_wrapper_attributes(
 		<img decoding="async" class="video-play__image" src="https://doctorlevin.ru/wp-content/themes/sd-03-2_new/static/img/video-play-button.svg" alt="">
 	</div>
 </figure>
-

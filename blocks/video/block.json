@@ -51,6 +51,18 @@
     "caption": {
       "type": "string",
       "default": ""
+    },
+    "isBackground": {
+      "type": "boolean",
+      "default": false
+    },
+    "width": {
+      "type": "number",
+      "default": 0
+    },
+    "height": {
+      "type": "number",
+      "default": 0
     }
   },
   "textdomain": "theme",

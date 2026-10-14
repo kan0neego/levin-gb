@@ -63,6 +63,18 @@
   left: 0px;
 }
 
+.video-background {
+  cursor: default;
+
+  & > .video-content {
+    height: auto;
+    max-height: inherit;
+    aspect-ratio: auto 16 / 9;
+
+    position: static;
+  }
+}
+
 .video-source {
   display: flex;
   align-items: center;
