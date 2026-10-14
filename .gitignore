@@ -7,3 +7,4 @@ package-lock.json
 dist
 blocks/.DS_Store
 .DS_Store
+.reslop
