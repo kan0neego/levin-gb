@@ -37,14 +37,17 @@ const EMPTY_COVER = {
   poster: "",
 };
 
-const EMPTY_VIDEO = {
+const EMPTY_FRAME = {
   id: 0,
   url: "",
+};
+
+const EMPTY_PREVIEW = {
+  previewId: 0,
+  preview: "",
   mimeType: "",
   width: 0,
   height: 0,
-  previewId: 0,
-  preview: "",
 };
 
 /**
@@ -98,27 +101,6 @@ function getVideoDimensions(media) {
 }
 
 /**
- * Извлекает из объекта вложения (выбор из медиабиблиотеки или REST-ответ)
- * значения атрибутов `id`, `url`, `mimeType`, `width` и `height` блока
- * `theme/video`.
- *
- * Предпочитает `mime` вложения, чтобы не определять тип повторно при рендере.
- *
- * @param {Object} media Объект вложения.
- * @return {{id: number, url: string, mimeType: string, width: number, height: number}} Значения атрибутов.
- */
-function createVideoAttributes(media) {
-  const url = media?.url ?? "";
-
-  return {
-    id: media?.id ?? 0,
-    url,
-    mimeType: media?.mime || getVideoMimeType(url),
-    ...getVideoDimensions(media),
-  };
-}
-
-/**
  * Есть ли непустой текст подписи (без учёта пустой HTML-разметки).
  *
  * @param {string} caption HTML подписи.
@@ -136,12 +118,30 @@ function hasCaptionText(caption) {
  * @return {boolean}
  */
 function isVideoSetupComplete(attributes) {
-  return Boolean(attributes.poster) && Boolean(attributes.url);
+  return (
+    Boolean(attributes.poster) &&
+    Boolean(attributes.url || attributes.preview)
+  );
+}
+
+/**
+ * Фоновое видео: только превью без фрейма, либо устаревший флаг
+ * `isBackground` с источником в `url`.
+ *
+ * @param {Object} attributes Атрибуты блока.
+ * @return {boolean}
+ */
+function isBackgroundVideo(attributes) {
+  if (attributes.url) {
+    return Boolean(attributes.isBackground) && !attributes.preview;
+  }
+
+  return Boolean(attributes.preview);
 }
 
 /**
  * Контролы обложки, фонового видео и полного фрейма.
- * Обложка независима. Фон и фрейм делят один источник видео.
+ * Обложка независима. Превью пишет `previewId`/`preview`, фрейм — `id`/`url`.
  *
  * @param {Object}   props
  * @param {Object}   props.attributes    - Атрибуты блока.
@@ -158,9 +158,9 @@ function getVideoModeControls({
   isUploading,
   setIsUploading,
 }) {
-  const { posterId, poster, id, url, isBackground } = attributes;
-  const backgroundValue = isBackground ? { id, url } : { id: 0, url: "" };
-  const frameValue = !isBackground ? { id, url } : { id: 0, url: "" };
+  const { posterId, poster, id, url, previewId, preview } = attributes;
+  const backgroundValue = { id: previewId, url: preview };
+  const frameValue = { id, url };
 
   const selectCover = (media) => {
     if (!media?.url) {
@@ -185,15 +185,17 @@ function getVideoModeControls({
     }
 
     if (!media?.url) {
-      setAttributes({ ...EMPTY_VIDEO, isBackground: false });
+      setAttributes({ ...EMPTY_PREVIEW });
       return;
     }
 
+    const previewUrl = media.url;
+
     setAttributes({
-      ...createVideoAttributes(media),
-      previewId: 0,
-      preview: "",
-      isBackground: true,
+      previewId: media.id ?? 0,
+      preview: previewUrl,
+      mimeType: media.mime || getVideoMimeType(previewUrl),
+      ...getVideoDimensions(media),
     });
   };
 
@@ -208,23 +210,21 @@ function getVideoModeControls({
     }
 
     if (!media?.url) {
-      setAttributes({ ...EMPTY_VIDEO, isBackground: false });
+      setAttributes({ ...EMPTY_FRAME, isBackground: false });
       return;
     }
 
     setAttributes({
-      ...createVideoAttributes(media),
-      previewId: 0,
-      preview: "",
+      id: media.id ?? 0,
+      url: media.url,
       isBackground: false,
     });
   };
 
   const selectFrameUrl = (nextUrl) => {
     setAttributes({
-      ...EMPTY_VIDEO,
+      ...EMPTY_FRAME,
       url: nextUrl,
-      mimeType: getVideoMimeType(nextUrl),
       isBackground: false,
     });
   };
@@ -439,7 +439,7 @@ function VideoFigure({
       "vid-block",
       "wp-block-video",
       "video-lightbox",
-      isDirect ? "video-autoplay" : "",
+      previewUrl ? "video-autoplay" : "",
       hasCaptionText(caption) ? "has-caption" : "",
     ]
       .filter(Boolean)
@@ -452,7 +452,7 @@ function VideoFigure({
   return (
     <figure {...figureProps}>
       {poster && <img className="video-poster" src={poster} alt="" />}
-      {isDirect && previewUrl && (
+      {previewUrl && (
         <video className="video-content" muted loop playsInline>
           <source data-src={previewUrl} type={sourceType} />
         </video>
@@ -479,13 +479,13 @@ registerBlockType(metadata.name, {
       poster,
       playMode,
       caption,
-      isBackground,
       width,
       height,
     } = attributes;
     const blockProps = useBlockProps();
     const [isUploading, setIsUploading] = useState(false);
     const isSetupComplete = isVideoSetupComplete(attributes);
+    const isBackgroundMode = isBackgroundVideo(attributes);
 
     const onUploadError = (error) => {
       setIsUploading(false);
@@ -534,9 +534,9 @@ registerBlockType(metadata.name, {
               </BlockSetupSection>
             </BlockSetupPanel>
           )}
-          {isSetupComplete && isBackground && (
+          {isSetupComplete && isBackgroundMode && (
             <BackgroundVideoFigure
-              url={url}
+              url={preview || url}
               width={width}
               height={height}
               caption={caption}
@@ -544,7 +544,7 @@ registerBlockType(metadata.name, {
               setDimensions={setAttributes}
             />
           )}
-          {isSetupComplete && !isBackground && (
+          {isSetupComplete && !isBackgroundMode && (
             <VideoFigure
               url={url}
               preview={preview}

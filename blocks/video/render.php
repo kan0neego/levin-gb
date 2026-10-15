@@ -15,7 +15,6 @@ $play_mode  = isset( $attributes['playMode'] ) ? $attributes['playMode'] : 'auto
 $caption    = isset( $attributes['caption'] ) ? $attributes['caption'] : '';
 $width      = isset( $attributes['width'] ) ? absint( $attributes['width'] ) : 0;
 $height     = isset( $attributes['height'] ) ? absint( $attributes['height'] ) : 0;
-$has_preview = '' !== $preview;
 
 // Предпочитаем вложение: даёт актуальный URL даже если сохранённый устарел.
 if ( $id > 0 ) {
@@ -25,18 +24,36 @@ if ( $id > 0 ) {
 	}
 }
 
-if ( '' === $url ) {
+if ( $preview_id > 0 ) {
+	$preview_attachment_url = wp_get_attachment_url( $preview_id );
+	if ( $preview_attachment_url ) {
+		$preview = $preview_attachment_url;
+	}
+}
+
+$has_preview = '' !== $preview;
+
+if ( '' === $url && ! $has_preview ) {
 	return;
 }
 
 // Прямая ссылка на видеофайл открывается во встроенном плеере, всё остальное (YouTube, Vimeo и т.п.) — во фрейме.
-$is_direct     = (bool) preg_match( '/\.(mp4|webm|ogv|ogg|mov)(\?.*)?$/i', $url );
-$is_background = ! empty( $attributes['isBackground'] ) && $is_direct;
+$is_direct = (bool) preg_match( '/\.(mp4|webm|ogv|ogg|mov)(\?.*)?$/i', $url );
+
+// Фон: превью без фрейма, либо устаревший флаг isBackground с источником в url.
+if ( '' === $url ) {
+	$is_background = $has_preview;
+} else {
+	$is_background = ! empty( $attributes['isBackground'] ) && $is_direct && ! $has_preview;
+}
 
 // Фоновое видео: автовоспроизведение без обложки и lightbox проигрывателя.
 if ( $is_background ) {
-	if ( ( ! $width || ! $height ) && $id > 0 ) {
-		$metadata = wp_get_attachment_metadata( $id );
+	$background_src = $has_preview ? $preview : $url;
+	$background_id  = $has_preview ? $preview_id : $id;
+
+	if ( ( ! $width || ! $height ) && $background_id > 0 ) {
+		$metadata = wp_get_attachment_metadata( $background_id );
 		$width    = isset( $metadata['width'] ) ? absint( $metadata['width'] ) : 0;
 		$height   = isset( $metadata['height'] ) ? absint( $metadata['height'] ) : 0;
 	}
@@ -54,7 +71,7 @@ if ( $is_background ) {
 <figure <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<video
 		class="video-content"
-		src="<?php echo esc_url( $url ); ?>"
+		src="<?php echo esc_url( $background_src ); ?>"
 		<?php if ( $has_dimensions ) : ?>
 			width="<?php echo esc_attr( $width ); ?>"
 			height="<?php echo esc_attr( $height ); ?>"
@@ -74,14 +91,6 @@ if ( $is_background ) {
 	return;
 }
 
-// Инлайновое превью-видео: вложение имеет приоритет над ссылкой.
-if ( $preview_id > 0 ) {
-	$preview_attachment_url = wp_get_attachment_url( $preview_id );
-	if ( $preview_attachment_url ) {
-		$preview = $preview_attachment_url;
-	}
-}
-
 $poster = wp_get_attachment_image( $poster_id, 'full', false, array( 'class' => 'video-poster', 'srcset' => " " ) );
 
 if ( '' === $mime_type ) {
@@ -93,7 +102,7 @@ if ( '' === $mime_type ) {
 		'mov'  => 'video/quicktime',
 	);
 	$mime_type  = 'video/mp4';
-	if ( preg_match( '/\.([^.\/?#]+)(?:\?.*)?$/', $source_url, $matches ) ) {
+	if ( preg_match( '/\.([^.\/?#]+)(?:\?.*)?$/', $preview, $matches ) ) {
 		$extension = strtolower( $matches[1] );
 		if ( isset( $mime_types[ $extension ] ) ) {
 			$mime_type = $mime_types[ $extension ];
@@ -124,7 +133,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 
 <figure <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<?php echo $poster ?>
-	<?php if ( '' !== $has_preview ) : ?>
+	<?php if ( $has_preview ) : ?>
 		<video class="video-content" muted loop playsinline>
 			<source data-src="<?php echo esc_url( $preview ); ?>" type="<?php echo esc_attr( $mime_type ); ?>" />
 		</video>
