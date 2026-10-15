@@ -1,26 +1,18 @@
 import {
   InspectorControls,
   MediaPlaceholder,
-  MediaUpload,
-  MediaUploadCheck,
   RichText,
   useBlockProps,
 } from "@wordpress/block-editor";
 import { registerBlockType } from "@wordpress/blocks";
 import { dispatch } from "@wordpress/data";
+import { PanelBody, Spinner } from "@wordpress/components";
+import { useEffect, useRef, useState } from "@wordpress/element";
+import bindVideoProgress from "@lib/video-progress";
 import {
-  Button,
-  Dropdown,
-  PanelBody,
-  Spinner,
-  TextControl,
-  ToggleControl,
-  __experimentalToggleGroupControl as ToggleGroupControl,
-  __experimentalToggleGroupControlOption as ToggleGroupControlOption,
-} from "@wordpress/components";
-import { image, link } from "@wordpress/icons";
-import { useState } from "@wordpress/element";
-import { BlockSetupPanel } from "@/components/block-setup-panel";
+  BlockSetupPanel,
+  BlockSetupSection,
+} from "@/components/block-setup-panel";
 import { MediaPreviewControl } from "@/components/media-preview-control";
 import metadata from "./block.json";
 import "./index.scss";
@@ -39,6 +31,21 @@ const VIDEO_MIME_TYPES = {
 
 /** MIME-тип по умолчанию для видео с неизвестным расширением. */
 const DEFAULT_VIDEO_MIME_TYPE = "video/mp4";
+
+const EMPTY_COVER = {
+  posterId: 0,
+  poster: "",
+};
+
+const EMPTY_VIDEO = {
+  id: 0,
+  url: "",
+  mimeType: "",
+  width: 0,
+  height: 0,
+  previewId: 0,
+  preview: "",
+};
 
 /**
  * Определяет, является ли источник прямой ссылкой на видеофайл.
@@ -64,11 +71,6 @@ function getVideoMimeType(url) {
 
   return VIDEO_MIME_TYPES[extension] ?? DEFAULT_VIDEO_MIME_TYPE;
 }
-
-const PLAY_MODES = [
-  { label: "Автоплей", value: "autoplay" },
-  { label: "Наведениe", value: "hover" },
-];
 
 /**
  * Проверяет, что вложение уже загружено в медиабиблиотеку. Во время загрузки
@@ -117,209 +119,193 @@ function createVideoAttributes(media) {
 }
 
 /**
- * Панель выбора видео в сайдбаре.
+ * Есть ли непустой текст подписи (без учёта пустой HTML-разметки).
  *
- * Кнопка «Редактировать превью» открывает попап изменения атрибута `preview`
- * (ссылка инлайнового тега video): выбор из медиагалереи либо ввод внешней
- * ссылки. Кнопка внешнего источника задаёт ссылку основного видео `url`.
- * Кнопка «Заменить постер» третьей открывает медиагалерею для атрибутов
- * `posterId`/`poster`.
- *
- * Выбор из галереи сохраняет `previewId` и `preview`; внешняя ссылка сбрасывает
- * `previewId` и определяет MIME-тип по расширению.
- *
- * Фоновое видео не использует превью и постер, поэтому их кнопки скрыты.
- *
- * @param {Object}   props
- * @param {number}   props.previewId     - ID текущего вложения превью.
- * @param {string}   props.preview       - URL текущего превью.
- * @param {string}   props.url           - URL основного видео.
- * @param {number}   props.posterId      - ID текущего вложения постера.
- * @param {boolean}  props.isBackground  - Включён режим фонового видео.
- * @param {Function} props.setAttributes - setter атрибутов блока.
- * @return {import("react").JSX.Element}
+ * @param {string} caption HTML подписи.
+ * @return {boolean}
  */
-function VideoSourceControl({
-  previewId,
-  preview,
-  url,
-  posterId,
-  isBackground,
-  setAttributes,
-}) {
-  const [externalUrl, setExternalUrl] = useState(preview);
-  const [videoUrl, setVideoUrl] = useState(url);
-
-  const getMedia = (media) => {
-    const { id, url, mime } = media;
-    return { id, url, mime: mime || getVideoMimeType(url) };
-  };
-
-  const selectPreview = (media) => {
-    const { id, url, mime } = getMedia(media);
-
-    setAttributes({ previewId: id, preview: url, mimeType: mime });
-    setExternalUrl(url);
-  };
-
-  const selectVideo = (media) => {
-    const { id, url } = getMedia(media);
-    setAttributes({ id, url, ...getVideoDimensions(media) });
-    setVideoUrl(url);
-  };
-
-  const applyPreviewUrl = () => {
-    if (externalUrl === preview) return;
-    const mime = getVideoMimeType(externalUrl);
-    setAttributes({ id: 0, preview: externalUrl, mime });
-  };
-
-  const applyVideoUrl = () => {
-    if (videoUrl === url) return;
-    setAttributes({ id: 0, url: videoUrl, width: 0, height: 0 });
-  };
-
-  return (
-    <div className="video-source">
-      {!isBackground && (
-        <Dropdown
-          className="video-source__dropdown"
-          contentClassName="video-source__popover"
-          popoverProps={{ placement: "bottom-start", resize: false }}
-          renderToggle={({ isOpen, onToggle }) => (
-            <Button
-              variant="secondary"
-              icon="video-alt3"
-              label="Редактировать превью"
-              onClick={onToggle}
-              aria-expanded={isOpen}
-            >
-              Ред. превью
-            </Button>
-          )}
-          renderContent={({ onClose }) => (
-            <div className="video-source__popover-inner">
-              <MediaUploadCheck>
-                <MediaUpload
-                  value={previewId}
-                  allowedTypes={["video"]}
-                  render={({ open }) => (
-                    <Button
-                      variant="secondary"
-                      onClick={() => {
-                        onClose();
-                        setTimeout(() => open(), 150);
-                      }}
-                    >
-                      Выбрать из медиагалереи
-                    </Button>
-                  )}
-                  onSelect={selectPreview}
-                />
-              </MediaUploadCheck>
-              <TextControl
-                label="Ссылка на превью"
-                value={externalUrl}
-                placeholder="https://"
-                onChange={setExternalUrl}
-              />
-              <Button
-                variant="primary"
-                onClick={() => {
-                  applyPreviewUrl();
-                  onClose();
-                }}
-              >
-                Применить
-              </Button>
-            </div>
-          )}
-        />
-      )}
-      <Dropdown
-        className="video-source__dropdown"
-        contentClassName="video-source__popover"
-        popoverProps={{ placement: "bottom-start", resize: false }}
-        renderToggle={({ isOpen, onToggle }) => (
-          <Button
-            className="video-source__button"
-            variant="secondary"
-            icon={link}
-            label="Внешний источник или медиа"
-            onClick={onToggle}
-            aria-expanded={isOpen}
-          />
-        )}
-        renderContent={({ onClose }) => (
-          <div className="video-source__popover-inner">
-            <MediaUploadCheck>
-              <MediaUpload
-                value={url}
-                allowedTypes={["video"]}
-                render={({ open }) => (
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      onClose();
-                      setTimeout(() => open(), 150);
-                    }}
-                  >
-                    Выбрать из медиагалереи
-                  </Button>
-                )}
-                onSelect={selectVideo}
-              />
-            </MediaUploadCheck>
-            <TextControl
-              label="Ссылка на видео"
-              value={videoUrl}
-              placeholder="https://"
-              onChange={setVideoUrl}
-            />
-            <Button
-              variant="primary"
-              onClick={() => {
-                applyVideoUrl();
-                onClose();
-              }}
-            >
-              Применить
-            </Button>
-          </div>
-        )}
-      />
-      {!isBackground && (
-        <MediaUploadCheck>
-          <MediaUpload
-            value={posterId}
-            allowedTypes={["image"]}
-            render={({ open }) => (
-              <Button
-                className="video-source__button"
-                variant="secondary"
-                icon={image}
-                label="Заменить постер"
-                onClick={open}
-              />
-            )}
-            onSelect={(media) =>
-              setAttributes({
-                posterId: media?.id ?? 0,
-                poster: media?.url ?? "",
-              })
-            }
-          />
-        </MediaUploadCheck>
-      )}
-    </div>
-  );
+function hasCaptionText(caption) {
+  return Boolean((caption ?? "").replace(/<[^>]+>/g, "").trim());
 }
 
 /**
- * Настройки блока в сайдбаре: видео, режим отображения, режим
- * воспроизведения и постер.
+ * Начальная панель скрывается, когда задана обязательная обложка
+ * и хотя бы один источник видео (фон или полный фрейм).
  *
- * Фоновый режим доступен только для прямой ссылки на видеофайл.
+ * @param {Object} attributes Атрибуты блока.
+ * @return {boolean}
+ */
+function isVideoSetupComplete(attributes) {
+  return Boolean(attributes.poster) && Boolean(attributes.url);
+}
+
+/**
+ * Контролы обложки, фонового видео и полного фрейма.
+ * Обложка независима. Фон и фрейм делят один источник видео.
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes    - Атрибуты блока.
+ * @param {Function} props.setAttributes - setter атрибутов блока.
+ * @param {Function} [props.onUploadError] - Обработчик ошибки загрузки.
+ * @param {boolean}  [props.isUploading] - Идёт загрузка вложения.
+ * @param {Function} [props.setIsUploading] - setter состояния загрузки.
+ * @return {{cover: import("react").JSX.Element, background: import("react").JSX.Element, frame: import("react").JSX.Element}}
+ */
+function getVideoModeControls({
+  attributes,
+  setAttributes,
+  onUploadError,
+  isUploading,
+  setIsUploading,
+}) {
+  const { posterId, poster, id, url, isBackground } = attributes;
+  const backgroundValue = isBackground ? { id, url } : { id: 0, url: "" };
+  const frameValue = !isBackground ? { id, url } : { id: 0, url: "" };
+
+  const selectCover = (media) => {
+    if (!media?.url) {
+      setAttributes({ ...EMPTY_COVER });
+      return;
+    }
+
+    setAttributes({
+      posterId: media.id ?? 0,
+      poster: media.url,
+    });
+  };
+
+  const selectBackground = (media) => {
+    if (setIsUploading && media && !isUploadedMedia(media)) {
+      setIsUploading(true);
+      return;
+    }
+
+    if (setIsUploading) {
+      setIsUploading(false);
+    }
+
+    if (!media?.url) {
+      setAttributes({ ...EMPTY_VIDEO, isBackground: false });
+      return;
+    }
+
+    setAttributes({
+      ...createVideoAttributes(media),
+      previewId: 0,
+      preview: "",
+      isBackground: true,
+    });
+  };
+
+  const selectFrame = (media) => {
+    if (setIsUploading && media && !isUploadedMedia(media)) {
+      setIsUploading(true);
+      return;
+    }
+
+    if (setIsUploading) {
+      setIsUploading(false);
+    }
+
+    if (!media?.url) {
+      setAttributes({ ...EMPTY_VIDEO, isBackground: false });
+      return;
+    }
+
+    setAttributes({
+      ...createVideoAttributes(media),
+      previewId: 0,
+      preview: "",
+      isBackground: false,
+    });
+  };
+
+  const selectFrameUrl = (nextUrl) => {
+    setAttributes({
+      ...EMPTY_VIDEO,
+      url: nextUrl,
+      mimeType: getVideoMimeType(nextUrl),
+      isBackground: false,
+    });
+  };
+
+  return {
+    cover: (
+      <MediaPreviewControl
+        label="Изображение (постер)"
+        accept="image/*"
+        allowedTypes={["image"]}
+        value={{ id: posterId, url: poster }}
+        onChange={selectCover}
+        onDelete={() => selectCover()}
+      />
+    ),
+    background: (
+      <MediaPreviewControl
+        label="Видеопревью"
+        icon="video-alt3"
+        accept="video/*"
+        allowedTypes={["video"]}
+        value={backgroundValue}
+        onChange={selectBackground}
+        onDelete={() => selectBackground()}
+        renderPlaceholder={({
+          icon,
+          label,
+          accept,
+          allowedTypes,
+          onSelect,
+        }) => (
+          <MediaPlaceholder
+            icon={icon}
+            labels={{ title: label }}
+            accept={accept}
+            allowedTypes={allowedTypes}
+            onSelect={onSelect}
+            onError={onUploadError}
+          >
+            {isUploading && <Spinner />}
+          </MediaPlaceholder>
+        )}
+      />
+    ),
+    frame: (
+      <MediaPreviewControl
+        label="Внешний источник или медиа"
+        icon="video-alt3"
+        accept="video/*"
+        allowedTypes={["video"]}
+        value={frameValue}
+        onChange={selectFrame}
+        onDelete={() => selectFrame()}
+        onSelectURL={selectFrameUrl}
+        renderPlaceholder={({
+          icon,
+          label,
+          accept,
+          allowedTypes,
+          onSelect,
+          onSelectURL,
+        }) => (
+          <MediaPlaceholder
+            icon={icon}
+            labels={{ title: label }}
+            accept={accept}
+            allowedTypes={allowedTypes}
+            onSelect={onSelect}
+            onSelectURL={onSelectURL}
+            onError={onUploadError}
+          >
+            {isUploading && <Spinner />}
+          </MediaPlaceholder>
+        )}
+      />
+    ),
+  };
+}
+
+/**
+ * Настройки блока в сайдбаре: обложка, фоновое видео и полный фрейм.
  *
  * @param {Object}   props
  * @param {Object}   props.attributes    - Атрибуты блока.
@@ -327,54 +313,13 @@ function VideoSourceControl({
  * @return {import("react").JSX.Element}
  */
 function InspectorTools({ attributes, setAttributes }) {
-  const { previewId, preview, url, playMode, posterId, isBackground } =
-    attributes;
-  const hasVideo = Boolean(url);
-
-  if (!hasVideo) return null;
-  const hasPreview = preview !== "";
-  const isDirect = isDirectVideo(url);
-  const showBackground = isBackground && isDirect;
+  const controls = getVideoModeControls({ attributes, setAttributes });
 
   return (
     <InspectorControls>
-      <PanelBody title="Настройка видео">
-        <VideoSourceControl
-          previewId={previewId}
-          preview={preview}
-          url={url}
-          posterId={posterId}
-          isBackground={showBackground}
-          setAttributes={setAttributes}
-        />
-      </PanelBody>
-      <PanelBody title="Настройки отображения">
-        <ToggleControl
-          label="Фоновое видео"
-          help={isDirect && "Доступно только для прямой ссылки на видеофайл."}
-          checked={showBackground}
-          disabled={!isDirect}
-          onChange={(value) => setAttributes({ isBackground: value })}
-        />
-        {!showBackground && (
-          <ToggleGroupControl
-            isBlock
-            label="Режим воспроизведения"
-            value={playMode}
-            disabled={!hasPreview}
-            onChange={(value) => setAttributes({ playMode: value })}
-          >
-            {PLAY_MODES.map((mode) => (
-              <ToggleGroupControlOption
-                key={mode.value}
-                value={mode.value}
-                label={mode.label}
-                disabled={!hasPreview}
-              />
-            ))}
-          </ToggleGroupControl>
-        )}
-      </PanelBody>
+      <PanelBody title="Обложка">{controls.cover}</PanelBody>
+      <PanelBody title="Фоновое видео">{controls.background}</PanelBody>
+      <PanelBody title="Полное видео (Фрейм)">{controls.frame}</PanelBody>
     </InspectorControls>
   );
 }
@@ -404,6 +349,15 @@ function BackgroundVideoFigure({
   setDimensions,
 }) {
   const hasDimensions = width > 0 && height > 0;
+  const figureRef = useRef(null);
+
+  useEffect(() => {
+    if (!figureRef.current) {
+      return undefined;
+    }
+
+    return bindVideoProgress(figureRef.current);
+  }, [url]);
 
   const onLoadedMetadata = (event) => {
     const { videoWidth, videoHeight } = event.currentTarget;
@@ -412,7 +366,17 @@ function BackgroundVideoFigure({
   };
 
   return (
-    <figure className="vid-block wp-block-video video-background">
+    <figure
+      ref={figureRef}
+      className={[
+        "vid-block",
+        "wp-block-video",
+        "video-background",
+        hasCaptionText(caption) ? "has-caption" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <video
         className="video-content"
         src={url}
@@ -427,6 +391,9 @@ function BackgroundVideoFigure({
         playsInline
         onLoadedMetadata={onLoadedMetadata}
       />
+      <div className="video-progress" aria-hidden="true">
+        <div className="video-progress__bar" />
+      </div>
       <RichText
         tagName="figcaption"
         className="video-caption"
@@ -473,6 +440,7 @@ function VideoFigure({
       "wp-block-video",
       "video-lightbox",
       isDirect ? "video-autoplay" : "",
+      hasCaptionText(caption) ? "has-caption" : "",
     ]
       .filter(Boolean)
       .join(" "),
@@ -484,7 +452,7 @@ function VideoFigure({
   return (
     <figure {...figureProps}>
       {poster && <img className="video-poster" src={poster} alt="" />}
-      {isDirect && (
+      {isDirect && previewUrl && (
         <video className="video-content" muted loop playsInline>
           <source data-src={previewUrl} type={sourceType} />
         </video>
@@ -509,7 +477,6 @@ registerBlockType(metadata.name, {
       preview,
       mimeType,
       poster,
-      posterId,
       playMode,
       caption,
       isBackground,
@@ -518,20 +485,7 @@ registerBlockType(metadata.name, {
     } = attributes;
     const blockProps = useBlockProps();
     const [isUploading, setIsUploading] = useState(false);
-
-    const hasVideo = Boolean(url);
-    const isDirect = isDirectVideo(url);
-    const hasPoster = Boolean(poster);
-    const showBackground = isBackground && isDirect;
-    const showSetup = !hasVideo || (!showBackground && !hasPoster);
-
-    const setCaption = (value) => setAttributes({ caption: value });
-
-    const selectVideo = (media) => {
-      if (!isUploadedMedia(media)) return setIsUploading(true);
-      setIsUploading(false);
-      setAttributes(createVideoAttributes(media));
-    };
+    const isSetupComplete = isVideoSetupComplete(attributes);
 
     const onUploadError = (error) => {
       setIsUploading(false);
@@ -544,62 +498,43 @@ registerBlockType(metadata.name, {
       });
     };
 
+    const controls = getVideoModeControls({
+      attributes,
+      setAttributes,
+      onUploadError,
+      isUploading,
+      setIsUploading,
+    });
+
+    const setCaption = (value) => setAttributes({ caption: value });
+
     return (
       <>
-        <InspectorTools attributes={attributes} setAttributes={setAttributes} />
+        {isSetupComplete && (
+          <InspectorTools
+            attributes={attributes}
+            setAttributes={setAttributes}
+          />
+        )}
         <div {...blockProps}>
-          {showSetup && (
+          {!isSetupComplete && (
             <BlockSetupPanel
               title={metadata.title}
               icon="video-alt3"
-              hint="Выберите видео и обложку, затем настройте отображение."
+              hint="Обложка обязательна. Добавьте фоновое или полное видео."
             >
-              <MediaPreviewControl
-                label="Обложка"
-                accept="image/*"
-                allowedTypes={["image"]}
-                value={{ id: posterId, url: poster }}
-                onChange={(media) =>
-                  setAttributes({
-                    posterId: media?.id ?? 0,
-                    poster: media?.url ?? "",
-                  })
-                }
-              />
-              <MediaPlaceholder
-                icon="video-alt3"
-                labels={{ title: "Видео" }}
-                accept="video/*"
-                allowedTypes={["video"]}
-                value={hasVideo ? { id: attributes.id, src: url } : undefined}
-                onSelect={selectVideo}
-                onError={onUploadError}
-                onSelectURL={(nextUrl) =>
-                  setAttributes({
-                    id: 0,
-                    url: nextUrl,
-                    mimeType: getVideoMimeType(nextUrl),
-                    width: 0,
-                    height: 0,
-                  })
-                }
-              >
-                {isUploading && <Spinner />}
-              </MediaPlaceholder>
-              <ToggleControl
-                label="Фоновое видео"
-                help={
-                  hasVideo &&
-                  !isDirect &&
-                  "Доступно только для прямой ссылки на видеофайл."
-                }
-                checked={isBackground}
-                disabled={hasVideo && !isDirect}
-                onChange={(value) => setAttributes({ isBackground: value })}
-              />
+              <BlockSetupSection title="Обложка">
+                {controls.cover}
+              </BlockSetupSection>
+              <BlockSetupSection title="Фоновое видео">
+                {controls.background}
+              </BlockSetupSection>
+              <BlockSetupSection title="Полное видео (Фрейм)">
+                {controls.frame}
+              </BlockSetupSection>
             </BlockSetupPanel>
           )}
-          {hasVideo && showBackground && (
+          {isSetupComplete && isBackground && (
             <BackgroundVideoFigure
               url={url}
               width={width}
@@ -609,7 +544,7 @@ registerBlockType(metadata.name, {
               setDimensions={setAttributes}
             />
           )}
-          {hasVideo && !showBackground && hasPoster && (
+          {isSetupComplete && !isBackground && (
             <VideoFigure
               url={url}
               preview={preview}

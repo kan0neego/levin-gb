@@ -28,3 +28,31 @@ export function BlockSetupPanel({ title, icon, hint = "", children }) {
     </div>
   );
 }
+
+/**
+ * Секция внутри тела панели: заголовок и слот с контролом.
+ *
+ * @param {Object}                    props
+ * @param {string}                    props.title    - Заголовок секции.
+ * @param {import("react").ReactNode} props.children - Содержимое секции.
+ * @return {import("react").JSX.Element}
+ */
+export function BlockSetupSection({ title, children }) {
+  return (
+    <div className="b-setup__section">
+      {title && <div className="b-setup__section-title">{title}</div>}
+      {children}
+    </div>
+  );
+}
+
+/**
+ * Разделитель альтернативных опций в теле панели.
+ *
+ * @param {Object} props
+ * @param {string} props.label - Текст разделителя.
+ * @return {import("react").JSX.Element}
+ */
+export function BlockSetupDivider({ label = "или" }) {
+  return <div className="b-setup__divider">{label}</div>;
+}

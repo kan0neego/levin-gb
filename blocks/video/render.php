@@ -42,8 +42,12 @@ if ( $is_background ) {
 	}
 
 	$has_dimensions     = $width > 0 && $height > 0;
+	$background_class   = 'vid-block wp-block-video video-background';
+	if ( '' !== $caption ) {
+		$background_class .= ' has-caption';
+	}
 	$wrapper_attributes = get_block_wrapper_attributes(
-		array( 'class' => 'vid-block wp-block-video video-background' )
+		array( 'class' => $background_class )
 	);
 	?>
 
@@ -58,6 +62,9 @@ if ( $is_background ) {
 		<?php endif; ?>
 		autoplay muted loop playsinline
 	></video>
+	<div class="video-progress" aria-hidden="true">
+		<div class="video-progress__bar"></div>
+	</div>
 	<?php if ( '' !== $caption ) : ?>
 		<figcaption class="video-caption"><?php echo wp_kses_post( $caption ); ?></figcaption>
 	<?php endif; ?>
@@ -97,6 +104,9 @@ if ( '' === $mime_type ) {
 $classes = 'vid-block wp-block-video video-lightbox';
 if ( $has_preview ) {
 	$classes .= ' video-autoplay';
+}
+if ( '' !== $caption ) {
+	$classes .= ' has-caption';
 }
 
 $wrapper_attributes = get_block_wrapper_attributes(

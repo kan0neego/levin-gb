@@ -24,6 +24,14 @@
       object-fit: cover;
       object-position: 50% 50%;
     }
+
+    &.is-video {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      color: #1e1e1e;
+    }
   }
 
   &__meta {
@@ -49,6 +57,15 @@
     color: #757575;
     font-size: 11px;
     line-height: 1.4;
+
+    overflow: clip;
+  }
+
+  &__url {
+    min-width: 0;
+
+    overflow: clip;
+    white-space: nowrap;
   }
 
   &__actions {

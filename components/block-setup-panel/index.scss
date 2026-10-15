@@ -36,11 +36,44 @@
   &__body {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
     padding: 20px;
 
-    .components-base-control {
+    .components-base-control,
+    .components-placeholder {
       margin-bottom: 0;
+    }
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__section-title {
+    color: #1e1e1e;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  &__divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    color: #757575;
+    font-size: 11px;
+    line-height: 1;
+    text-transform: uppercase;
+
+    &::before,
+    &::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background-color: #e6e6e6;
     }
   }
 }
