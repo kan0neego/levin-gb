@@ -69,16 +69,8 @@
   left: 0px;
 }
 
-.video-background {
+.vid-block:not([data-fancybox]) {
   cursor: default;
-
-  & > .video-content {
-    height: auto;
-    max-height: inherit;
-    aspect-ratio: auto 16 / 9;
-
-    position: static;
-  }
 }
 
 .video-progress {
@@ -97,14 +89,17 @@
   right: 0;
   bottom: 20px;
 
-  &__bar {
+  &::after {
+    content: "";
+    display: block;
+
     width: 100%;
     height: 100%;
     max-width: 100%;
 
     background: #fff;
 
-    transform: scaleX(0);
+    transform: scaleX(var(--video-progress, 0));
     transform-origin: left center;
     will-change: transform;
   }

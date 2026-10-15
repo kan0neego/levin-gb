@@ -125,21 +125,6 @@ function isVideoSetupComplete(attributes) {
 }
 
 /**
- * Фоновое видео: только превью без фрейма, либо устаревший флаг
- * `isBackground` с источником в `url`.
- *
- * @param {Object} attributes Атрибуты блока.
- * @return {boolean}
- */
-function isBackgroundVideo(attributes) {
-  if (attributes.url) {
-    return Boolean(attributes.isBackground) && !attributes.preview;
-  }
-
-  return Boolean(attributes.preview);
-}
-
-/**
  * Контролы обложки, фонового видео и полного фрейма.
  * Обложка независима. Превью пишет `previewId`/`preview`, фрейм — `id`/`url`.
  *
@@ -325,95 +310,15 @@ function InspectorTools({ attributes, setAttributes }) {
 }
 
 /**
- * Фоновое видео в редакторе: повторяет разметку render.php. Видео
- * воспроизводится сразу, без обложки и lightbox проигрывателя.
- *
- * Атрибуты `width`/`height` задают пропорции до загрузки видео. Если размеры
- * неизвестны (внешняя ссылка), они берутся из метаданных загруженного видео.
- *
- * @param {Object}   props
- * @param {string}   props.url           - URL видеофайла.
- * @param {number}   props.width         - Ширина видео.
- * @param {number}   props.height        - Высота видео.
- * @param {string}   props.caption       - Подпись к видео.
- * @param {Function} props.setCaption    - setter атрибута caption.
- * @param {Function} props.setDimensions - setter атрибутов width и height.
- * @return {import("react").JSX.Element}
- */
-function BackgroundVideoFigure({
-  url,
-  width,
-  height,
-  caption,
-  setCaption,
-  setDimensions,
-}) {
-  const hasDimensions = width > 0 && height > 0;
-  const figureRef = useRef(null);
-
-  useEffect(() => {
-    if (!figureRef.current) {
-      return undefined;
-    }
-
-    return bindVideoProgress(figureRef.current);
-  }, [url]);
-
-  const onLoadedMetadata = (event) => {
-    const { videoWidth, videoHeight } = event.currentTarget;
-    if (hasDimensions || !videoWidth || !videoHeight) return;
-    setDimensions({ width: videoWidth, height: videoHeight });
-  };
-
-  return (
-    <figure
-      ref={figureRef}
-      className={[
-        "vid-block",
-        "wp-block-video",
-        "video-background",
-        hasCaptionText(caption) ? "has-caption" : "",
-      ]
-        .filter(Boolean)
-        .join(" ")}
-    >
-      <video
-        className="video-content"
-        src={url}
-        width={hasDimensions ? width : undefined}
-        height={hasDimensions ? height : undefined}
-        style={
-          hasDimensions ? { aspectRatio: `${width} / ${height}` } : undefined
-        }
-        autoPlay
-        muted
-        loop
-        playsInline
-        onLoadedMetadata={onLoadedMetadata}
-      />
-      <div className="video-progress" aria-hidden="true">
-        <div className="video-progress__bar" />
-      </div>
-      <RichText
-        tagName="figcaption"
-        className="video-caption"
-        value={caption}
-        placeholder="Описание (опционально)"
-        onChange={setCaption}
-      />
-    </figure>
-  );
-}
-
-/**
  * Кастомное отображение видео в редакторе: повторяет разметку render.php.
  *
- * Прямая ссылка на файл рендерится в <video>, внешний источник — во фрейме
- * через fancybox (data-type="iframe").
+ * Обложка всегда в разметке. Превью даёт video-autoplay, полный источник —
+ * lightbox. Устаревший `isBackground` с url считается превью.
  *
  * @param {Object}   props
  * @param {string}   props.url        - URL выбранного видео.
  * @param {string}   props.preview    - URL инлайнового превью-видео.
+ * @param {boolean}  props.isBackground - Устаревший флаг фонового режима.
  * @param {string}   props.mimeType   - MIME-тип видео из атрибутов блока.
  * @param {string}   props.poster     - URL постера.
  * @param {string}   props.playMode   - Режим воспроизведения.
@@ -424,38 +329,59 @@ function BackgroundVideoFigure({
 function VideoFigure({
   url,
   preview,
+  isBackground,
   caption,
   mimeType,
   poster,
   playMode,
   setCaption,
 }) {
-  const isDirect = isDirectVideo(url);
-  const previewUrl = preview;
+  const legacyBackground = Boolean(isBackground) && url && !preview;
+  const previewUrl = preview || (legacyBackground ? url : "");
+  const frameUrl = legacyBackground ? "" : url;
+  const isDirect = isDirectVideo(frameUrl);
   const sourceType = mimeType || getVideoMimeType(previewUrl);
+  const figureRef = useRef(null);
+
+  useEffect(() => {
+    if (!figureRef.current || !previewUrl) {
+      return undefined;
+    }
+
+    return bindVideoProgress(figureRef.current);
+  }, [previewUrl]);
 
   const figureProps = {
+    ref: figureRef,
     className: [
       "vid-block",
       "wp-block-video",
-      "video-lightbox",
+      frameUrl ? "video-lightbox" : "",
       previewUrl ? "video-autoplay" : "",
       hasCaptionText(caption) ? "has-caption" : "",
     ]
       .filter(Boolean)
       .join(" "),
-    "data-src": url,
-    "data-fancybox": "",
-    ...(isDirect ? { "data-play-mode": playMode } : { "data-type": "iframe" }),
+    "data-play-mode": playMode,
+    ...(frameUrl
+      ? {
+          "data-src": frameUrl,
+          "data-fancybox": "",
+          ...(isDirect ? {} : { "data-type": "iframe" }),
+        }
+      : {}),
   };
 
   return (
     <figure {...figureProps}>
       {poster && <img className="video-poster" src={poster} alt="" />}
       {previewUrl && (
-        <video className="video-content" muted loop playsInline>
-          <source data-src={previewUrl} type={sourceType} />
-        </video>
+        <>
+          <video className="video-content" muted loop playsInline>
+            <source data-src={previewUrl} type={sourceType} />
+          </video>
+          <div className="video-progress" aria-hidden="true" />
+        </>
       )}
       <RichText
         tagName="figcaption"
@@ -472,20 +398,11 @@ registerBlockType(metadata.name, {
   ...metadata,
 
   edit: function ({ attributes, setAttributes }) {
-    const {
-      url,
-      preview,
-      mimeType,
-      poster,
-      playMode,
-      caption,
-      width,
-      height,
-    } = attributes;
+    const { url, preview, isBackground, mimeType, poster, playMode, caption } =
+      attributes;
     const blockProps = useBlockProps();
     const [isUploading, setIsUploading] = useState(false);
     const isSetupComplete = isVideoSetupComplete(attributes);
-    const isBackgroundMode = isBackgroundVideo(attributes);
 
     const onUploadError = (error) => {
       setIsUploading(false);
@@ -534,20 +451,11 @@ registerBlockType(metadata.name, {
               </BlockSetupSection>
             </BlockSetupPanel>
           )}
-          {isSetupComplete && isBackgroundMode && (
-            <BackgroundVideoFigure
-              url={preview || url}
-              width={width}
-              height={height}
-              caption={caption}
-              setCaption={setCaption}
-              setDimensions={setAttributes}
-            />
-          )}
-          {isSetupComplete && !isBackgroundMode && (
+          {isSetupComplete && (
             <VideoFigure
               url={url}
               preview={preview}
+              isBackground={isBackground}
               caption={caption}
               mimeType={mimeType}
               poster={poster}
