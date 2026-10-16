@@ -23,5 +23,45 @@
     "cli": "cursor",
     "name": "2026-10-14-agent-05",
     "startedAt": 1791974316852
+  },
+  "2026-10-15-agent-01": {
+    "cli": "cursor",
+    "name": "2026-10-15-agent-01",
+    "startedAt": 1792046185683
+  },
+  "2026-10-15-agent-02": {
+    "cli": "cursor",
+    "name": "2026-10-15-agent-02",
+    "startedAt": 1792049997765
+  },
+  "2026-10-15-agent-03": {
+    "cli": "cursor",
+    "name": "2026-10-15-agent-03",
+    "startedAt": 1792050717362
+  },
+  "2026-10-15-agent-04": {
+    "cli": "cursor",
+    "name": "2026-10-15-agent-04",
+    "startedAt": 1792050988070
+  },
+  "2026-10-15-agent-05": {
+    "cli": "cursor",
+    "name": "2026-10-15-agent-05",
+    "startedAt": 1792054603929
+  },
+  "2026-10-15-agent-06": {
+    "cli": "cursor",
+    "name": "2026-10-15-agent-06",
+    "startedAt": 1792057657220
+  },
+  "2026-10-15-agent-07": {
+    "cli": "cursor",
+    "name": "2026-10-15-agent-07",
+    "startedAt": 1792059003187
+  },
+  "2026-10-15-agent-08": {
+    "cli": "cursor",
+    "name": "2026-10-15-agent-08",
+    "startedAt": 1792059060712
   }
 }

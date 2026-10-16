@@ -1,36 +1,27 @@
-.has-iframe .f-html {
-	height: auto;
+.has-html5video .f-html {
+  height: auto;
+}
 
-	max-width: 1280px;
-	padding: 0;
+.has-iframe .f-html {
+  height: auto;
+
+  max-width: 1280px;
+  padding: 0;
   aspect-ratio: 16 / 9;
 }
 
 .has-iframe .f-html:where(.shot *),
 .has-html5video .f-html:where(.shot *) {
-	width: auto !important;
-	height: 45vw !important;
-	aspect-ratio: 9/16 !important;
+  width: auto !important;
+  height: 45vw !important;
+  aspect-ratio: 9/16 !important;
 
-	@media screen and (max-width: 1024px) {
-		height: 70vw !important;
-	}
+  @media screen and (max-width: 1024px) {
+    height: 70vw !important;
+  }
 
-	@media screen and (max-width: 640px) {
-		width: 100% !important;
-		height: auto !important;
-	}
-}
-
-.fancybox {
-	&__backdrop {
-		display: none;
-
-		background-color: #08101126;
-		opacity: 1;
-
-		position: fixed;
-		inset: 0;
-		z-index: -1;
-	}
+  @media screen and (max-width: 640px) {
+    width: 100% !important;
+    height: auto !important;
+  }
 }
