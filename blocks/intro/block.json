@@ -1,0 +1,19 @@
+{
+	"apiVersion": 3,
+	"name": "theme/prose-intro",
+	"title": "Введение",
+	"category": "text",
+	"description": "Блок введения для статьи",
+	"icon": "text",
+	"textdomain": "theme",
+	"attributes": {
+		"content": {
+			"type": "string"
+		}
+	},
+	"supports": {
+		"className": false
+	},
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}
