@@ -25,7 +25,9 @@ jobs:
       - name: Production build
         run: pnpm build:blocks
 
-      - name: Copy built blocks to PROD
+      - name: Deploy to PROD via SSH (SCP)
+        id: ssh-deploy
+        continue-on-error: true
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
@@ -35,3 +37,14 @@ jobs:
           target: /var/www/vhosts/u0139435.plsk.regruhosting.ru/httpdocs/doctorlevin.ru/wp-content/themes/sd-03-2_new/blocks/react
           strip_components: 2
           rm: false
+
+      - name: Deploy to PROD via FTP (fallback)
+        if: steps.ssh-deploy.outcome == 'failure'
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          local-dir: ./dist/blocks/
+          server-dir: httpdocs/doctorlevin.ru/wp-content/themes/sd-03-2_new/blocks/react/
