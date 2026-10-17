@@ -63,5 +63,18 @@
     "cli": "cursor",
     "name": "2026-10-15-agent-08",
     "startedAt": 1792059060712
+  },
+  "1792222659327_WFdPR_cli": {
+    "cli": "cline",
+    "name": "2026-10-17-agent-01",
+    "title": "@kan0neego at github: Введение: при вставке кода ломаются теги @blocks/…",
+    "startedAt": 1792222658772
+  },
+  "b8d476d6-3d97-4331-9b22-eb87c8f2e1b6": {
+    "cli": "cursor",
+    "name": "2026-10-17-agent-02",
+    "title": "@kan0neego at github: Введение: при вставке кода ломаются теги @blocks/…",
+    "startedAt": 1792223499170,
+    "files": 2
   }
 }

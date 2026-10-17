@@ -55,7 +55,7 @@ $wrapper_class = 'quote' . ('' !== $variations ? ' ' . $variations : '');
             <?php echo wp_kses_post($heading); ?>
         </div>
         <div class="quote__prose">
-            <?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+            <?php echo wp_kses_post($content); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
         </div>
         <?php if ( $is_author ) : ?>
         <div class="quote__author">
