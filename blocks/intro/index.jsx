@@ -38,5 +38,11 @@ registerBlockType(metadata.name, {
     );
   },
 
-  save: ({ attributes }) => attributes.content,
+  save: ({ attributes }) => (
+    <RichText.Content
+      tagName="p"
+      className="wp-block-paragraph is-style-introduction"
+      value={attributes.content}
+    />
+  ),
 });
