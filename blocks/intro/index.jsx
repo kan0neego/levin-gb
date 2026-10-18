@@ -1,10 +1,20 @@
 import { RichText, useBlockProps } from "@wordpress/block-editor";
-import { registerBlockType } from "@wordpress/blocks";
+import { createBlock, registerBlockType } from "@wordpress/blocks";
 import { useDispatch } from "@wordpress/data";
 import metadata from "./block.json";
 
 registerBlockType(metadata.name, {
   ...metadata,
+
+  transforms: {
+    to: [
+      {
+        type: "block",
+        blocks: ["core/paragraph"],
+        transform: ({ content }) => createBlock("core/paragraph", { content }),
+      },
+    ],
+  },
 
   edit: function ({ clientId, attributes, setAttributes }) {
     const { content } = attributes;
