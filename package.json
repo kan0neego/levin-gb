@@ -9,6 +9,7 @@
 		"watch:sass": "sass --watch styles:../assets/styles",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
+		"test": "node --test lib/blocks/migrate-author-id.test.js",
 		"wp-packages:update": "wp-scripts packages-update"
 	},
 	"devDependencies": {

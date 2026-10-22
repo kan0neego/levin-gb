@@ -1,80 +1,16 @@
 {
-  "2026-10-14-agent-01": {
+  "8fc5fc22-673b-4ccb-8c9f-9ac55811a558": {
     "cli": "cursor",
-    "name": "2026-10-14-agent-01",
-    "startedAt": 1791970156585
+    "name": "2026-10-21-agent-01",
+    "title": "Есть блоки в которых намертво зашиты данные бизнес сущностей. Необходим…",
+    "startedAt": 1792582462725,
+    "files": 17
   },
-  "2026-10-14-agent-02": {
+  "fc6c03f4-be5e-41fc-887f-a46c3c13f41e": {
     "cli": "cursor",
-    "name": "2026-10-14-agent-02",
-    "startedAt": 1791970395204
-  },
-  "2026-10-14-agent-03": {
-    "cli": "cursor",
-    "name": "2026-10-14-agent-03",
-    "startedAt": 1791974084741
-  },
-  "2026-10-14-agent-04": {
-    "cli": "cursor",
-    "name": "2026-10-14-agent-04",
-    "startedAt": 1791974118192
-  },
-  "2026-10-14-agent-05": {
-    "cli": "cursor",
-    "name": "2026-10-14-agent-05",
-    "startedAt": 1791974316852
-  },
-  "2026-10-15-agent-01": {
-    "cli": "cursor",
-    "name": "2026-10-15-agent-01",
-    "startedAt": 1792046185683
-  },
-  "2026-10-15-agent-02": {
-    "cli": "cursor",
-    "name": "2026-10-15-agent-02",
-    "startedAt": 1792049997765
-  },
-  "2026-10-15-agent-03": {
-    "cli": "cursor",
-    "name": "2026-10-15-agent-03",
-    "startedAt": 1792050717362
-  },
-  "2026-10-15-agent-04": {
-    "cli": "cursor",
-    "name": "2026-10-15-agent-04",
-    "startedAt": 1792050988070
-  },
-  "2026-10-15-agent-05": {
-    "cli": "cursor",
-    "name": "2026-10-15-agent-05",
-    "startedAt": 1792054603929
-  },
-  "2026-10-15-agent-06": {
-    "cli": "cursor",
-    "name": "2026-10-15-agent-06",
-    "startedAt": 1792057657220
-  },
-  "2026-10-15-agent-07": {
-    "cli": "cursor",
-    "name": "2026-10-15-agent-07",
-    "startedAt": 1792059003187
-  },
-  "2026-10-15-agent-08": {
-    "cli": "cursor",
-    "name": "2026-10-15-agent-08",
-    "startedAt": 1792059060712
-  },
-  "1792222659327_WFdPR_cli": {
-    "cli": "cline",
-    "name": "2026-10-17-agent-01",
-    "title": "@kan0neego at github: Введение: при вставке кода ломаются теги @blocks/…",
-    "startedAt": 1792222658772
-  },
-  "b8d476d6-3d97-4331-9b22-eb87c8f2e1b6": {
-    "cli": "cursor",
-    "name": "2026-10-17-agent-02",
-    "title": "@kan0neego at github: Введение: при вставке кода ломаются теги @blocks/…",
-    "startedAt": 1792223499170,
-    "files": 2
+    "name": "2026-10-22-agent-01",
+    "title": "Есть блоки в которых намертво зашиты данные бизнес сущностей. Необходим…",
+    "startedAt": 1792651885979,
+    "files": 10
   }
 }

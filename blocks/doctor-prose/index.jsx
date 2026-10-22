@@ -68,7 +68,7 @@ registerBlockType(metadata.name, {
     const { doctor } = useDoctor(author?.id);
     const preview = doctor || {};
     const picture = preview.pictureBlock || preview.picture || "";
-    const descriptionValue = description?.edited
+    const descriptionValue = description.edited
       ? description.value
       : preview.options?.bannerDesc ?? "";
     const isActive = Boolean(preview.isActive);

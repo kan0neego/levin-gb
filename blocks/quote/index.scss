@@ -23,20 +23,15 @@
   }
 
   &__content {
-    $p: fn.fluid(20px, 60px);
-    --p: #{$p};
-
+    --offset: -20px;
     flex: 1.5;
-
-    // padding-top: 27px;
-    padding: var(--p);
 
     position: relative;
     z-index: 1;
 
     &::before {
       --size: 78px;
-      --offset: calc(var(--p) - 20px);
+      --offset: -20px;
 
       display: flex;
       align-items: center;
@@ -198,12 +193,6 @@
     &__picture {
       display: none;
     }
-
-    &__content {
-      &:where(.is-rounded-image *) {
-        padding: fn.fluid(20px, 64px);
-      }
-    }
   }
 
   @media screen and (max-width: 640px) {
@@ -222,7 +211,7 @@
 
     &__content {
       &::before {
-        --offset: calc(var(--p) - 15px);
+        --offset: -15px;
         --size: 60px;
       }
     }
