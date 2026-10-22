@@ -13,7 +13,7 @@
   background-color: var(--bg-color);
   border-radius: var(--rounded);
 
-  clip-path: inset(-100px 0px 0px 0px round var(--rounded));
+  clip-path: inset(-100px 0px 0px -30px round var(--rounded));
 
   position: relative;
 
@@ -213,6 +213,8 @@
       &::before {
         --offset: -15px;
         --size: 60px;
+
+        left: 0;
       }
     }
   }
