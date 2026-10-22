@@ -1,10 +1,14 @@
 node_modules
 package-lock.json
+AGENTS.md
 
+.agents
 .review
+.plan
 .log
 
 dist
 blocks/.DS_Store
 .DS_Store
 .reslop
+skills-lock.json
