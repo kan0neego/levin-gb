@@ -5,16 +5,23 @@
  * @package theme
  */
 
-$author      = isset( $attributes['author'] ) ? $attributes['author'] : array();
-$author_id   = isset( $author['id'] ) ? absint( $author['id'] ) : 0;
-$author_name = get_the_title( $author_id );
-$author_exp  = num_decline( gmdate( 'Y' ) - get_field( 'experience', $author_id, false ), 'год, года, лет' );
-$author_spec = wp_strip_all_tags( get_the_excerpt( $author_id ) );
-$description = $attributes['description']['edited'] ? $attributes['description']['value'] : get_field( 'banner_text', $author_id, false );
-$picture_url = get_field( 'clipped_photo_block_single', $author_id );
+$author    = isset( $attributes['author'] ) ? $attributes['author'] : array();
+$author_id = isset( $author['id'] ) ? absint( $author['id'] ) : 0;
+$doctor    = class_exists( 'Doctor' ) ? new Doctor( $author_id ) : null;
+$is_doctor = $doctor instanceof Doctor && $doctor->exists();
 
-if ( get_field( 'is_active', $author_id ) ) {
-	$button_link = get_permalink( $author_id );
+$author_name = $is_doctor ? $doctor->get_title() : '';
+$author_spec = $is_doctor ? $doctor->get_spec() : '';
+$author_exp  = $is_doctor ? $doctor->get_experience_label() : '';
+$picture_url = $is_doctor ? $doctor->get_block_picture_url() : '';
+$is_active   = $is_doctor && $doctor->is_active();
+$banner_text = $is_doctor ? $doctor->get_banner_text() : '';
+
+$description_attr = isset( $attributes['description'] ) ? $attributes['description'] : array();
+$description      = ! empty( $description_attr['edited'] ) ? $description_attr['value'] : $banner_text;
+
+if ( $is_active ) {
+	$button_link = $doctor->get_permalink();
 	$button_attr = 'target="_blank"';
 	$button_text = 'Подробнее о враче';
 } else {
@@ -41,16 +48,18 @@ if ( get_field( 'is_active', $author_id ) ) {
 				<?php echo esc_html( $author_spec ); ?>
 			</div>
 		</div>
+		<?php if ( $author_exp ) : ?>
 		<div class="dc-prose__b-wr">
 			<div class="dc-prose__b">
 				Стаж <?php echo esc_html( $author_exp ); ?>
 			</div>
 		</div>
+		<?php endif; ?>
 		<div class="dc-prose__text">
 			<?php echo esc_html( $description ); ?>
 		</div>
 		<div class="dc-prose__footer">
-			<a href="<?php echo esc_url( $button_link ); ?>" <?php echo esc_attr( $button_attr ); ?> class="section-button">
+			<a href="<?php echo esc_url( $button_link ); ?>" <?php echo $button_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> class="section-button">
 				<?php echo esc_html( $button_text ); ?>
 			</a>
 		</div>

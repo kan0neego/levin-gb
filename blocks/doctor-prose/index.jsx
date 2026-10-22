@@ -7,14 +7,14 @@ import {
 import { registerBlockType } from "@wordpress/blocks";
 import { PanelBody } from "@wordpress/components";
 
-import { fetchDoctor } from "./lib/fetch-doctor";
-
 import { PostRelationControl } from "@components/post-relation-control";
 import { Fragment, useMemo } from "react";
 
 import BlockPlaceholder from "@/components/placeholder/block-placeholder";
 import { isEmpty } from "@/lib/helpers/object";
+import { useDoctor } from "@/lib/hooks/use-doctor";
 import metadata from "./block.json";
+import { deprecated } from "./deprecated";
 
 const DOCTOR_POST_TYPE = "doctors";
 const DOCTOR_TAXONOMY = "doctors_group";
@@ -32,29 +32,10 @@ function EditorTools({ attributes, setAttributes }) {
   const changeAuthor = (nextValue) => {
     const id = nextValue[0]?.[VALUE_KEY] ?? "";
 
-    if (!id) {
-      setAttributes({
-        author: EMPTY_AUTHOR,
-        description: { edited: false, value: "" },
-      });
-      return;
-    }
-
-    fetchDoctor(id)
-      .then((doctor) => {
-        if (!doctor) return;
-        const { options } = doctor;
-        const { bannerDesc } = options;
-        const description = { edited: false, value: bannerDesc };
-        setAttributes({ author: doctor });
-        setAttributes({ description });
-      })
-      .catch(() => {
-        setAttributes({
-          author: { ...EMPTY_AUTHOR, id },
-          description: { edited: false, value: "" },
-        });
-      });
+    setAttributes({
+      author: id ? { id } : EMPTY_AUTHOR,
+      description: { edited: false, value: "" },
+    });
   };
 
   return (
@@ -77,12 +58,21 @@ function EditorTools({ attributes, setAttributes }) {
 
 registerBlockType(metadata.name, {
   ...metadata,
+  deprecated,
 
   edit: function ({ attributes, setAttributes }) {
     const { description, author } = attributes;
     const blockProps = useBlockProps();
     const { children, ...innerProps } = useInnerBlocksProps(blockProps);
     const hasAuthor = !isEmpty(author.id);
+    const { doctor } = useDoctor(author?.id);
+    const preview = doctor || {};
+    const picture = preview.pictureBlock || preview.picture || "";
+    const descriptionValue = description?.edited
+      ? description.value
+      : preview.options?.bannerDesc ?? "";
+    const isActive = Boolean(preview.isActive);
+    const buttonText = isActive ? "Подробнее о враче" : "Записаться на прием";
 
     return (
       <>
@@ -91,19 +81,23 @@ registerBlockType(metadata.name, {
             <div className="dc-prose">
               <div className="dc-prose__img-wrapper">
                 <div className="dc-prose__image">
-                  <img src={author.picture} alt={author.name} loading="lazy" />
+                  {picture ? (
+                    <img src={picture} alt={preview.name} loading="lazy" />
+                  ) : null}
                 </div>
               </div>
               <div className="dc-prose__content">
                 <div className="dc-prose__header">
-                  <div className="dc-prose__name">{author.name}</div>
-                  <div className="dc-prose__snippet">{author.spec}</div>
+                  <div className="dc-prose__name">{preview.name}</div>
+                  <div className="dc-prose__snippet">{preview.spec}</div>
                 </div>
-                <div className="dc-prose__b-wr">
-                  <div className="dc-prose__b">Стаж {author.experience}</div>
-                </div>
+                {preview.experience ? (
+                  <div className="dc-prose__b-wr">
+                    <div className="dc-prose__b">Стаж {preview.experience}</div>
+                  </div>
+                ) : null}
                 <RichText
-                  value={description.value}
+                  value={descriptionValue}
                   placeholder={"Описание"}
                   className="dc-prose__text"
                   onChange={(value) => {
@@ -111,7 +105,7 @@ registerBlockType(metadata.name, {
                   }}
                 />
                 <div className="dc-prose__footer">
-                  <div className="section-button">Заказать звонок</div>
+                  <div className="section-button">{buttonText}</div>
                 </div>
               </div>
             </div>

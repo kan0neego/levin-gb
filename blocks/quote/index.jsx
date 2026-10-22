@@ -11,9 +11,10 @@ import { AuthorAvatar } from "@components/avatar";
 import { PostRelationControl } from "@components/post-relation-control";
 import { Fragment, useMemo } from "react";
 
+import { useDoctor } from "@/lib/hooks/use-doctor";
 import metadata from "./block.json";
+import { deprecated } from "./deprecated";
 import "./index.scss";
-import { fetchDoctor } from "./lib/fetch-doctor";
 
 const DOCTOR_POST_TYPE = "doctors";
 const DOCTOR_TAXONOMY = "doctors_group";
@@ -27,42 +28,35 @@ const VARIATIONS = [
 
 registerBlockType(metadata.name, {
   ...metadata,
+  deprecated,
 
   edit: function ({ attributes, setAttributes }) {
     const { heading, author, variations } = attributes;
     const blockProps = useBlockProps();
     const { children, ...innerProps } = useInnerBlocksProps(blockProps);
 
-    const isAuthor = Boolean(author?.id);
+    const authorId = author?.id;
+    const isAuthor = Boolean(authorId);
     const isRounded = variations.includes("rounded");
     const EMPTY_AUTHOR = metadata.attributes.author.default;
+    const { doctor } = useDoctor(authorId);
+    const preview = doctor || EMPTY_AUTHOR;
 
     // Значение контрола — упорядоченный массив [{ id }] либо [].
     const relationValue = useMemo(
-      () => (author?.id ? [{ [VALUE_KEY]: author.id }] : []),
-      [author?.id],
+      () => (authorId ? [{ [VALUE_KEY]: authorId }] : []),
+      [authorId],
     );
 
     const changeAuthor = (nextValue) => {
       const id = nextValue[0]?.[VALUE_KEY] ?? "";
 
-      // При снятии выбора сразу очищаем автора и вариацию.
       if (!id) {
         setAttributes({ author: EMPTY_AUTHOR, variations: "" });
         return;
       }
 
-      // При выборе — догружаем полные данные врача (name/spec/avatar/picture)
-      // и сохраняем их в атрибут.
-      fetchDoctor(id)
-        .then((doctor) => {
-          if (doctor) {
-            setAttributes({ author: doctor, variations });
-          }
-        })
-        .catch(() => {
-          setAttributes({ author: { ...EMPTY_AUTHOR, id } });
-        });
+      setAttributes({ author: { id }, variations });
     };
 
     const changeVar = (value) => {
@@ -99,10 +93,14 @@ registerBlockType(metadata.name, {
           <div class={`quote ${variations}`}>
             <div className="quote__picture">
               {!isRounded ? (
-                <img src={author.picture} alt={author.name} loading="lazy" />
+                <img src={preview.picture} alt={preview.name} loading="lazy" />
               ) : (
                 <div className="quote__picture-circle">
-                  <img src={author.picture} alt={author.name} loading="lazy" />
+                  <img
+                    src={preview.picture}
+                    alt={preview.name}
+                    loading="lazy"
+                  />
                 </div>
               )}
             </div>
@@ -118,7 +116,7 @@ registerBlockType(metadata.name, {
               <div className="quote__prose">{children}</div>
               {isAuthor ? (
                 <div class="quote__author">
-                  <AuthorAvatar author={author} />
+                  <AuthorAvatar author={preview} />
                 </div>
               ) : null}
             </div>

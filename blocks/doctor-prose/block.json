@@ -27,12 +27,7 @@
     "author": {
       "type": "object",
       "default": {
-        "id": "",
-        "name": "",
-        "spec": "",
-        "avatar": "",
-        "picture": "",
-        "experience": ""
+        "id": ""
       }
     }
   },
