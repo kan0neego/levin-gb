@@ -31,7 +31,15 @@
       }
     }
   },
+  "example": {
+    "attributes": {
+      "author": {
+        "id": ""
+      }
+    }
+  },
   "textdomain": "theme",
   "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
   "render": "file:./render.php"
 }

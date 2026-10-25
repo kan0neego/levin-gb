@@ -8,9 +8,9 @@ import { registerBlockType } from "@wordpress/blocks";
 import { PanelBody } from "@wordpress/components";
 
 import { PostRelationControl } from "@components/post-relation-control";
+import { BlockPlaceholder } from "@/components/placeholder/block-placeholder";
 import { Fragment, useMemo } from "react";
 
-import BlockPlaceholder from "@/components/placeholder/block-placeholder";
 import { isEmpty } from "@/lib/helpers/object";
 import { useDoctor } from "@/lib/hooks/use-doctor";
 import metadata from "./block.json";
@@ -110,7 +110,10 @@ registerBlockType(metadata.name, {
               </div>
             </div>
           ) : (
-            <BlockPlaceholder name={metadata.title} />
+            <BlockPlaceholder
+              name={metadata.title}
+              hint="Нажмите для настройки и выберите врача"
+            />
           )}
         </div>
         <EditorTools attributes={attributes} setAttributes={setAttributes} />

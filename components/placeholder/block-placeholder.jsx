@@ -2,7 +2,7 @@ import { isEmpty } from "@/lib/helpers/object";
 
 import "./index.scss";
 
-export default function BlockPlaceholder({ name, hint = "" }) {
+export function BlockPlaceholder({ name, hint = "" }) {
   const description = !isEmpty(hint) ? hint : "Нажимте для настройки...";
 
   return (

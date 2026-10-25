@@ -4,13 +4,18 @@
 
   background-color: #ebedf0;
 
-  &__name {
-    color: #a5b1bd;
+  &__name,
+  &__subname {
     text-align: center;
-    font-size: 2em;
+    color: #a5b1bd;
+  }
+
+  &__name {
+    margin-bottom: 4px;
+    font-size: 24px;
   }
 
   &__subname {
-    font-size: 0.5em;
+    font-size: 18px;
   }
 }
