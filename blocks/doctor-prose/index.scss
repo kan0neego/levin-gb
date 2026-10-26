@@ -1,0 +1,16 @@
+.dc-prose__placeholder {
+  display: block;
+  width: min(100%, 280px);
+  aspect-ratio: 1;
+  margin: 24px auto;
+  border: 2px solid #c8c8c8;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.dc-prose__text {
+  display: block;
+  min-height: 1.5em;
+  background: transparent;
+  resize: none;
+}

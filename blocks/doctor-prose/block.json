@@ -32,6 +32,7 @@
     }
   },
   "example": {
+    "viewportWidth": 1100,
     "attributes": {
       "author": {
         "id": ""

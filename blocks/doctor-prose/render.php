@@ -56,7 +56,7 @@ if ( $is_active ) {
 		</div>
 		<?php endif; ?>
 		<div class="dc-prose__text">
-			<?php echo esc_html( $description ); ?>
+			<?php echo nl2br( esc_html( $description ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		</div>
 		<div class="dc-prose__footer">
 			<a href="<?php echo esc_url( $button_link ); ?>" <?php echo $button_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> class="section-button">
