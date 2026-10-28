@@ -23,15 +23,16 @@
   }
 
   &__content {
-    --offset: -20px;
     flex: 1.5;
+
+    padding-left: 30px;
 
     position: relative;
     z-index: 1;
 
     &::before {
       --size: 78px;
-      --offset: -20px;
+      --offset: -10px;
 
       display: flex;
       align-items: center;
@@ -210,6 +211,8 @@
     }
 
     &__content {
+      padding-left: 0;
+
       &::before {
         --offset: -15px;
         --size: 60px;
