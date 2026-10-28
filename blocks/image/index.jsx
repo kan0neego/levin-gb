@@ -8,11 +8,45 @@ import {
   RichText,
   useBlockProps,
 } from "@wordpress/block-editor";
-import { registerBlockType } from "@wordpress/blocks";
+import {
+  createBlock,
+  getDefaultBlockName,
+  registerBlockType,
+} from "@wordpress/blocks";
 import { ToolbarButton, ToolbarGroup } from "@wordpress/components";
 import metadata from "./block.json";
 import "./index.scss";
 import { createImageItem, isDownload, transforms } from "./transforms";
+
+// Enter в подписи открывает следующий блок. Shift+Enter оставляет перенос строки.
+function onCaptionEnter(insertBlocksAfter, event) {
+  if (
+    event.defaultPrevented ||
+    event.nativeEvent?.isComposing ||
+    event.keyCode === 229
+  ) {
+    return;
+  }
+
+  if (
+    event.key !== "Enter" ||
+    event.shiftKey ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.metaKey
+  ) {
+    return;
+  }
+
+  const blockName = getDefaultBlockName();
+  if (!insertBlocksAfter || !blockName) {
+    return;
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+  insertBlocksAfter(createBlock(blockName));
+}
 
 const mergeImageItem = (prev, curr) => {
   return curr.map((item) => {
@@ -74,7 +108,7 @@ function EditorTools({ attributes, setAttributes }) {
   );
 }
 
-function FigureImage({ image, editable = false, set }) {
+function FigureImage({ image, editable = false, set, onCaptionKeyDown }) {
   const {
     sizes: { full },
   } = image;
@@ -92,6 +126,7 @@ function FigureImage({ image, editable = false, set }) {
           value={image.caption ?? ""}
           tagName="figcaption"
           placeholder="Опишите изображение (опционально)"
+          onKeyDown={onCaptionKeyDown}
           onChange={(text) => {
             const item = { ...image, caption: text };
             set(({ media }) => {
@@ -105,25 +140,32 @@ function FigureImage({ image, editable = false, set }) {
   );
 }
 
-function MediaWidget({ attributes, setAttributes }) {
+function MediaWidget({ attributes, setAttributes, insertBlocksAfter }) {
   const { media } = attributes;
   const isMedia = media.length === 1;
   const isGallery = media.length > 1;
   const isEmpty = !isMedia && !isGallery;
   const blockProps = useBlockProps();
+  const onCaptionKeyDown = (event) => onCaptionEnter(insertBlocksAfter, event);
 
   return (
     <>
       <EditorTools attributes={attributes} setAttributes={setAttributes} />
       <div {...blockProps}>
         {isMedia && (
-          <FigureImage image={media[0]} set={setAttributes} editable={true} />
+          <FigureImage
+            image={media[0]}
+            set={setAttributes}
+            editable={true}
+            onCaptionKeyDown={onCaptionKeyDown}
+          />
         )}
 
         {isGallery && (
           <MediaSlider
             key={media.map((m) => m.id).join("-")}
             media={media}
+            onCaptionKeyDown={onCaptionKeyDown}
             setItems={(next) => {
               setAttributes({ media: next });
             }}
@@ -157,9 +199,13 @@ registerBlockType(metadata.name, {
   ...metadata,
   transforms,
 
-  edit: function ({ attributes, setAttributes }) {
+  edit: function ({ attributes, setAttributes, insertBlocksAfter }) {
     return (
-      <MediaWidget attributes={attributes} setAttributes={setAttributes} />
+      <MediaWidget
+        attributes={attributes}
+        setAttributes={setAttributes}
+        insertBlocksAfter={insertBlocksAfter}
+      />
     );
   },
 

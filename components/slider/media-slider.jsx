@@ -10,7 +10,7 @@ import { SliderWrapper } from "./slider-wrapper";
  * Подпись текущего слайда. Значение хранится в медиа-элементе слайдера,
  * поэтому правка подписи обновляет исходный массив `media`.
  */
-function SliderCaption({ ...props }) {
+function SliderCaption({ onKeyDown, ...props }) {
   const { media, setItems, activeIndex } = useContext(SliderContext);
   const value = media[activeIndex]?.caption ?? "";
 
@@ -22,6 +22,7 @@ function SliderCaption({ ...props }) {
           tagName="div"
           className="swiper-caption-text"
           placeholder="Подпись изображения (опционально)"
+          onKeyDown={onKeyDown}
           onChange={(text) => {
             const next = media.map((item, index) =>
               index === activeIndex ? { ...item, caption: text } : item,
@@ -34,7 +35,13 @@ function SliderCaption({ ...props }) {
   );
 }
 
-export function MediaSlider({ media, setItems, perView, children }) {
+export function MediaSlider({
+  media,
+  setItems,
+  perView,
+  children,
+  onCaptionKeyDown,
+}) {
   const [activeIndex, setActiveIndex] = useState(0);
   const context = { media, setItems, activeIndex, setActiveIndex };
 
@@ -51,7 +58,7 @@ export function MediaSlider({ media, setItems, perView, children }) {
           <SliderButton type="prev" />
           <SliderButton type="next" />
         </Slider>
-        <SliderCaption />
+        <SliderCaption onKeyDown={onCaptionKeyDown} />
       </div>
     </SliderContext.Provider>
   );
