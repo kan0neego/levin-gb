@@ -1,0 +1,10 @@
+// Убираем стандартные верхний/нижний отступы блока Gutenberg (.wp-block),
+// которые ломают вёрстку .card-number
+[data-type="theme/card-number"] {
+	margin-top: 0 !important;
+	margin-bottom: 24px !important;
+}
+
+[data-type="theme/card-number"]:not(:has(~ [data-type="theme/card-number"])) {
+	margin-bottom: 0 !important;
+}

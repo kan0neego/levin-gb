@@ -1,0 +1,25 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "theme/tab-pane",
+	"title": "Вкладка",
+	"category": "common",
+	"icon": "media-text",
+	"description": "Одна вкладка внутри блока «Табы».",
+	"parent": ["theme/tabs"],
+	"attributes": {
+		"label": {
+			"type": "string",
+			"default": ""
+		},
+		"active": {
+			"type": "boolean",
+			"default": false
+		},
+		"paneId": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"editorScript": "file:./index.js"
+}

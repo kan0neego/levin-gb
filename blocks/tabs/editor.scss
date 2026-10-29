@@ -1,0 +1,83 @@
+// Кнопки вкладок рисует родитель (theme/tabs) напрямую — не через InnerBlocks,
+// поэтому им не мешают служебные обёртки Gutenberg. Просто кладём их в ряд,
+// как на фронте (.containers .tab-n при display:flex).
+[data-type="theme/tabs"] .tab-buttons {
+	display: flex !important;
+	flex-wrap: nowrap !important;
+	align-items: stretch !important;
+	width: 100% !important;
+	position: relative !important;
+}
+
+[data-type="theme/tabs"] .tab-buttons .tab-n {
+	flex: 1 1 0 !important;
+	width: auto !important;
+	min-width: 0;
+}
+
+[data-type="theme/tabs"] .tab-buttons .tab-n b {
+	white-space: normal;
+	overflow-wrap: break-word;
+	width: 100%;
+}
+
+// Кнопка добавления вкладки — выносим за пределы контейнера вправо,
+// чтобы не занимать место в ряду табов и не ломать раскладку как на фронте.
+[data-type="theme/tabs"] .tab-buttons .add-tab-btn {
+	position: absolute !important;
+	top: 0;
+	left: 100%;
+	margin-left: 8px;
+	width: 32px;
+	height: 32px;
+	min-width: 32px;
+	padding: 0 !important;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent !important;
+	border: 2px dashed #20A1E5 !important;
+	color: #20A1E5 !important;
+	font-family: Rubik;
+	font-size: 18px;
+	line-height: 1;
+	box-shadow: none !important;
+}
+
+[data-type="theme/tabs"] .tab-buttons .add-tab-btn:hover {
+	background: #20A1E5 !important;
+	color: #fff !important;
+}
+
+.tab-tabs {
+	display: block;
+	width: 100%;
+}
+
+// Контент каждой вкладки — обычный InnerBlocks, выводится друг под другом,
+// видна только активная (переключение через display:none во вложенном блоке).
+// Базовое правило .pane (ui-components.css) держит высоту/видимость на нуле
+// и раскрывается только по селектору смежности .tab-n.active + .pane —
+// а в нашей структуре .pane больше не стоит рядом с .tab-n, поэтому
+// принудительно возвращаем видимость здесь.
+[data-type="theme/tabs"] .tab-tabs .pane {
+	opacity: 1 !important;
+	visibility: visible !important;
+	height: auto !important;
+	width: 100% !important;
+	margin: 0;
+}
+
+// Обёртка Gutenberg вокруг theme/tab-pane (.wp-block) обычно ограничена
+// max-width контентной колонки — снимаем это ограничение, чтобы вкладка
+// занимала всю ширину .containers
+[data-type="theme/tabs"] .tab-tabs > .block-editor-inner-blocks,
+[data-type="theme/tabs"] .tab-tabs .block-editor-block-list__layout,
+[data-type="theme/tabs"] .tab-tabs [data-type="theme/tab-pane"],
+[data-type="theme/tabs"] .tab-tabs .pane > b.d-block,
+[data-type="theme/tabs"] .tab-tabs .pane .block-editor-inner-blocks,
+[data-type="theme/tabs"] .tab-tabs .pane .block-editor-block-list__layout {
+	display: block !important;
+	width: 100% !important;
+	max-width: none !important;
+}

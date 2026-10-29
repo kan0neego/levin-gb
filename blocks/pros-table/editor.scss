@@ -1,0 +1,202 @@
+// ---- Editor wrapper ----
+
+.pros-table-editor {
+    max-width: 875px;
+    padding-right: 44px; // место для кнопок удаления строк
+
+    .pros-table-editor__add {
+        margin-top: 12px;
+    }
+}
+
+// ---- Pros-table core (mirrors prices.css) ----
+
+.editor-styles-wrapper .pros-table {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding-top: 6px;
+    max-width: 875px;
+    margin: auto;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: -6px;
+        left: calc(50% - 6px);
+        right: -6px;
+        border: 6px solid #20A1E5;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, .15);
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    &.pros-table-three::before {
+        left: calc(100% - (100% / 3) - 6px);
+    }
+}
+
+.editor-styles-wrapper .pros-table__row {
+    display: flex;
+    position: relative; // для абсолютного позиционирования ctrl-col
+}
+
+.editor-styles-wrapper .pros-table__cell {
+    border-top: 1px solid #e4e2e2;
+    padding: 20px 20px 20px 0;
+    width: 100%;
+    font-size: 18px;
+}
+
+// 2-column cell sizing
+.editor-styles-wrapper .pros-table:not(.pros-table-three) .pros-table__cell:nth-child(1) {
+    max-width: calc(50% - 26px);
+    margin-right: 21px;
+}
+
+.editor-styles-wrapper .pros-table__head:not(.pros-table-three *) .pros-table__cell:last-child,
+.editor-styles-wrapper .pros-table:not(.pros-table-three) .pros-table__head .pros-table__cell:last-child,
+.editor-styles-wrapper .pros-table:not(.pros-table-three) .pros-table__body .pros-table__cell:nth-last-child(2) {
+    max-width: calc(50% - 30px);
+    padding: 15px;
+    margin: 0 15px;
+}
+
+// 3-column: сброс ограничений, равные колонки
+.editor-styles-wrapper .pros-table.pros-table-three .pros-table__cell {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 15px 10px !important;
+}
+
+.editor-styles-wrapper .pros-table__head .pros-table__cell {
+    display: flex;
+    align-items: center;
+    font-family: Rubik, Helvetica, Arial, sans-serif;
+    font-weight: 500;
+    font-size: 1.11rem;
+    line-height: 24px;
+    border: none;
+
+    &:last-child {
+        color: #20A1E5;
+    }
+}
+
+.editor-styles-wrapper .pros-table__body .pros-table__cell {
+    font-family: 'San Francisco(SF UI)', Helvetica, Arial, sans-serif;
+    font-size: 18px;
+    line-height: 30px;
+    color: #313640;
+    padding: 15px 15px 15px 0;
+}
+
+.editor-styles-wrapper .pros-table__icon {
+    display: flex;
+}
+
+.editor-styles-wrapper .pros-table__cell i {
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-image: url("data:image/svg+xml,%3Csvg width='13' height='12' viewBox='0 0 13 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.50006 6.58984L4.50007 9.58984L11.8704 1.58984' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: 10px;
+    background-color: #20A1E5;
+    margin-right: 11px;
+    margin-top: 5px;
+    display: block;
+    flex-shrink: 0;
+}
+
+// ---- Ctrl column — вынесена из потока, не влияет на ширину таблицы ----
+
+.editor-styles-wrapper .pros-table-editor__ctrl-col {
+    position: absolute;
+    right: -44px;
+    top: 0;
+    bottom: 0;
+    width: 36px;
+    border: none;
+    display: flex;
+    align-items: center;
+    padding: 0;
+}
+
+// ---- RichText wrapper ----
+
+.editor-styles-wrapper .pros-table__cell .block-editor-rich-text__editable {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+}
+
+// Header: FEFF-фикс через :has() (пустое → line-height: 0, контент → нормально)
+.editor-styles-wrapper .pros-table__head .pros-table__cell div[contenteditable]:has(span[data-rich-text-placeholder]) {
+    line-height: 0 !important;
+}
+.editor-styles-wrapper .pros-table__head .pros-table__cell div[contenteditable]:has(span[data-rich-text-placeholder]) span[data-rich-text-placeholder] {
+    line-height: 24px !important;
+    font-size: 1.11rem !important;
+    font-weight: 500 !important;
+    opacity: 0.4;
+}
+
+// ---- Критерий (span[contenteditable]) ----
+
+.editor-styles-wrapper .pros-table__body .pros-table__cell > span[contenteditable] {
+    font-weight: 300 !important;
+    font-size: 16px !important;
+    line-height: 19px !important;
+    font-family: 'San Francisco(SF UI)', Helvetica, Arial, sans-serif !important;
+    color: #696F7C !important;
+    margin-bottom: 5px !important;
+}
+
+// Плейсхолдер критерия
+.editor-styles-wrapper .pros-table__body .pros-table__cell > span[contenteditable] span[data-rich-text-placeholder] {
+    font-weight: 300 !important;
+    font-size: 16px !important;
+    line-height: 19px !important;
+    color: rgba(105, 111, 124, 0.5) !important;
+}
+
+// Подавляем FEFF только в пустом состоянии (плейсхолдер видим)
+// :has() поддерживается во всех современных браузерах
+.editor-styles-wrapper .pros-table__body .pros-table__cell > span[contenteditable]:has(span[data-rich-text-placeholder]) {
+    line-height: 0 !important;
+}
+.editor-styles-wrapper .pros-table__body .pros-table__cell > span[contenteditable]:has(span[data-rich-text-placeholder]) span[data-rich-text-placeholder] {
+    line-height: 19px !important;
+}
+
+// ---- Основной текст (div[contenteditable]) ----
+
+.editor-styles-wrapper .pros-table__body .pros-table__cell > div[contenteditable],
+.editor-styles-wrapper .pros-table__body .pros-table__cell .pros-table__icon > div[contenteditable] {
+    font-family: 'San Francisco(SF UI)', Helvetica, Arial, sans-serif !important;
+    font-size: 18px !important;
+    line-height: 30px !important;
+    color: #313640 !important;
+}
+
+// Плейсхолдер основного текста
+.editor-styles-wrapper .pros-table__body .pros-table__cell > div[contenteditable] span[data-rich-text-placeholder],
+.editor-styles-wrapper .pros-table__body .pros-table__cell .pros-table__icon > div[contenteditable] span[data-rich-text-placeholder] {
+    font-size: 18px !important;
+    line-height: 30px !important;
+    font-weight: 400 !important;
+    color: rgba(49, 54, 64, 0.35) !important;
+}
+
+// Подавляем FEFF только в пустом состоянии
+.editor-styles-wrapper .pros-table__body .pros-table__cell > div[contenteditable]:has(span[data-rich-text-placeholder]),
+.editor-styles-wrapper .pros-table__body .pros-table__cell .pros-table__icon > div[contenteditable]:has(span[data-rich-text-placeholder]) {
+    line-height: 0 !important;
+}
+.editor-styles-wrapper .pros-table__body .pros-table__cell > div[contenteditable]:has(span[data-rich-text-placeholder]) span[data-rich-text-placeholder],
+.editor-styles-wrapper .pros-table__body .pros-table__cell .pros-table__icon > div[contenteditable]:has(span[data-rich-text-placeholder]) span[data-rich-text-placeholder] {
+    line-height: 30px !important;
+}

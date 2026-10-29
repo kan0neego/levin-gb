@@ -1,0 +1,14 @@
+// Убираем стандартные верхний/нижний отступы блока Gutenberg (.wp-block),
+// которые ломают вёрстку .stages-list__row
+[data-type="theme/stage"] {
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
+}
+
+// :not(:last-child) во фронтовом CSS не срабатывает в редакторе, т.к. после
+// последнего блока идёт служебный .block-list-appender (тоже div) —
+// поэтому last-of-type указывает на него, а не на последний этап.
+// Находим этап, после которого нет других этапов (:has + general sibling).
+[data-type="theme/stage"]:not(:has(~ [data-type="theme/stage"])) .stages-list__item {
+	border-left: none !important;
+}

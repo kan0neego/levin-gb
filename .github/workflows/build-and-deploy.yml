@@ -34,7 +34,7 @@ jobs:
           username: ${{ secrets.HOST_NAME }}
           key: ${{ secrets.RSA_KEY }}
           source: dist/blocks/*
-          target: /var/www/vhosts/u0139435.plsk.regruhosting.ru/httpdocs/doctorlevin.ru/wp-content/themes/sd-03-2_new/blocks/react
+          target: /var/www/vhosts/u0139435.plsk.regruhosting.ru/httpdocs/doctorlevin.ru/wp-content/themes/sd-03-2_new/blocks
           strip_components: 2
           rm: false
 
@@ -47,4 +47,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
           local-dir: ./dist/blocks/
-          server-dir: httpdocs/doctorlevin.ru/wp-content/themes/sd-03-2_new/blocks/react/
+          server-dir: httpdocs/doctorlevin.ru/wp-content/themes/sd-03-2_new/blocks/

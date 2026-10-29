@@ -1,0 +1,10 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "theme/faq",
+	"title": "FAQ / Аккордеон",
+	"category": "common",
+	"icon": "editor-help",
+	"description": "Список вопросов-ответов с аккордеоном.",
+	"editorScript": "file:./index.js"
+}

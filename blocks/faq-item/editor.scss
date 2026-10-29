@@ -1,0 +1,14 @@
+// Стрелка в хедере управляется классом accordeon-editor-open (только редактор).
+// На фронте стрелка крутится через accordeon_open на обёртке,
+// но в редакторе accordeon_open всегда присутствует — поэтому отдельный класс на хедере.
+.editor-styles-wrapper .question::after {
+	content: none;
+}
+
+.editor-styles-wrapper .accordeon__head.question__head::after {
+	transform: translateY(-50%) rotate(-180deg);
+}
+
+.editor-styles-wrapper .accordeon__head.accordeon-editor-open::after {
+	transform: translateY(-50%) rotate(0deg);
+}

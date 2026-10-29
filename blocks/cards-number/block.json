@@ -1,0 +1,12 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "theme/cards-number",
+	"title": "Карточки с номерами",
+	"category": "common",
+	"supports": {
+		"className": false,
+		"customClassName": false
+	},
+	"editorScript": "file:./index.js"
+}

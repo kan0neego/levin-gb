@@ -1,0 +1,15 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "theme/tabs",
+	"title": "Табы",
+	"category": "common",
+	"icon": "editor-table",
+	"description": "Группа вкладок с переключаемым содержимым.",
+	"supports": {
+		"className": false,
+		"customClassName": false
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css"
+}

@@ -1,0 +1,31 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "theme/pros-table",
+	"title": "Акцентная таблица",
+	"category": "common",
+	"icon": "editor-table",
+	"description": "Сравнительная таблица с акцентной колонкой и метками-критериями.",
+	"attributes": {
+		"columns": {
+			"type": "number",
+			"default": 2
+		},
+		"accentLast": {
+			"type": "boolean",
+			"default": true
+		},
+		"headers": {
+			"type": "array",
+			"default": [ "", "" ]
+		},
+		"rows": {
+			"type": "array",
+			"default": [
+				{ "criterion": "", "cells": [ "", "" ] }
+			]
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css"
+}

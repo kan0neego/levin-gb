@@ -1,0 +1,14 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "theme/stages",
+	"title": "Этапы",
+	"category": "common",
+	"icon": "list-view",
+	"description": "Пронумерованный список этапов (например, этапы операции).",
+	"supports": {
+		"className": false,
+		"customClassName": false
+	},
+	"editorScript": "file:./index.js"
+}
