@@ -17,6 +17,10 @@
 
   position: relative;
 
+  .block-editor-default-block-appender {
+    height: auto !important;
+  }
+
   &:where(.is-rounded-image) {
     --rounded: 0px;
     --bg-color: transparent;
