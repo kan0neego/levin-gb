@@ -1,0 +1,19 @@
+{
+  "apiVersion": 3,
+  "name": "theme/warn",
+  "title": "Важно!",
+  "category": "widgets",
+  "description": "Блок для акцента внимания",
+  "icon": "warning",
+  "textdomain": "theme",
+  "attributes": {
+    "content": {
+      "type": "string"
+    }
+  },
+  "supports": {
+    "className": false
+  },
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php"
+}
