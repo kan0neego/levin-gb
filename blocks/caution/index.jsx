@@ -18,21 +18,20 @@ registerBlockType(metadata.name, {
       }
     };
 
-    const blockProps = useBlockProps({
-      className: "important",
-      onKeyDown: insertAfterKeyDown,
-    });
+    const blockProps = useBlockProps({ onKeyDown: insertAfterKeyDown });
 
     return (
       <div {...blockProps}>
-        <RichText
-          tagName="p"
-          value={content}
-          placeholder="Описание..."
-          onChange={(raw) => {
-            setAttributes({ content: raw });
-          }}
-        />
+        <div class="important">
+          <RichText
+            tagName="p"
+            value={content}
+            placeholder="Описание..."
+            onChange={(raw) => {
+              setAttributes({ content: raw });
+            }}
+          />
+        </div>
       </div>
     );
   },
