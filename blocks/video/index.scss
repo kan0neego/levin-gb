@@ -51,6 +51,28 @@
     left: 0;
     bottom: -1px;
   }
+
+  @media screen and (max-width: 768px) {
+    aspect-ratio: 14 / 9;
+
+    .video-content,
+    .video-poster {
+      aspect-ratio: 14 / 9;
+    }
+
+    .video-poster {
+      object-fit: cover;
+    }
+
+    .video-progress {
+      margin: 0;
+      bottom: 0;
+
+      &:after {
+        background: #20a1e5;
+      }
+    }
+  }
 }
 
 .video-content {
@@ -182,7 +204,7 @@
   transition: opacity 150ms ease-in-out;
 
   position: relative;
-  z-index: 10;
+  z-index: 5;
 }
 
 .video-play {
