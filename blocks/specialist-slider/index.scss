@@ -40,6 +40,8 @@ $button-width: 52px;
   background-color: var(--bg-banner);
   position: relative;
 
+  overflow: hidden;
+
   figure {
     margin: 0px;
   }
