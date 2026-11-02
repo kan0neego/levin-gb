@@ -1,28 +1,61 @@
-// Кнопки вкладок рисует родитель (theme/tabs) напрямую — не через InnerBlocks,
-// поэтому им не мешают служебные обёртки Gutenberg. Просто кладём их в ряд,
-// как на фронте (.containers .tab-n при display:flex).
 [data-type="theme/tabs"] .tab-buttons {
 	display: flex !important;
-	flex-wrap: nowrap !important;
-	align-items: stretch !important;
+	flex-wrap: wrap !important;
+	align-items: stretch;
 	width: 100% !important;
+	max-width: 1058px;
 	position: relative !important;
 }
 
 [data-type="theme/tabs"] .tab-buttons .tab-n {
-	flex: 1 1 0 !important;
+	flex: 1 1 calc(25% - 1px) !important;
+	box-sizing: border-box;
 	width: auto !important;
 	min-width: 0;
+	max-width: 100%;
+	overflow: hidden;
+	white-space: nowrap;
+	cursor: pointer;
+	position: relative;
 }
 
 [data-type="theme/tabs"] .tab-buttons .tab-n b {
-	white-space: normal;
-	overflow-wrap: break-word;
-	width: 100%;
+	display: block;
+	min-width: 0;
+	max-width: 100%;
+	white-space: nowrap;
 }
 
-// Кнопка добавления вкладки — выносим за пределы контейнера вправо,
-// чтобы не занимать место в ряду табов и не ломать раскладку как на фронте.
+[data-type="theme/tabs"] .tab-buttons .tab-n .block-editor-plain-text {
+	display: block;
+	width: 100%;
+	min-height: 0;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	resize: none;
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	color: inherit;
+	font: inherit;
+	font-weight: inherit;
+	text-align: inherit;
+}
+
+[data-type="theme/tabs"] .tab-buttons .tab-remove-btn {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	padding: 0 4px;
+	min-width: auto;
+	opacity: 0.5;
+	font-size: 12px;
+	line-height: 1;
+}
+
 [data-type="theme/tabs"] .tab-buttons .add-tab-btn {
 	position: absolute !important;
 	top: 0;
@@ -54,12 +87,6 @@
 	width: 100%;
 }
 
-// Контент каждой вкладки — обычный InnerBlocks, выводится друг под другом,
-// видна только активная (переключение через display:none во вложенном блоке).
-// Базовое правило .pane (ui-components.css) держит высоту/видимость на нуле
-// и раскрывается только по селектору смежности .tab-n.active + .pane —
-// а в нашей структуре .pane больше не стоит рядом с .tab-n, поэтому
-// принудительно возвращаем видимость здесь.
 [data-type="theme/tabs"] .tab-tabs .pane {
 	opacity: 1 !important;
 	visibility: visible !important;
@@ -68,9 +95,14 @@
 	margin: 0;
 }
 
-// Обёртка Gutenberg вокруг theme/tab-pane (.wp-block) обычно ограничена
-// max-width контентной колонки — снимаем это ограничение, чтобы вкладка
-// занимала всю ширину .containers
+[data-type="theme/tabs"] .tab-tabs .pane.is-active {
+	display: block !important;
+}
+
+[data-type="theme/tabs"] .tab-tabs .pane.is-hidden {
+	display: none !important;
+}
+
 [data-type="theme/tabs"] .tab-tabs > .block-editor-inner-blocks,
 [data-type="theme/tabs"] .tab-tabs .block-editor-block-list__layout,
 [data-type="theme/tabs"] .tab-tabs [data-type="theme/tab-pane"],

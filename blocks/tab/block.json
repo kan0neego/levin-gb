@@ -19,6 +19,10 @@
 		"paneId": {
 			"type": "string",
 			"default": ""
+		},
+		"duplicateTitle": {
+			"type": "boolean",
+			"default": true
 		}
 	},
 	"editorScript": "file:./index.js"
