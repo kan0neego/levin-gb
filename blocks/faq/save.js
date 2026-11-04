@@ -1,11 +1,13 @@
-import { InnerBlocks, useBlockProps } from '@wordpress/block-editor';
+import { InnerBlocks, useBlockProps } from "@wordpress/block-editor";
 
 export default function save() {
-	const blockProps = useBlockProps.save( { className: 'wp-block-lazyblock-faq' } );
+  const blockProps = useBlockProps.save({
+    className: "wp-block-lazyblock-faq",
+  });
 
-	return (
-		<div { ...blockProps }>
-			<InnerBlocks.Content />
-		</div>
-	);
+  return (
+    <div {...blockProps}>
+      <InnerBlocks.Content />
+    </div>
+  );
 }

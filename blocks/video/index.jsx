@@ -119,8 +119,7 @@ function hasCaptionText(caption) {
  */
 function isVideoSetupComplete(attributes) {
   return (
-    Boolean(attributes.poster) &&
-    Boolean(attributes.url || attributes.preview)
+    Boolean(attributes.poster) && Boolean(attributes.url || attributes.preview)
   );
 }
 
