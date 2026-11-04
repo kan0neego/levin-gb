@@ -211,7 +211,7 @@ export default function Edit({ attributes, setAttributes }) {
                   </td>
                 ))}
 
-                <td className="pros-table-editor__ctrl-col">
+                <div className="pros-table-editor__ctrl-col">
                   {rows.length > 1 && (
                     <Button
                       isDestructive
@@ -220,7 +220,7 @@ export default function Edit({ attributes, setAttributes }) {
                       onClick={() => removeRow(rowIdx)}
                     />
                   )}
-                </td>
+                </div>
               </tr>
             ))}
           </tbody>
