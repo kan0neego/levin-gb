@@ -24,6 +24,7 @@
       "default": [{ "criterion": "", "cells": ["", ""] }]
     }
   },
+  "style": "file:./index.css",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css"
 }

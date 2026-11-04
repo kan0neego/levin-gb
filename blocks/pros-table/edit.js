@@ -1,6 +1,7 @@
 import {
   useBlockProps,
   InspectorControls,
+  BlockControls,
   RichText,
 } from "@wordpress/block-editor";
 import {
@@ -8,7 +9,88 @@ import {
   RadioControl,
   ToggleControl,
   Button,
+  ToolbarButton,
+  ToolbarGroup,
 } from "@wordpress/components";
+import { useRef } from "@wordpress/element";
+
+import "./editor.scss";
+
+function onCriterionEnter(contentRef, event) {
+  if (
+    event.defaultPrevented ||
+    event.nativeEvent?.isComposing ||
+    event.keyCode === 229
+  ) {
+    return;
+  }
+
+  if (
+    event.key !== "Enter" ||
+    event.shiftKey ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.metaKey
+  ) {
+    return;
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+  contentRef.current?.focus();
+}
+
+function RowCell({
+  row,
+  rowIdx,
+  cell,
+  cellIdx,
+  accent,
+  updateCriterion,
+  updateCell,
+}) {
+  const contentRef = useRef(null);
+  const criterion = (
+    <RichText
+      tagName="span"
+      className="pros-rt-criterion"
+      value={row.criterion || ""}
+      onChange={(v) => updateCriterion(rowIdx, v)}
+      placeholder="Критерий"
+      allowedFormats={[]}
+      disableLineBreaks
+      onKeyDown={(event) => onCriterionEnter(contentRef, event)}
+    />
+  );
+  const content = (
+    <RichText
+      ref={contentRef}
+      className="pros-rt-content"
+      value={cell || ""}
+      onChange={(v) => updateCell(rowIdx, cellIdx, v)}
+      placeholder="Текст ячейки"
+    />
+  );
+
+  if (accent) {
+    return (
+      <>
+        {criterion}
+        <div className="pros-table__icon">
+          <i />
+          {content}
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {criterion}
+      {content}
+    </>
+  );
+}
 
 export default function Edit({ attributes, setAttributes }) {
   const { columns, accentLast, headers, rows } = attributes;
@@ -69,6 +151,12 @@ export default function Edit({ attributes, setAttributes }) {
 
   return (
     <>
+      <BlockControls>
+        <ToolbarGroup>
+          <ToolbarButton onClick={addRow}>Добавить строку</ToolbarButton>
+        </ToolbarGroup>
+      </BlockControls>
+
       <InspectorControls>
         <PanelBody title="Настройки">
           <RadioControl
@@ -99,6 +187,8 @@ export default function Edit({ attributes, setAttributes }) {
                     value={h || ""}
                     onChange={(v) => updateHeader(idx, v)}
                     placeholder={`Заголовок ${idx + 1}`}
+                    allowedFormats={[]}
+                    disableLineBreaks
                   />
                 </td>
               ))}
@@ -107,52 +197,19 @@ export default function Edit({ attributes, setAttributes }) {
           <tbody className="pros-table__body">
             {rows.map((row, rowIdx) => (
               <tr key={rowIdx} className="pros-table__row">
-                {(row.cells || []).slice(0, columns).map((cell, cellIdx) => {
-                  const isLast = cellIdx === lastCellIdx;
-                  const cellContent = (
-                    <>
-                      <RichText
-                        tagName="span"
-                        className="pros-rt-criterion"
-                        value={row.criterion || ""}
-                        onChange={(v) => updateCriterion(rowIdx, v)}
-                        placeholder="Критерий"
-                      />
-                      <RichText
-                        className="pros-rt-content"
-                        value={cell || ""}
-                        onChange={(v) => updateCell(rowIdx, cellIdx, v)}
-                        placeholder="Текст ячейки"
-                      />
-                    </>
-                  );
-                  return (
-                    <td key={cellIdx} className="pros-table__cell">
-                      {isLast && accentLast ? (
-                        <>
-                          <RichText
-                            tagName="span"
-                            className="pros-rt-criterion"
-                            value={row.criterion || ""}
-                            onChange={(v) => updateCriterion(rowIdx, v)}
-                            placeholder="Критерий"
-                          />
-                          <div className="pros-table__icon">
-                            <i />
-                            <RichText
-                              className="pros-rt-content"
-                              value={cell || ""}
-                              onChange={(v) => updateCell(rowIdx, cellIdx, v)}
-                              placeholder="Текст ячейки"
-                            />
-                          </div>
-                        </>
-                      ) : (
-                        cellContent
-                      )}
-                    </td>
-                  );
-                })}
+                {(row.cells || []).slice(0, columns).map((cell, cellIdx) => (
+                  <td key={cellIdx} className="pros-table__cell">
+                    <RowCell
+                      row={row}
+                      rowIdx={rowIdx}
+                      cell={cell}
+                      cellIdx={cellIdx}
+                      accent={cellIdx === lastCellIdx && accentLast}
+                      updateCriterion={updateCriterion}
+                      updateCell={updateCell}
+                    />
+                  </td>
+                ))}
 
                 <td className="pros-table-editor__ctrl-col">
                   {rows.length > 1 && (
@@ -168,14 +225,6 @@ export default function Edit({ attributes, setAttributes }) {
             ))}
           </tbody>
         </table>
-
-        <Button
-          variant="secondary"
-          className="pros-table-editor__add"
-          onClick={addRow}
-        >
-          + Добавить строку
-        </Button>
       </div>
     </>
   );
