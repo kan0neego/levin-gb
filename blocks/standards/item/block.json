@@ -1,0 +1,43 @@
+{
+  "apiVersion": 3,
+  "name": "theme/standard-item",
+  "title": "Стандарт",
+  "category": "common",
+  "icon": "yes-alt",
+  "description": "Один стандарт внутри блока «Стандарты лечения».",
+  "parent": ["theme/standards"],
+  "supports": {
+    "html": false,
+    "align": false,
+    "className": false,
+    "reusable": false,
+    "color": {
+      "background": false,
+      "text": false
+    }
+  },
+  "attributes": {
+    "standardId": {
+      "type": "number",
+      "default": 0
+    },
+    "title": {
+      "type": "string",
+      "default": ""
+    },
+    "subtitle": {
+      "type": "string",
+      "default": ""
+    },
+    "items": {
+      "type": "array",
+      "default": [""],
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "textdomain": "theme",
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php"
+}
