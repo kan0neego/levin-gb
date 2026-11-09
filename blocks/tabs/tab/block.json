@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "theme/tab",
+	"title": "Табы",
+	"icon": "editor-justify",
+	"description": "Блок таб",
+	"parent": [
+		"theme/tabs"
+	],
+	"usesContext": [
+		"theme/duplicateTitle"
+	],
+	"supports": {
+		"html": false,
+		"align": false,
+		"className": false,
+		"color": {
+			"background": false,
+			"text": false
+		}
+	},
+	"attributes": {
+		"id": {
+			"type": "string",
+			"default": ""
+		},
+		"label": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"textdomain": "theme",
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

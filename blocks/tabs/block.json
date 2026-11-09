@@ -1,15 +1,49 @@
 {
-  "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 3,
-  "name": "theme/tabs",
-  "title": "Табы",
-  "category": "common",
-  "icon": "editor-table",
-  "description": "Группа вкладок с переключаемым содержимым.",
-  "supports": {
-    "className": false,
-    "customClassName": false
-  },
-  "editorScript": "file:./index.js",
-  "editorStyle": "file:./index.css"
+	"apiVersion": 3,
+	"name": "theme/tabs",
+	"version": "1.0.0",
+	"title": "Табы",
+	"category": "widgets",
+	"icon": "grid-view",
+	"allowedBlocks": [
+		"theme/tab"
+	],
+	"description": "Группа табов",
+	"keywords": [
+		"группа табов",
+		"табы"
+	],
+	"supports": {
+		"html": false,
+		"align": false,
+		"className": false,
+		"color": {
+			"background": false,
+			"text": false
+		}
+	},
+	"attributes": {
+		"activeTabIndex": {
+			"type": "string",
+			"role": "local",
+			"default": ""
+		},
+		"duplicateTitle": {
+			"type": "boolean",
+			"default": true
+		},
+		"tabsItems": {
+			"type": "array",
+			"default": []
+		}
+	},
+	"providesContext": {
+		"theme/duplicateTitle": "duplicateTitle"
+	},
+	"textdomain": "theme",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./index.css",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php"
 }
