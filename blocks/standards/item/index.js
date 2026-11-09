@@ -1,11 +1,19 @@
 (function () {
   "use strict";
 
-  const { BlockControls, InspectorControls, RichText, useBlockProps } = window.wp.blockEditor;
+  const { BlockControls, InspectorControls, RichText, useBlockProps } =
+    window.wp.blockEditor;
   const { registerBlockType } = window.wp.blocks;
-  const { Button, Dropdown, PanelBody, SelectControl, ToolbarButton } = window.wp.components;
+  const { Button, Dropdown, PanelBody, SelectControl, ToolbarButton } =
+    window.wp.components;
   const { useEntityRecords } = window.wp.coreData;
-  const { createElement: el, Fragment, useEffect, useRef, useState } = window.wp.element;
+  const {
+    createElement: el,
+    Fragment,
+    useEffect,
+    useRef,
+    useState,
+  } = window.wp.element;
   const { decodeEntities } = window.wp.htmlEntities;
 
   const POST_TYPE = "standards";
@@ -114,7 +122,9 @@
         return;
       }
 
-      listRef.current.querySelectorAll("[contenteditable]")[focusIndex]?.focus();
+      listRef.current
+        .querySelectorAll("[contenteditable]")
+        [focusIndex]?.focus();
       setFocusIndex(null);
     }, [focusIndex]);
 
@@ -182,7 +192,11 @@
       const { standardId, title, subtitle, items } = attributes;
       // `.row` не на обёртке: его clearfix занимает `::after`, где редактор рисует рамку.
       const blockProps = useBlockProps();
-      const { records } = useEntityRecords("postType", POST_TYPE, STANDARDS_QUERY);
+      const { records } = useEntityRecords(
+        "postType",
+        POST_TYPE,
+        STANDARDS_QUERY,
+      );
       const standards = records ?? [];
       const standard = standards.find(({ id }) => id === standardId);
       const image = standard?.acf?.[IMAGE_FIELD];
@@ -230,7 +244,11 @@
               "div",
               { className: "col col-sm-5" },
               image?.url
-                ? el("img", { className: "d-block mx-auto", src: image.url, alt: "" })
+                ? el("img", {
+                    className: "d-block mx-auto",
+                    src: image.url,
+                    alt: "",
+                  })
                 : el(StandardPicker, {
                     standards,
                     standardId,

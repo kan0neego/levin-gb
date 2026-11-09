@@ -1,7 +1,8 @@
 (function () {
   "use strict";
 
-  const { InnerBlocks, useBlockProps, useInnerBlocksProps } = window.wp.blockEditor;
+  const { InnerBlocks, useBlockProps, useInnerBlocksProps } =
+    window.wp.blockEditor;
   const { createBlock, registerBlockType } = window.wp.blocks;
   const { Button } = window.wp.components;
   const { useDispatch } = window.wp.data;
@@ -21,7 +22,8 @@
         className: "standards__add",
         variant: "secondary",
         icon: "plus-alt2",
-        onClick: () => insertBlock(createBlock(ITEM_BLOCK), undefined, rootClientId),
+        onClick: () =>
+          insertBlock(createBlock(ITEM_BLOCK), undefined, rootClientId),
       },
       "Добавить стандарт",
     );

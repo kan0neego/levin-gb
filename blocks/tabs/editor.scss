@@ -1,9 +1,9 @@
 .editor-tab-buttons {
-	.tab-button {
-		cursor: pointer;
+  .tab-button {
+    cursor: pointer;
 
-		&.active {
-			pointer-events: all;
-		}
-	}
+    &.active {
+      pointer-events: all;
+    }
+  }
 }
