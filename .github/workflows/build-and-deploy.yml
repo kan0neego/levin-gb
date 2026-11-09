@@ -39,7 +39,6 @@ jobs:
           rm: false
 
       - name: Deploy to PROD via FTP (fallback)
-        id: ftp-deploy
         if: steps.ssh-deploy.outcome == 'failure'
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
@@ -49,21 +48,3 @@ jobs:
           protocol: ftp
           local-dir: ./dist/blocks/
           server-dir: httpdocs/doctorlevin.ru/wp-content/themes/sd-03-2_new/blocks/
-
-      - name: Remove obsolete tab blocks
-        if: steps.ssh-deploy.outcome == 'success' || steps.ftp-deploy.outcome == 'success'
-        uses: appleboy/ssh-action@v1.2.2
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.HOST_NAME }}
-          key: ${{ secrets.RSA_KEY }}
-          script: |
-            set -e
-            ROOT=/var/www/vhosts/u0139435.plsk.regruhosting.ru/httpdocs/doctorlevin.ru/wp-content/themes/sd-03-2_new/blocks
-            rm -rf "$ROOT/tab" "$ROOT/tabs-new"
-            test ! -e "$ROOT/tab"
-            test ! -e "$ROOT/tabs-new"
-            test -f "$ROOT/tabs/block.json"
-            test -f "$ROOT/tabs/tab/block.json"
-            grep '"name"' "$ROOT/tabs/block.json" "$ROOT/tabs/tab/block.json"
-            echo "obsolete directories removed"
