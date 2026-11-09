@@ -17,16 +17,22 @@
 
   .tab-button {
     display: block;
-    flex: 1 1 auto;
+    flex: 1 1 200px;
+
     box-sizing: border-box;
-    min-width: min(200px, 100%);
+    min-width: min(180px, 100%);
+
     height: 68px;
     margin: 0;
+
     padding: 16px;
     overflow: hidden;
+
     border: 0;
     border-radius: var(--tab-radius);
+
     background: var(--tab-idle);
+
     color: var(--tab-accent);
     font-family: var(--third-family, "Rubik");
     font-size: 20px;
@@ -36,7 +42,27 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     cursor: pointer;
+
     appearance: none;
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:not(.active):hover {
+        background: var(--tab-accent);
+        color: #fff;
+
+        .block-editor-rich-text__editable {
+          color: #fff;
+
+          [data-rich-text-placeholder],
+          [data-rich-text-placeholder]::before {
+            color: #fff;
+          }
+        }
+      }
+    }
 
     .block-editor-rich-text__editable {
       display: block;
@@ -45,7 +71,7 @@
       max-width: 100%;
       overflow: hidden;
       color: var(--tab-accent);
-      // Gutenberg sets white-space: pre-wrap inline on the editable.
+
       white-space: nowrap !important;
       text-overflow: ellipsis;
       text-align: inherit;
@@ -171,11 +197,17 @@
     }
 
     .tab-content-item {
+      &:not(.tab-active) {
+        display: none;
+        height: auto;
+      }
+
       &.tab-active {
+        display: block;
         padding: 20px;
       }
     }
-  
+
     &:not(:has(.tab-active)) .tab-content-item:first-of-type {
       padding: 20px;
     }
