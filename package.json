@@ -2,14 +2,11 @@
   "name": "my-theme-blocks",
   "version": "1.0.0",
   "scripts": {
-    "cline:review": "cline -a \"Пройдись по папке .review\"",
     "build:blocks": "wp-scripts build --webpack-src-dir=blocks --output-path=dist/blocks",
+    "build:theme": "wp-scripts build --webpack-src-dir=blocks --output-path=../blocks",
     "watch:blocks": "wp-scripts start --webpack-src-dir=blocks --output-path=../blocks --stats=errors-only",
-    "build:sass": "sass styles ../assets/styles",
-    "watch:sass": "sass --watch styles:../assets/styles",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "node --test lib/blocks/migrate-author-id.test.js",
     "wp-packages:update": "wp-scripts packages-update"
   },
   "devDependencies": {
