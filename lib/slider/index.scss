@@ -1,5 +1,3 @@
-@use "@/styles/decorators.scss" as *;
-
 :root {
   --swiper-pagination-bullet-width: 88px;
   --swiper-pagination-bullet-height: 4px;
@@ -344,42 +342,6 @@
   max-width: 330px;
 
   margin: 0 auto;
-}
-
-.line-pagination-overflow {
-  --swiper-pagination-bottom: 18px;
-
-  display: flex;
-
-  width: fit-content !important;
-  max-width: 90%;
-
-  padding: 6px 4px;
-  border-radius: 55px;
-  background-color: #1e3a571a;
-
-  position: absolute;
-  right: 0;
-  z-index: 10;
-
-  @media screen and (max-width: 640px) {
-    --swiper-pagination-bottom: 8px;
-  }
-}
-
-.swiper-caption {
-  margin-top: 12px;
-}
-
-.swiper-caption-content {
-  transition: height 0.3s ease;
-  overflow: hidden;
-}
-
-.swiper-caption-text {
-  @include figcaption;
-  overflow: hidden;
-  word-break: break-word;
 }
 
 .slider-navigation-wrapper {

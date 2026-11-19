@@ -1,5 +1,9 @@
 import { useContext, useEffect, useRef } from "@wordpress/element";
 import { SliderContext } from "./context";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/scrollbar";
+import "@lib/slider/index.scss";
 
 export function Slider({
   option,

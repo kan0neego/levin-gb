@@ -188,4 +188,40 @@
       right: var(--offset);
     }
   }
+
+  .line-pagination-overflow {
+    --swiper-pagination-bottom: 18px;
+
+    display: flex;
+
+    width: fit-content !important;
+    max-width: 90%;
+
+    padding: 6px 4px;
+    border-radius: 55px;
+    background-color: #1e3a571a;
+
+    position: absolute;
+    right: 0;
+    z-index: 10;
+
+    @media screen and (max-width: 640px) {
+      --swiper-pagination-bottom: 8px;
+    }
+  }
+
+  .swiper-caption {
+    margin-top: 12px;
+  }
+
+  .swiper-caption-content {
+    transition: height 0.3s ease;
+    overflow: hidden;
+  }
+
+  .swiper-caption-text {
+    @include figcaption;
+    overflow: hidden;
+    word-break: break-word;
+  }
 }
