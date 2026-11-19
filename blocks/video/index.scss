@@ -286,3 +286,11 @@
     --hover-zoom: 1;
   }
 }
+
+.swiper-slide > .video-lightbox {
+  width: 100%;
+
+  &::before {
+    visibility: visible;
+  }
+}
