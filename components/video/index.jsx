@@ -1,0 +1,491 @@
+import {
+  InspectorControls,
+  MediaPlaceholder,
+  RichText,
+} from "@wordpress/block-editor";
+import { dispatch } from "@wordpress/data";
+import { PanelBody, Spinner } from "@wordpress/components";
+import { useCallback, useEffect, useRef, useState } from "@wordpress/element";
+import bindVideoProgress from "@lib/video-progress";
+import {
+  BlockSetupPanel,
+  BlockSetupSection,
+} from "@/components/block-setup-panel";
+import { MediaPreviewControl } from "@/components/media-preview-control";
+import {
+  EMPTY_COVER,
+  EMPTY_FRAME,
+  EMPTY_PREVIEW,
+  omitVideoAttributes,
+  pickVideoAttributes,
+} from "./attributes";
+
+export { EMPTY_VIDEO_MEDIA } from "./attributes";
+
+/** Расширения прямых ссылок на видеофайлы. */
+const VIDEO_EXTENSIONS = /\.(mp4|webm|ogv|ogg|mov)(\?.*)?$/i;
+
+/** Соответствие расширений видеофайлов и их MIME-типов. */
+const VIDEO_MIME_TYPES = {
+  mp4: "video/mp4",
+  webm: "video/webm",
+  ogv: "video/ogg",
+  ogg: "video/ogg",
+  mov: "video/quicktime",
+};
+
+/** MIME-тип по умолчанию для видео с неизвестным расширением. */
+const DEFAULT_VIDEO_MIME_TYPE = "video/mp4";
+
+/**
+ * Определяет, является ли источник прямой ссылкой на видеофайл.
+ * Всё остальное (YouTube, Vimeo, embed) считается внешним источником.
+ *
+ * @param {string} url URL источника.
+ * @return {boolean} true — прямой файл, false — внешний источник.
+ */
+function isDirectVideo(url) {
+  return VIDEO_EXTENSIONS.test(url ?? "");
+}
+
+/**
+ * Определяет MIME-тип видео по расширению файла для атрибута `type` тега
+ * `<source>`. Для неизвестных расширений используется `video/mp4`.
+ *
+ * @param {string} url URL источника.
+ * @return {string} MIME-тип видео.
+ */
+function getVideoMimeType(url) {
+  const match = (url ?? "").match(/\.([^./?#]+)(?:\?.*)?$/);
+  const extension = match ? match[1].toLowerCase() : "";
+
+  return VIDEO_MIME_TYPES[extension] ?? DEFAULT_VIDEO_MIME_TYPE;
+}
+
+/**
+ * Проверяет, что вложение уже загружено в медиабиблиотеку. Во время загрузки
+ * `mediaUpload` сначала отдаёт временный объект с `blob:` ссылкой и без `id`.
+ *
+ * @param {Object} media Объект вложения.
+ * @return {boolean} true — вложение загружено и имеет постоянную ссылку.
+ */
+function isUploadedMedia(media) {
+  return Boolean(media?.id) && !(media.url ?? "").startsWith("blob:");
+}
+
+/**
+ * Извлекает размеры видео из объекта вложения: выбор из медиабиблиотеки
+ * отдаёт `width`/`height`, REST-ответ — `media_details`.
+ *
+ * @param {Object} media Объект вложения.
+ * @return {{width: number, height: number}} Размеры видео либо нули.
+ */
+function getVideoDimensions(media) {
+  return {
+    width: media?.width ?? media?.media_details?.width ?? 0,
+    height: media?.height ?? media?.media_details?.height ?? 0,
+  };
+}
+
+/**
+ * Есть ли непустой текст подписи (без учёта пустой HTML-разметки).
+ *
+ * @param {string} caption HTML подписи.
+ * @return {boolean}
+ */
+function hasCaptionText(caption) {
+  return Boolean((caption ?? "").replace(/<[^>]+>/g, "").trim());
+}
+
+/**
+ * Начальная панель скрывается, когда задана обязательная обложка
+ * и хотя бы один источник видео (фон или полный фрейм).
+ *
+ * @param {Object} attributes Атрибуты блока.
+ * @return {boolean}
+ */
+function isVideoSetupComplete(attributes) {
+  return (
+    Boolean(attributes.poster) && Boolean(attributes.url || attributes.preview)
+  );
+}
+
+/**
+ * Контролы обложки, фонового видео и полного фрейма.
+ * Обложка независима. Превью пишет `previewId`/`preview`, фрейм — `id`/`url`.
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes      - Атрибуты блока.
+ * @param {Function} props.setAttributes   - setter атрибутов видео.
+ * @param {Function} [props.onUploadError] - Обработчик ошибки загрузки.
+ * @param {boolean}  [props.isUploading]   - Идёт загрузка вложения.
+ * @param {Function} [props.setIsUploading] - setter состояния загрузки.
+ * @return {{cover: import("react").JSX.Element, background: import("react").JSX.Element, frame: import("react").JSX.Element}}
+ */
+function getVideoModeControls({
+  attributes,
+  setAttributes,
+  onUploadError,
+  isUploading,
+  setIsUploading,
+}) {
+  const { posterId, poster, id, url, previewId, preview } = attributes;
+  const backgroundValue = { id: previewId, url: preview };
+  const frameValue = { id, url };
+
+  const selectCover = (media) => {
+    if (!media?.url) {
+      setAttributes({ ...EMPTY_COVER });
+      return;
+    }
+
+    setAttributes({
+      posterId: media.id ?? 0,
+      poster: media.url,
+    });
+  };
+
+  const selectBackground = (media) => {
+    if (setIsUploading && media && !isUploadedMedia(media)) {
+      setIsUploading(true);
+      return;
+    }
+
+    if (setIsUploading) {
+      setIsUploading(false);
+    }
+
+    if (!media?.url) {
+      setAttributes({ ...EMPTY_PREVIEW });
+      return;
+    }
+
+    const previewUrl = media.url;
+
+    setAttributes({
+      previewId: media.id ?? 0,
+      preview: previewUrl,
+      mimeType: media.mime || getVideoMimeType(previewUrl),
+      ...getVideoDimensions(media),
+    });
+  };
+
+  const selectFrame = (media) => {
+    if (setIsUploading && media && !isUploadedMedia(media)) {
+      setIsUploading(true);
+      return;
+    }
+
+    if (setIsUploading) {
+      setIsUploading(false);
+    }
+
+    if (!media?.url) {
+      setAttributes({ ...EMPTY_FRAME, isBackground: false });
+      return;
+    }
+
+    setAttributes({
+      id: media.id ?? 0,
+      url: media.url,
+      isBackground: false,
+    });
+  };
+
+  const selectFrameUrl = (nextUrl) => {
+    setAttributes({
+      ...EMPTY_FRAME,
+      url: nextUrl,
+      isBackground: false,
+    });
+  };
+
+  return {
+    cover: (
+      <MediaPreviewControl
+        label="Изображение (постер)"
+        accept="image/*"
+        allowedTypes={["image"]}
+        value={{ id: posterId, url: poster }}
+        onChange={selectCover}
+        onDelete={() => selectCover()}
+      />
+    ),
+    background: (
+      <MediaPreviewControl
+        label="Видеопревью"
+        icon="video-alt3"
+        accept="video/*"
+        allowedTypes={["video"]}
+        value={backgroundValue}
+        onChange={selectBackground}
+        onDelete={() => selectBackground()}
+        renderPlaceholder={({
+          icon,
+          label,
+          accept,
+          allowedTypes,
+          onSelect,
+        }) => (
+          <MediaPlaceholder
+            icon={icon}
+            labels={{ title: label }}
+            accept={accept}
+            allowedTypes={allowedTypes}
+            onSelect={onSelect}
+            onError={onUploadError}
+          >
+            {isUploading && <Spinner />}
+          </MediaPlaceholder>
+        )}
+      />
+    ),
+    frame: (
+      <MediaPreviewControl
+        label="Внешний источник или медиа"
+        icon="video-alt3"
+        accept="video/*"
+        allowedTypes={["video"]}
+        value={frameValue}
+        onChange={selectFrame}
+        onDelete={() => selectFrame()}
+        onSelectURL={selectFrameUrl}
+        renderPlaceholder={({
+          icon,
+          label,
+          accept,
+          allowedTypes,
+          onSelect,
+          onSelectURL,
+        }) => (
+          <MediaPlaceholder
+            icon={icon}
+            labels={{ title: label }}
+            accept={accept}
+            allowedTypes={allowedTypes}
+            onSelect={onSelect}
+            onSelectURL={onSelectURL}
+            onError={onUploadError}
+          >
+            {isUploading && <Spinner />}
+          </MediaPlaceholder>
+        )}
+      />
+    ),
+  };
+}
+
+/**
+ * Настройки видео в сайдбаре: обложка, фоновое видео и полный фрейм.
+ * `leading` — панели обёртки проекта, их компонент не разбирает.
+ *
+ * @param {Object}                    props
+ * @param {Object}                    props.controls - Контролы медиа.
+ * @param {import("react").ReactNode} [props.leading] - Панели обёртки.
+ * @return {import("react").JSX.Element}
+ */
+function InspectorTools({ controls, leading = null }) {
+  return (
+    <InspectorControls>
+      {leading}
+      <PanelBody title="Обложка">{controls.cover}</PanelBody>
+      <PanelBody title="Фоновое видео">{controls.background}</PanelBody>
+      <PanelBody title="Полное видео (Фрейм)">{controls.frame}</PanelBody>
+    </InspectorControls>
+  );
+}
+
+/**
+ * Кастомное отображение видео в редакторе: повторяет разметку render.php.
+ *
+ * Обложка всегда в разметке. Превью даёт video-autoplay, полный источник —
+ * lightbox. Устаревший `isBackground` с url считается превью.
+ *
+ * @param {Object}   props
+ * @param {string}   props.url          - URL выбранного видео.
+ * @param {string}   props.preview      - URL инлайнового превью-видео.
+ * @param {boolean}  props.isBackground - Устаревший флаг фонового режима.
+ * @param {string}   props.mimeType     - MIME-тип видео из атрибутов блока.
+ * @param {string}   props.poster       - URL постера.
+ * @param {string}   props.playMode     - Режим воспроизведения.
+ * @param {string}   props.caption      - Подпись к видео.
+ * @param {Function} props.setCaption   - setter атрибута caption.
+ * @return {import("react").JSX.Element}
+ */
+function VideoFigure({
+  url,
+  preview,
+  isBackground,
+  caption,
+  mimeType,
+  poster,
+  playMode,
+  setCaption,
+}) {
+  const legacyBackground = Boolean(isBackground) && url && !preview;
+  const previewUrl = preview || (legacyBackground ? url : "");
+  const frameUrl = legacyBackground ? "" : url;
+  const isDirect = isDirectVideo(frameUrl);
+  const sourceType = mimeType || getVideoMimeType(previewUrl);
+  const figureRef = useRef(null);
+
+  useEffect(() => {
+    if (!figureRef.current || !previewUrl) {
+      return undefined;
+    }
+
+    return bindVideoProgress(figureRef.current);
+  }, [previewUrl]);
+
+  const figureProps = {
+    ref: figureRef,
+    className: [
+      "vid-block",
+      "wp-block-video",
+      frameUrl ? "video-lightbox" : "",
+      previewUrl ? "video-autoplay" : "",
+      hasCaptionText(caption) ? "has-caption" : "",
+    ]
+      .filter(Boolean)
+      .join(" "),
+    "data-play-mode": playMode,
+    ...(frameUrl
+      ? {
+          "data-src": frameUrl,
+          "data-fancybox": "",
+          ...(isDirect ? {} : { "data-type": "iframe" }),
+        }
+      : {}),
+  };
+
+  return (
+    <figure {...figureProps}>
+      {poster && <img className="video-poster" src={poster} alt="" />}
+      {previewUrl && (
+        <>
+          <video className="video-content" muted loop playsInline>
+            <source data-src={previewUrl} type={sourceType} />
+          </video>
+          <div className="video-progress" aria-hidden="true" />
+        </>
+      )}
+      <RichText
+        tagName="figcaption"
+        className="video-caption"
+        value={caption}
+        placeholder="Описание (опционально)"
+        onChange={setCaption}
+      />
+    </figure>
+  );
+}
+
+/**
+ * Базовый редактор видео: обложка, превью, фрейм и лайтбокс.
+ *
+ * Компонент не регистрирует блок и не знает про CPT проекта. Атрибуты видео
+ * и обёртки пишутся разными setter-ами, общий `setAttributes` остаётся
+ * у обёртки для снимка, где нужны обе группы сразу.
+ *
+ * `useBlockProps` здесь не вызывается: оболочку задаёт блок-обёртка.
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes          - Сохранённые атрибуты. Их меняют контролы.
+ * @param {Object}   [props.displayAttributes] - Атрибуты фигуры. Без пропа — `attributes`.
+ * @param {Function} props.setAttributes    - setter всех атрибутов блока.
+ * @param {string}   props.title            - Заголовок панели настройки.
+ * @param {import("react").ReactNode} [props.setupLeading] - Верх панели настройки.
+ * @param {import("react").ReactNode} [props.inspectorLeading] - Верх сайдбара.
+ * @param {Function} props.children         - Render-prop редактора.
+ * @return {import("react").ReactNode}
+ */
+export function VideoBlock({
+  attributes,
+  setAttributes,
+  displayAttributes,
+  title,
+  setupLeading = null,
+  inspectorLeading = null,
+  children,
+}) {
+  const setVideoAttributes = useCallback(
+    (patch) => {
+      setAttributes(pickVideoAttributes(patch));
+    },
+    [setAttributes],
+  );
+  const setWrapperAttributes = useCallback(
+    (patch) => {
+      setAttributes(omitVideoAttributes(patch));
+    },
+    [setAttributes],
+  );
+  const [isUploading, setIsUploading] = useState(false);
+  const shown = displayAttributes || attributes;
+  const isSetupComplete = isVideoSetupComplete(shown);
+
+  const onUploadError = (error) => {
+    setIsUploading(false);
+    const message =
+      (typeof error === "string" ? error : error?.message) ||
+      "Не удалось загрузить видео.";
+    dispatch("core/notices").createErrorNotice(message, {
+      type: "snackbar",
+      isDismissible: true,
+    });
+  };
+
+  const controls = getVideoModeControls({
+    attributes,
+    setAttributes: setVideoAttributes,
+    onUploadError,
+    isUploading,
+    setIsUploading,
+  });
+
+  const setCaption = (value) => setVideoAttributes({ caption: value });
+  const { url, preview, isBackground, mimeType, poster, playMode, caption } =
+    shown;
+
+  const inspector = isSetupComplete ? (
+    <InspectorTools controls={controls} leading={inspectorLeading} />
+  ) : null;
+
+  const setup = !isSetupComplete ? (
+    <BlockSetupPanel
+      title={title}
+      icon="video-alt3"
+      hint="Обложка обязательна. Добавьте фоновое или полное видео."
+    >
+      {setupLeading}
+      <BlockSetupSection title="Обложка">{controls.cover}</BlockSetupSection>
+      <BlockSetupSection title="Фоновое видео">
+        {controls.background}
+      </BlockSetupSection>
+      <BlockSetupSection title="Полное видео (Фрейм)">
+        {controls.frame}
+      </BlockSetupSection>
+    </BlockSetupPanel>
+  ) : null;
+
+  const figure = isSetupComplete ? (
+    <VideoFigure
+      url={url}
+      preview={preview}
+      isBackground={isBackground}
+      caption={caption}
+      mimeType={mimeType}
+      poster={poster}
+      playMode={playMode}
+      setCaption={setCaption}
+    />
+  ) : null;
+
+  return children({
+    inspector,
+    setup,
+    figure,
+    setVideoAttributes,
+    setWrapperAttributes,
+  });
+}

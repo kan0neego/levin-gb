@@ -63,6 +63,17 @@
     "height": {
       "type": "number",
       "default": 0
+    },
+    "videoId": {
+      "type": "number",
+      "default": 0
+    },
+    "doctorIds": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "number"
+      }
     }
   },
   "textdomain": "theme",
